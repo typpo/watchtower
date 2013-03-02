@@ -35,4 +35,4 @@ def get_fingerprint(url, selector):
   return ret
 
 if __name__ == '__main__':
-  get_fingerprint('http://www.google.com', '#lga')
+  print get_fingerprint('http://www.google.com', '#lga')
