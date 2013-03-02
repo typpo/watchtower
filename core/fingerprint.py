@@ -18,7 +18,6 @@ def get_fingerprints(url, selectors):
 
   # check all selectors
   ret = [get_fingerprint(browser, sel) for sel in selectors]
-
   browser.close()
 
   return ret
@@ -30,12 +29,12 @@ def get_fingerprint(browser, selector):
   var computed_style = window.getComputedStyle($el.get(0));
   var style = {};
   for (var s in computed_style) {
-    if (!computed_style.hasOwnProperty(s)) {   // !hasOwnProperty is required
+    if (!computed_style.hasOwnProperty(s)) {   // !hasOwnProperty is required because it's half array, half object
       style[s] = computed_style[s];
     }
   }
   return {
-    offset: $el.offset(),
+    offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
     innerHTML: $el.html(),
     outerHTML: $el.parent().html(),
     computedStyle: style
