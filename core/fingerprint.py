@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import time
+import json
 
 def get_fingerprints(url, selectors):
   browser = webdriver.Firefox() # Firefox for now
@@ -26,14 +27,23 @@ def get_fingerprint(browser, selector):
   eval_js = """
   var $ = window.jQuery;
   var $el = $('{{ SELECTOR }}');
+  var computed_style = window.getComputedStyle($el.get(0));
+  var style = {};
+  for (var s in computed_style) {
+    if (!computed_style.hasOwnProperty(s)) {   // !hasOwnProperty is required
+      style[s] = computed_style[s];
+    }
+  }
   return {
     offset: $el.offset(),
     innerHTML: $el.html(),
     outerHTML: $el.parent().html(),
-    computedStyle: window.getComputedStyle($el.get(0))
+    computedStyle: style
   };
   """.replace('{{ SELECTOR }}', selector)
-  return browser.execute_script(eval_js)
+  ret = browser.execute_script(eval_js)
+
+  return ret
 
 if __name__ == '__main__':
   print get_fingerprints('http://www.google.com', ['#lga', '#mngb'])
