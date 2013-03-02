@@ -2,7 +2,7 @@
 
 pushd `dirname $0`
 
-sudo apt-get install python-virtualenv python-pip mongodb-server
+sudo apt-get install python-virtualenv python-pip
 cd ..
 virtualenv .
 source bin/activate
