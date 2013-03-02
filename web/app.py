@@ -3,6 +3,7 @@ from flask import Flask, request, redirect, session, url_for, render_template, R
 import urllib
 import urlparse
 import json
+import random
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
@@ -16,6 +17,10 @@ def placeholder():
   query = request.args.get('query')
   json_resp = json.dumps({'foo': 'bar'})
   return Response(json_resp, mimetype='application/json')
+
+@app.route('/test')
+def test():
+  return render_template('test.html', random=random.randint(0, 1000))
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', use_reloader=True)

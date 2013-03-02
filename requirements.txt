@@ -3,3 +3,4 @@ sqlalchemy
 gunicorn
 selenium
 flask-login
+difflib
