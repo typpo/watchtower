@@ -15,6 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
+from core.utils import get_blob
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
