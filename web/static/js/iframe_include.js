@@ -32,7 +32,6 @@ jQuery.fn.getPath = function () {
       return false;
     }
 
-
     // mouseenter
     //var $wrap = $el.wrap('<div></div>').addClass('watchtower-border-highlight');
     //$el.replaceWith($wrap);
@@ -62,6 +61,8 @@ jQuery.fn.getPath = function () {
     // allow bubbling
   }).live('click', function() {
     console.log($(this).getPath());
+    $currently_highlighting_element.addClass('watchtower-border-confirm');
+    confirm('u want to do this?');
     return false;
   });
 
