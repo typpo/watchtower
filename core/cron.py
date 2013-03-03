@@ -3,14 +3,24 @@ Go through and check all pages that need to be updated
 """
 
 from datetime import datetime, timedelta
+import sys
+import os
 
-pages = Page.query.filter(Page.next_check < datetime.now())
+from models import Page
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from ..web.app import create_app
 
-print len(pages), 'pages due for checking'
+app = create_app()
 
-for page in pages:
+if __name__ == '__main__':
 
-  # TODO check page
+  pages = Page.query.filter(Page.next_check < datetime.utcnow())
 
-  page.next_check = datetime.now() + timedelta(minutes=page.frequency)
-  page.save()
+  print len(pages), 'pages due for checking'
+  
+  for page in pages:
+    
+    # TODO check page
+    
+    page.next_check = datetime.now() + timedelta(minutes=page.frequency)
+    page.save()
