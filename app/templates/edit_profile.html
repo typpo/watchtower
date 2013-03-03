@@ -10,6 +10,14 @@
       <dd>{{form.email}}
       <input type=submit value="Go on" />
       <input type=hidden name=next value="{{next}}"/>
+    <dl>
+    <span> Twitter feed of pages </span>
+    {% for tweet in feed %}
+      <dt> Page:
+      <dd> {{ tweet['user']['screen_name'] }}
+      <dt> Tweet:
+      <dd> {{tweet['text'] }}
+    {% endfor %}
   </form>
 {% endblock %}
 

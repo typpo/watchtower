@@ -35,7 +35,7 @@ class Page(db.Model):
     self.next_check = next_check
     if frequency:
       self.frequency = frequency
-    
+
   def __repr__(self):
     return '<Page %r>' % self.url
 

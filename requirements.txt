@@ -6,3 +6,4 @@ Flask-OpenID
 Flask-SQLAlchemy
 BeautifulSoup
 requests
+twython

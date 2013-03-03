@@ -6,12 +6,14 @@ from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
 from threading import Thread
+from twython import Twython
 import time
 import json
 import random
 import os
 import sys
 from operator import attrgetter, add
+#from yahoo.search.news import NewsSearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
@@ -26,6 +28,11 @@ def create_app():
   db.init_app(app)
   return app
 
+class TwythonOld(Twython):
+  def oldSearch(self, **kwargs):
+    return self.get('https://search.twitter.com/search.json', params=kwargs)
+
+twitter = TwythonOld(Twython)
 app = create_app()
 
 oid = OpenID(app, 'temp/openid')
@@ -163,16 +170,20 @@ def create_profile():
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
   form = dict(name=request.args.get('name'), email = request.args.get('email'))
+  feed = twitter.getUserTimeline(screen_name="google")
   if request.method == 'POST':
     if (form['name'] and form['email']):
       return redirect(oid.get_next_url())# url_for('edit_profile'))
-  return render_template('edit_profile.html', form=form, next=oid.get_next_url)
+  return render_template('edit_profile.html', feed=feed, form=form, next=oid.get_next_url)
 
 @app.route('/logout')
 def logout():
   g.user = None
   session.pop('openid', None)
   return redirect(oid.get_next_url())
+
+def twitter_stream(results):
+  print results;
 
 @app.route('/test')
 def test():
