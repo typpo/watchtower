@@ -6,12 +6,15 @@ import json
 import difflib
 import os
 
+NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
+
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
   browser = webdriver.Firefox() # Firefox for now
   browser.get(url) # Load page
 
-  # TODO selector needs to be js escaped
+  # TODO selector needs to be js escaped for complicated
+  # selector cases like data-foo=['bar']
 
   # inject jquery
   f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
@@ -100,8 +103,38 @@ def diff_styles(s1, s2):
       })
   return diffs
 
-if __name__ == '__main__':
-  #print get_fingerprints('http://www.google.com', ['#lga', '#mngb'])
+# attempts to detect a/b tests.  For now, just refresh the page
+# a bunch of times with a new session each time
+def detect_ab_test(url, selectors):
+  prints = []
+  for i in range(NUM_AB_CHECKS):
+    prints.append(get_fingerprints('http://localhost:5000/test', selectors))
+
+  for i in range(len(selectors)):
+    prev_print = None
+    for selector_prints in prints:
+      selector_fingerprint = selector_prints[i]
+      if prev_print:
+        diffs = diff_fingerprints(prev_print, selector_fingerprint)
+        if len(diffs) > 0:
+          print 'Detected a/b test'
+          return diffs
+
+      prev_print = selector_fingerprint
+
+  print 'no a/b detected'
+  return []
+
+def test_fingerprint():
+  print get_fingerprints('http://www.google.com', ['#lga', '#mngb'])
+
+def test_diff():
   fp1 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
   fp2 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
   print diff_fingerprints(fp1[0], fp2[0])
+
+def test_ab_detection():
+  print detect_ab_test('http://localhost:5000/test', ['#lucky'])
+
+if __name__ == '__main__':
+  test_ab_detection()
