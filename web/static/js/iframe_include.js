@@ -23,18 +23,19 @@ jQuery.fn.getPath = function () {
   $('body *').unbind('*');
   var currently_highlighting = false;
   $('body *').live('mouseover', function(e) {
-    if (currently_highlighting) return;
+    //if (currently_highlighting) return;
     // mouseenter
-    console.log('mouseenter');
     var $el = $(this);
+    //var $wrap = $el.wrap('<div></div>').addClass('watchtower-border-highlight');
+    //$el.replaceWith($wrap);
     $el.addClass('watchtower-border-highlight');
     currently_highlighting = true;
 
     // allow bubbling.  some elements don't support border styles
   }).live('mouseleave', function(e) {
     // mouseleave
-    console.log('mouseleave');
     var $el = $(this);
+    //$el.parent().remove();
     $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
 
     currently_highlighting = false;
