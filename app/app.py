@@ -126,7 +126,6 @@ def edit_page(page_id):
     db.session.add(version)
   db.session.commit()
 
-  #return redirect(url_for('page/<page_id>', page_id=page.id))
   return redirect('/page/%d' % page.id)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
