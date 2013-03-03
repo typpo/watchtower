@@ -7,7 +7,11 @@
 <ul>
   {% for page in pages %}
   <li>
-    <a href="/page/{{ page.id }}">{{ page.name }}</a> - <a href={{ page.url }}>{{ page.url }}</a> <a href=/page/{{ page.id }}/delete>delete</a>
+    <a href="/page/{{ page.id }}">{{ page.name }}</a> - <a href={{ page.url }}>{{ page.url }}</a>
+&middot;
+<a href=/page/{{ page.id }}/edit>edit</a>
+&middot;
+<a href=/page/{{ page.id }}/delete>delete</a>
   </li>
   {% endfor %}
 </ul>
