@@ -1,9 +1,12 @@
+{# jquery must go first so it doesn't overwrite other pages' jquery plugins #}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <base href="{{ root }}"/>
 <style>
   .watchtower-border-highlight {
     border: 2px solid red !important;
   }
 </style>
-{{ html }}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script src="/static/js/iframe_include.js"></script>
+{{ html|safe }}
+
+{# take over once all handlers are set #}
+<script src="{{ watchtower_content_root }}/static/js/iframe_include.js"></script>

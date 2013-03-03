@@ -4,7 +4,8 @@ from flask import Flask, request, redirect, session, url_for, render_template, R
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 import urllib
-from urlparse import urlparse
+from urlparse import urlparse, urljoin
+from BeautifulSoup import BeautifulSoup
 import json
 import random
 import os
@@ -37,7 +38,7 @@ class Page(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   url = db.Column(db.String(1024))
   blob = db.Column(db.Text)
-  
+
   def __init__(self, url, blob):
     self.url = url
     self.blob = blob
@@ -66,7 +67,7 @@ def watch():
   selectors = request.form.getlist('selectors[]')
   if selectors is None:
     return jsonify(error='missing selectors params')
-  
+
   elements = [Element(page=page, selector=selector) for selector in selectors]
 
   # save everything in the db
@@ -92,7 +93,19 @@ def proxy():
     real_url = parsed.scheme + '://www.' + parsed.netloc
   response = urllib.urlopen(real_url)
   html = Markup(response.read().decode('utf-8'))
-  return render_template('proxy.html', html=html, root=real_url)
+
+  """
+  soup = BeautifulSoup(html)
+  for a in soup.findAll('a'):
+    a['href'] = urljoin(a['href'], real_url)
+  for img in soup.findAll('img'):
+    img['src'] = urljoin(img['src'], real_url)
+
+  return render_template('proxy.html', html=str(soup), root=real_url, )
+  """
+  watchtower_content_root = 'http://localhost:5000'   # TODO changeme
+  return render_template('proxy.html', html=html, root=real_url, \
+      watchtower_content_root=watchtower_content_root)
 
 @app.before_request
 def lookup_current_user():
