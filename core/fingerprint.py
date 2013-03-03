@@ -58,11 +58,15 @@ def diff_offsets(o1, o2):
   # Assumes keys are the same
   for key in o1:
     if o1[key] != o2[key]:
-      diffs.append({ \
-        'key': key,
-        'diff_amount': o2[key] - o1[key],
-        'diff_unit': 'px',
-      })
+      diffamnt = o2[key] - o1[key]
+      if diffamnt > 10:
+        # this check is necessary because webkit will find extremely
+        # tiny differences from time to time
+        diffs.append({ \
+          'key': key,
+          'diff_amount': diffamnt,
+          'diff_unit': 'px',
+        })
   return diffs
 
 def diff_html(h1, h2):
