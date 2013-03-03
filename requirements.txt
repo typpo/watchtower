@@ -4,3 +4,4 @@ selenium
 flask-login
 Flask-OpenID
 Flask-SQLAlchemy
+BeautifulSoup

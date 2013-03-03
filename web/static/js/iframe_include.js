@@ -19,11 +19,16 @@ jQuery.fn.getPath = function () {
   return path;
 };
 
-(function() {
-  $('body *').unbind('*');
+(function($) {
   var $currently_highlighting_element;
-  $('body *').live('mouseover', function(e) {
+  $('body *').unbind('click')
+             .unbind('mousedown')
+  .live('mouseover', function(e) {
     var $el = $(this);
+    if ($el.hasClass('watchtower-border-confirmed')) {
+      $currently_highlighting_element = $el;
+      return false;
+    }
     var path = $el.getPath();
     var tagname = $el.prop('tagName');
     if ($currently_highlighting_element
@@ -32,14 +37,18 @@ jQuery.fn.getPath = function () {
       return false;
     }
 
-
     // mouseenter
     //var $wrap = $el.wrap('<div></div>').addClass('watchtower-border-highlight');
     //$el.replaceWith($wrap);
     $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
     $el.addClass('watchtower-border-highlight');
+    $el.css({
+      'margin-left': $el.css('margin-left') - 1,
+      'margin-top': $el.css('margin-top') - 1,
+
+    });
     // did it work?
-    if ($el.css('border-width') === '0px') {
+    if ($el.css('outline-width') === '0px') {
       $el.children().addClass('watchtower-border-highlight');
       $el.children().children().addClass('watchtower-border-highlight');
       // it didn't
@@ -48,10 +57,9 @@ jQuery.fn.getPath = function () {
       $currently_highlighting_element = $el;
     }
 
-    // allow bubbling.  some elements don't support border styles
-    // TODO only do this for certain types (that support border attr)
-    //e.stopPropagation();
-    //return false;
+    // allow bubbling
+    e.stopPropagation();
+    return false;
   }).live('mouseleave', function(e) {
     // mouseleave
     var $el = $(this);
@@ -60,8 +68,15 @@ jQuery.fn.getPath = function () {
 
     $currently_highlighting_element = null;
     // allow bubbling
-  }).live('click', function() {
+  }).live('mousedown', function() {
     console.log($(this).getPath());
+    $currently_highlighting_element.addClass('watchtower-border-confirmed');
+    if (confirm('u want to add this?')) {
+
+    }
+    else {
+      $currently_highlighting_element.removeClass('watchtower-border-confirmed');
+    }
     return false;
   });
 
@@ -69,4 +84,4 @@ jQuery.fn.getPath = function () {
   window.onbeforeunload = function() {
     return "Watchtower doesn't support navigation in Change Tracking mode.  Are you sure you want to navigate away?";
   }
-})();
+})(jQuery);

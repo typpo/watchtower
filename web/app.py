@@ -5,7 +5,8 @@ from flask.ext.openid import OpenID
 
 from datetime import datetime
 import urllib
-from urlparse import urlparse
+from urlparse import urlparse, urljoin
+from BeautifulSoup import BeautifulSoup
 import json
 import random
 import os
@@ -83,7 +84,19 @@ def proxy():
     real_url = parsed.scheme + '://www.' + parsed.netloc
   response = urllib.urlopen(real_url)
   html = Markup(response.read().decode('utf-8'))
-  return render_template('proxy.html', html=html, root=real_url)
+
+  """
+  soup = BeautifulSoup(html)
+  for a in soup.findAll('a'):
+    a['href'] = urljoin(a['href'], real_url)
+  for img in soup.findAll('img'):
+    img['src'] = urljoin(img['src'], real_url)
+
+  return render_template('proxy.html', html=str(soup), root=real_url, )
+  """
+  watchtower_content_root = 'http://localhost:5000'   # TODO changeme
+  return render_template('proxy.html', html=html, root=real_url, \
+      watchtower_content_root=watchtower_content_root)
 
 @app.before_request
 def lookup_current_user():
