@@ -92,12 +92,12 @@ def edit_page(page_id):
     names = [el.name for el in page.elements]
     #post_url = url_for('/page/<page_id>', page_id=page.id)  # why this not work
     post_url = '/page/%d/edit' % page.id
-    return render_template('edit_page.html', url=page.url, name=page.name, \
+    return render_template('edit_page.html', page=page, \
         selectors=selectors, names=names, post_url=post_url)
   else:
     # Update page
-    selectors = json.loads(request.form.get('selectors'))
-    selector_names = json.loads(request.form.get('names'))
+    selectors = json.loads(request.args.get('selectors'))
+    selector_names = json.loads(request.args.get('names'))
 
     if not selectors:
       return jsonify(error='must supply one or more selectors')

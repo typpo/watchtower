@@ -1,4 +1,5 @@
 function EditPageCtrl($scope, $http) {
+  $scope.pageid = pageid;
   $scope.iframe_visible = false;
   $scope.url = 'http://google.com';
   $scope.name = 'home page';
@@ -28,9 +29,9 @@ function EditPageCtrl($scope, $http) {
     $cnp.find('input[name="names"]').val(JSON.stringify(names));
     $cnp.submit();
     */
-    // TODO show loader
+    $('#loader').show();
     $http({
-        url: '/edit_page',
+        url: '/page/' + $scope.pageid + '/edit',
         method: "POST",
         params: {
           url: $scope.url,
@@ -39,7 +40,8 @@ function EditPageCtrl($scope, $http) {
           names: JSON.stringify(names)
         }
      }).success(function(data) {
-       window.location.href = '/';
+       $('#loader').hide();
+       window.location.href = '/page/' + $scope.pageid;
      });
   }
 
