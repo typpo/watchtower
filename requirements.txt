@@ -1,7 +1,6 @@
 flask
-sqlalchemy
 gunicorn
 selenium
 flask-login
-difflib
 Flask-OpenID
+Flask-SQLAlchemy

@@ -1,16 +1,25 @@
 #!/usr/bin/env python
-from flask import Flask, request, redirect, session, url_for, render_template, Response, Markup
+
+from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup
+from flask.ext.openid import OpenID
 import urllib
 import urlparse
 import json
 import random
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from core.models import User
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
+oid = OpenID(app, 'temp/openid')
 
 @app.route("/")
 def index():
-  return render_template('index.html')
+  app.logger.debug(g.user)
+  return render_template('index.html', user=g.user)
 
 @app.route('/placeholder')
 def placeholder():
@@ -25,6 +34,37 @@ def proxy():
   response = urllib.urlopen(url)
   html = Markup(response.read().decode('utf-8'))
   return render_template('proxy.html', html=html)
+
+@app.before_request
+def lookup_current_user():
+  g.user = None
+  if 'openid' in session:
+    g.user = User.query.filter_by(openid=openid).first()
+
+@oid.after_login
+def create_or_login(resp):
+    session['openid'] = resp.identity_url
+    user = User.query.filter_by(openid=resp.identity_url).first()
+    if user is not None:
+        flash(u'Successfully signed in')
+        g.user = user
+        return redirect(oid.get_next_url())
+    return redirect(url_for('create_profile', next=oid.get_next_url(),
+                            name=resp.fullname or resp.nickname,
+                            email=resp.email))
+
+@app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
+def login():
+  if g.user is not None:
+    return redirect(oid.get_next_url())
+  if request.method == 'POST':
+    openid = request.form.get('openid')
+    if openid:
+      return oid.try_login(openid, ask_for=['email', 'fullname',
+                                            'nickname'])
+  return render_template('index.html', next=oid.get_next_url(),
+              error=oid.fetch_error())
 
 @app.route('/test')
 def test():
