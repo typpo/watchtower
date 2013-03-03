@@ -34,7 +34,7 @@ def index():
   app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
-  return render_template('index.html', user=g.user, pages=pages)
+  return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
 @app.route('/watch', methods=['GET', 'POST'])
 def watch():
@@ -114,9 +114,8 @@ def proxy():
 @app.before_request
 def lookup_current_user():
   g.user = None
-  return
   if 'openid' in session:
-    g.user = User.query.filter_by(id=session['openid']).first()
+    g.user = User.query.filter_by(openid=session['openid']).first()
 
 @oid.after_login
 def create_or_login(resp):
@@ -125,6 +124,8 @@ def create_or_login(resp):
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
+        g.user.name = resp.fullname or resp.nickname
+        g.user.email = resp.email
         return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email, next=oid.get_next_url()))
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
