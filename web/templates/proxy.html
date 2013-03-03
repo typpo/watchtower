@@ -1,0 +1,14 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+{% if html %}
+<div id="proxy_wrapper">
+{{ html }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/main.js"></script>
+{% endblock %}
