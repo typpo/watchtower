@@ -80,6 +80,11 @@ def placeholder():
   json_resp = json.dumps({'foo': 'bar'})
   return Response(json_resp, mimetype='application/json')
 
+@app.route('/edit_page')
+def edit():
+  url = request.args.get('url')
+  return render_template('edit_page.html', url=url)
+
 @app.route('/proxy')
 def proxy():
   data = request.data
