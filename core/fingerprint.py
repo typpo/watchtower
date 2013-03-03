@@ -16,9 +16,6 @@ def get_fingerprints(url, selectors):
   browser = webdriver.Chrome() # fuck firefox
   browser.get(url) # Load page
 
-  # TODO selector needs to be js escaped for complicated
-  # selector cases like data-foo=['bar']
-
   # inject jquery
   f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
   jquery_js = f.read();
