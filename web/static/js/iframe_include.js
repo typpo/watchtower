@@ -25,6 +25,10 @@ jQuery.fn.getPath = function () {
              .unbind('mousedown')
   .live('mouseover', function(e) {
     var $el = $(this);
+    if ($el.hasClass('watchtower-border-confirmed')) {
+      $currently_highlighting_element = $el;
+      return false;
+    }
     var path = $el.getPath();
     var tagname = $el.prop('tagName');
     if ($currently_highlighting_element
@@ -38,8 +42,13 @@ jQuery.fn.getPath = function () {
     //$el.replaceWith($wrap);
     $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
     $el.addClass('watchtower-border-highlight');
+    $el.css({
+      'margin-left': $el.css('margin-left') - 1,
+      'margin-top': $el.css('margin-top') - 1,
+
+    });
     // did it work?
-    if ($el.css('border-width') === '0px') {
+    if ($el.css('outline-width') === '0px') {
       $el.children().addClass('watchtower-border-highlight');
       $el.children().children().addClass('watchtower-border-highlight');
       // it didn't
@@ -49,8 +58,8 @@ jQuery.fn.getPath = function () {
     }
 
     // allow bubbling
-    //e.stopPropagation();
-    //return false;
+    e.stopPropagation();
+    return false;
   }).live('mouseleave', function(e) {
     // mouseleave
     var $el = $(this);
@@ -61,12 +70,12 @@ jQuery.fn.getPath = function () {
     // allow bubbling
   }).live('mousedown', function() {
     console.log($(this).getPath());
-    $currently_highlighting_element.addClass('watchtower-border-confirm');
+    $currently_highlighting_element.addClass('watchtower-border-confirmed');
     if (confirm('u want to add this?')) {
 
     }
     else {
-      $currently_highlighting_element.removeClass('watchtower-border-confirm');
+      $currently_highlighting_element.removeClass('watchtower-border-confirmed');
     }
     return false;
   });
