@@ -3,10 +3,11 @@
 {% block content %}
 <h1>Changes for {{ page.name }}</h1>
 
-{% for change in changes %}
+{% for version in versions %}
 <div>
-  {{ change.element.name }}
-  {{ change.diff }}
+  {{ version.element.name }}
+  {{ version.change }}
 </div>
+{% endfor %}
 
 {% endblock %}

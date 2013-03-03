@@ -26,12 +26,14 @@ class Page(db.Model):
 
 class Version(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  blob = db.Column(db.Text)
+  finger = db.Column(db.Text)
+  diff = db.Column(db.Text)
   when = db.Column(db.DateTime, key='when')
   element_id = db.Column(db.Integer, db.ForeignKey('element.id'))
 
-  def __init__(self, blob, when, element):
-    self.blob = blob
+  def __init__(self, fingerprint, diff, when, element):
+    self.fingerprint = fingerprint
+    self.diff = diff
     self.when = when
     self.element = element
 
