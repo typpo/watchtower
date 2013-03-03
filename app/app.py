@@ -20,11 +20,11 @@ from core.fingerprint import get_fingerprints
 from core.utils import get_blob
 
 def create_app():
-    app = Flask(__name__)
-    app.secret_key = 'not a secret key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
-    db.init_app(app)
-    return app
+  app = Flask(__name__)
+  app.secret_key = 'not a secret key'
+  app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
+  db.init_app(app)
+  return app
 
 app = create_app()
 
@@ -54,6 +54,8 @@ def new_page():
   selectors = json.loads(request.form.get('selectors'))
   selector_names = json.loads(request.form.get('names'))
 
+  print url, page_name, selectors, selector_names
+
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
@@ -62,9 +64,10 @@ def new_page():
 
   # save everything in the db
   db.session.commit()
-  
+
   # redirect to page for this page
   return redirect(url_for('page', page_id=page.id))
+  #return json.dumps([url, page_name, selectors, selector_names])
 
 def add_page(page, selectors, selector_names):
   fingerprints = get_fingerprints(page.url, selectors)
@@ -180,4 +183,4 @@ def test():
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', use_reloader=True)
+  app.run(debug=True, host='0.0.0.0', use_reloader=True)

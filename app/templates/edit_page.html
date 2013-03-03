@@ -32,6 +32,13 @@
 <input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
 <h1>Click on areas of the page you want to track.</h1>
 Currently tracking: <span ng-repeat="(selector, name) in selectors"><span ng-bind="name"></span><span ng-show="!$last">;&nbsp;</span></span>
+
+<form id="create_new_page" action="/new_page" method="POST">
+<input type="hidden" name="url" />
+<input type="hidden" name="name" />
+<input type="hidden" name="selectors" />
+<input type="hidden" name="names" />
+</form>
 </div>
 
 <iframe id="proxy_frame" width="100%"></iframe>
