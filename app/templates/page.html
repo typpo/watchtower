@@ -1,20 +1,13 @@
-<!-- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
-{% block content %} -->
-<html>
-<head>
-<link href="../static/css/base.css" rel="stylesheet">
-</head>
-<body>
-<div id="navbar"><img src="https://dl.dropbox.com/u/13158227/watchtowerlogo.png"></div>
-<div id="content">
-<div id="innernav"><a href="fake.html">back to dashboard</a></div>
+{% block content %}
+<div><a href="fake.html">back to dashboard</a></div>
 <h1>Changes for {{ page.name }}</h1>
 <p>insert url for page here</p>
 {% for version in versions %}
 <div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
 <br>
-<table border="0" width="95%">
+<table class="table table-striped" width="95%">
 <thead>
 <tr>
 <th>Tracked Element</th>
@@ -32,6 +25,6 @@
 </div>
 </body>
 </html>
-<!-- {% endfor %}
+{% endfor %}
 
-{% endblock %} -->
+{% endblock %}
