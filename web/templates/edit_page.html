@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="height:50px;">
+<input type="submit" class="btn" value="Save" style="float:right;"/>
+<h1>Click on areas of the page you want to track.</h1>
+</div>
+<iframe id="proxy_frame" src="/proxy?url={{url}}" width="100%"></iframe>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/edit_page.js"></script>
+{% endblock %}
