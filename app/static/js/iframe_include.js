@@ -50,7 +50,6 @@ jQuery.fn.getPath = function () {
     $el.css({
       'margin-left': $el.css('margin-left') - 1,
       'margin-top': $el.css('margin-top') - 1,
-
     });
     // did it work?
     if ($el.css('outline-width') === '0px') {

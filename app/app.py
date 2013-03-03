@@ -17,7 +17,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
-from core.utils import get_blob
+from core.utils import get_blob, is_production
 
 def create_app():
   app = Flask(__name__)
@@ -113,7 +113,7 @@ def proxy():
 
   return render_template('proxy.html', html=str(soup), root=real_url, )
   """
-  watchtower_content_root = 'http://localhost:5000'   # TODO changeme
+  watchtower_content_root = 'http://gowatchtower.com' if is_production() else 'http://localhost:5000'
   ts = time.time()
   return render_template('proxy.html', html=html, root=url, \
       watchtower_content_root=watchtower_content_root, timestamp=ts)
