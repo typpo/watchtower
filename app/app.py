@@ -54,6 +54,8 @@ def new_page():
   selector_names = json.loads(request.values.get('names'))
   fingerprints = get_fingerprints(url, selectors)
 
+  print url, page_name, selectors, selector_names
+
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
@@ -69,6 +71,7 @@ def new_page():
 
   # redirect to page for this page
   return redirect(url_for('page', page_id=page.id))
+  #return json.dumps([url, page_name, selectors, selector_names])
 
 @app.route('/page/<int:page_id>')
 def page(page_id):
