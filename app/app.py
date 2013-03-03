@@ -39,7 +39,7 @@ def index():
 
 @app.route('/watch', methods=['GET', 'POST'])
 def watch():
-  for p in ['url', 'name', 'selectors[]', 'names[]']:
+  for p in ['url', 'name', 'selectors', 'names']:
     if p not in request.values:
       return jsonify(error='missing %s param' % p)
 
@@ -47,8 +47,8 @@ def watch():
   page_name = request.values.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
-  selectors = request.values.getlist('selectors[]')
-  selector_names = request.values.getlist('names[]')
+  selectors = json.loads(request.values.get('selectors'))
+  selector_names = json.loads(request.values.get('names'))
   fingerprints = get_fingerprints(url, selectors)
 
   if len(selector_names) != len(selectors):

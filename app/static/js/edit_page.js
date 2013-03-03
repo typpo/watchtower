@@ -1,7 +1,7 @@
 function EditPageCtrl($scope, $http) {
   $scope.iframe_visible = false;
   $scope.url = 'http://google.com';
-  $scope.name = '';
+  $scope.name = 'home page';
   $scope.selectors = {};
 
   $scope.LoadIframe = function() {
@@ -13,6 +13,23 @@ function EditPageCtrl($scope, $http) {
 
   $scope.SavePage = function() {
     console.log($scope.selectors);
+
+    var selectors = [];
+    var names = [];
+    for (var selector in $scope.selectors) {
+      selectors.push(selector);
+      names.push($scope.selectors[selector]);
+    }
+    $http({
+        url: '/watch',
+        method: "GET",
+        params: {
+          url: $scope.url,
+          name: $scope.name,
+          selectors: JSON.stringify(selectors),
+          names: JSON.stringify(names)
+        }
+     });
   }
 
   function adjust_iframe(oFrame) {
