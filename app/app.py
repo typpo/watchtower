@@ -5,6 +5,7 @@ from flask.ext.openid import OpenID
 from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
+from threading import Thread
 import time
 import json
 import random
@@ -43,32 +44,37 @@ def new_page():
     return render_template('edit_page.html')
 
   for p in ['url', 'name', 'selectors', 'names']:
-    if p not in request.values:
+    if p not in request.form:
       return jsonify(error='missing %s param' % p)
 
-  url = request.values.get('url')
-  page_name = request.values.get('name')
+  url = request.form.get('url')
+  page_name = request.form.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
-  selectors = json.loads(request.values.get('selectors'))
-  selector_names = json.loads(request.values.get('names'))
-  fingerprints = get_fingerprints(url, selectors)
+  selectors = json.loads(request.form.get('selectors'))
+  selector_names = json.loads(request.form.get('names'))
 
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
-  now = datetime.utcnow()
-  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
-    element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
-    db.session.add(element)
-    db.session.add(version)
+  thread = Thread(target=add_page, args=(page, selectors, selector_names))
+  thread.run()
 
   # save everything in the db
   db.session.commit()
   
   # redirect to page for this page
   return redirect(url_for('page', page_id=page.id))
+
+def add_page(page, selectors, selector_names):
+  fingerprints = get_fingerprints(page.url, selectors)
+  now = datetime.utcnow()
+  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+    element = Element(name=name, selector=selector, page=page)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
+    db.session.add(element)
+    db.session.add(version)
+  db.session.commit
 
 @app.route('/page/<int:page_id>')
 def page(page_id):
@@ -77,6 +83,8 @@ def page(page_id):
     return jsonify(error='invalid page id')
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements])
   versions = sorted(versions, key=attrgetter('when'))
+  for version in versions:
+    version.diff=json.loads(version.diff)
   return render_template('page.html', page=page, versions=versions)
 
 @app.route('/proxy')

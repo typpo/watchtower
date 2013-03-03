@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div><a href="fake.html">back to dashboard</a></div>
+<div><a href="/">back to dashboard</a></div>
 <h1>Changes for {{ page.name }}</h1>
 <p>{{ page.url }}</p>
 <div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
@@ -16,10 +16,17 @@
     <tbody>
       {% for version in versions %}
       <tr>
-        <td>{{ version.element.name }}</td>
-        <td>{{ version.when }}</td>
-        <td>{{ version.change }}</td>
+        <td rowspan={{ version.diff|length }}>{{ version.element.name }}</td>
+        <td rowspan={{ version.diff|length }}>{{ version.when }}</td>
+        <td>{{ version.diff[0] }}</td>
       </tr>
+      {% for diff in version.diff %}
+      {% if loop.index0 %}
+      <tr>
+        <td>{{ diff }}</td>
+      </tr>
+      {% endif %}
+      {% endfor %}
       {% endfor %}
     </tbody>
 </table>
