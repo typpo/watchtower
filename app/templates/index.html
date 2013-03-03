@@ -6,7 +6,11 @@
 
 <ul>
   {% for page in pages %}
-  <li>{{ page }}</li>
+  <li>
+    <a href="/page/{{ page.id }}">
+    {{ page.name }}
+    </a>
+  </li>
   {% endfor %}
 </ul>
 {% endblock %}
