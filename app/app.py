@@ -38,6 +38,10 @@ def index():
   app.logger.debug(pages)
   return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
+@app.route('/about')
+def about():
+  return render_template('about.html')
+
 @app.route('/page/<int:page_id>', methods=['GET'])
 def page(page_id):
   page = Page.query.filter_by(id=page_id).first()
