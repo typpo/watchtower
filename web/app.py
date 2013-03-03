@@ -18,13 +18,14 @@ def placeholder():
   json_resp = json.dumps({'foo': 'bar'})
   return Response(json_resp, mimetype='application/json')
 
-@app.route('/proxy')
-def proxy():
+@app.route('/proxy/<path>')
+def proxy(path):
   data = request.data
-  google = 'www.google.com'
-  response = urllib.urlopen('http://' + google)
-  html = Markup(response.read())
+  response = urllib.urlopen('http://' + path)
+  raw_html = response.read()
+  html = Markup(raw_html);
   return render_template('proxy.html', html=html)
+
 @app.route('/test')
 def test():
   return render_template('test_goog.html',
