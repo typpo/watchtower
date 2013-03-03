@@ -2,10 +2,7 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
-
 from datetime import datetime
-import urllib
-import requests
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
 import json
@@ -16,6 +13,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
+from core.utils import getBlob
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
@@ -48,7 +46,7 @@ def watch():
 
   selectors = request.form.getlist('selectors[]')
   selector_names = request.form.getlist('names[]')
-  
+
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
@@ -58,7 +56,7 @@ def watch():
     version = Version(blob=blob, when=now, element_id=element.id)
     db.session.add(element)
     db.session.add(version)
-  
+
   # save everything in the db
   db.session.commit()
 
@@ -83,7 +81,7 @@ def proxy():
   real_url = url
   if (parsed.netloc[:3] != 'www'):
     real_url = parsed.scheme + '://www.' + parsed.netloc
-  html = getHtml(url)
+  html = utils.getBlob(url)
 
   """
   soup = BeautifulSoup(html)
@@ -128,9 +126,6 @@ def login():
                                             'nickname'])
   return render_template('index.html', next=oid.get_next_url(),
               error=oid.fetch_error())
-
-def getHtml(url):
-  return requests.get(url).text
 
 @app.route('/test')
 def test():
