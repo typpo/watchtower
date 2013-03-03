@@ -9,3 +9,7 @@ local
 *.swp
 *.swo
 .Python
+
+web/static/.DS_Store
+
+.DS_Store
