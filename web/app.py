@@ -22,33 +22,6 @@ app.secret_key = 'not a secret key'
 db.init_app(app)
 oid = OpenID(app, 'temp/openid')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
-db = SQLAlchemy(app)
-
-class Element(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  selector = db.Column(db.String(255), unique=True)
-  page_id = db.Column(db.Integer, db.ForeignKey('page.id'))
-  page = db.relationship('Page',
-                         backref=db.backref('elements', lazy='dynamic'))
-
-  def __init__(self, selector, page):
-    self.selector = selector
-    self.page = page
-
-  def __repr__(self):
-    return '<Element %r>' % self.selector
-
-class Page(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  url = db.Column(db.String(1024))
-  blob = db.Column(db.Text)
-
-  def __init__(self, url, blob):
-    self.url = url
-    self.blob = blob
-
-  def __repr__(self):
-    return '<Page %r>' % self.url
 
 @app.route("/")
 def index():
@@ -131,17 +104,18 @@ def proxy():
 @app.before_request
 def lookup_current_user():
   g.user = None
+  return
   if 'openid' in session:
-    g.user = db.query.filter_by(openid=openid).first()
+    g.user = User.query.filter_by(id=session['openid']).first()
 
 @oid.after_login
 def create_or_login(resp):
     session['openid'] = resp.identity_url
-    user = None #User.query.filter_by(openid=resp.identity_url).first()
+    user = User.query.filter_by(openid=resp.identity_url).first()
     if user is not None:
         flash('Successfully signed in')
         g.user = user
-        return redirect(oid.get_next_url())
+        return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email))# oid.get_next_url())
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
@@ -152,20 +126,38 @@ def login():
   if (g.user is not None):
     return redirect(oid.get_next_url())
   if request.method == 'POST':
-    openid = request.form.get('openid')
+    openid = request.args.get('openid')
     if openid:
       return oid.try_login(openid, ask_for=['email', 'fullname',
                                             'nickname'])
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
 
-@app.route('/create-profile', methods=['GET', 'POSTT'])
+@app.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
   if request.method == 'POST':
     name = request.form['name']
     email = request.form['email']
-    db.add(User(name,email,session['openid']))
-  return render_template('create_profile.html', next_url=oid.get_next_url())
+    g.user = User(name,email,session['openid'])
+    db.session.add(g.user)
+    db.session.commit()
+    return redirect(url_for('edit_profile', name=name, email=email))# oid.get_next_url())
+  return render_template('create_profile.html', name=request.args.get('name'),
+      email=request.args.get('email'), next=oid.get_next_url())
+
+@app.route('/profile', methods=['GET', 'POST'])
+def edit_profile():
+  form = dict(name=request.args.get('name'), email = request.args.get('email'))
+  if request.method == 'POST':
+    if (form['name'] and form['email']):
+      pass
+      #return redirect(oid.get_next_url())# url_for('edit_profile'))
+  return render_template('edit_profile.html', form=form, next=oid.get_next_url)
+
+@app.route('/logout')
+def logout():
+  session.pop('openid', None)
+  return redirect(oid.get_next_url())
 
 @app.route('/test')
 def test():
