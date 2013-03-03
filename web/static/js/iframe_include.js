@@ -18,3 +18,35 @@ jQuery.fn.getPath = function () {
   }
   return path;
 };
+
+(function() {
+  $('body *').unbind('*');
+  var currently_highlighting = false;
+  $('body *').live('mouseover', function(e) {
+    //if (currently_highlighting) return;
+    // mouseenter
+    var $el = $(this);
+    //var $wrap = $el.wrap('<div></div>').addClass('watchtower-border-highlight');
+    //$el.replaceWith($wrap);
+    $el.addClass('watchtower-border-highlight');
+    currently_highlighting = true;
+
+    // allow bubbling.  some elements don't support border styles
+  }).live('mouseleave', function(e) {
+    // mouseleave
+    var $el = $(this);
+    //$el.parent().remove();
+    $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
+
+    currently_highlighting = false;
+    // allow bubbling
+  }).live('click', function() {
+    console.log($(this).getPath());
+    return false;
+  });
+
+  // no navigating away
+  window.onbeforeunload = function() {
+    return "Watchtower doesn't support navigation in Change Tracking mode.  Are you sure you want to navigate away?";
+  }
+})();

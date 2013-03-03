@@ -85,9 +85,9 @@ def placeholder():
 @app.route('/proxy')
 def proxy():
   data = request.data
-  google = 'www.google.com'
-  response = urllib.urlopen('http://' + google)
-  html = Markup(response.read())
+  url = request.args.get('url')
+  response = urllib.urlopen(url)
+  html = Markup(response.read().decode('utf-8'))
   return render_template('proxy.html', html=html)
 
 @app.before_request
