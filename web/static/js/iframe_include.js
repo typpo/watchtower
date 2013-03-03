@@ -18,3 +18,19 @@ jQuery.fn.getPath = function () {
   }
   return path;
 };
+
+(function() {
+  var prev_border_css;
+  console.log('hell');
+  //$('body *').unbind('*');
+  $('div').mouseover(function() {
+    // mouseenter
+    console.log('mouseenter');
+    prev_border_css = $(this).css('border');
+    $(this).css('border', '10px solid #000');
+  }).mouseout(function() {
+    // mouseleave
+    console.log('mouseleave');
+    $(this).css('border', prev_border_css);
+  });
+})();
