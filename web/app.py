@@ -2,7 +2,6 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
-from flask.ext.sqlalchemy import SQLAlchemy
 import urllib
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
@@ -12,10 +11,12 @@ import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from core.models import User
+from core.models import Element, Page, User
+from core.database import db
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
+db.init_app(app)
 oid = OpenID(app, 'temp/openid')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
 db = SQLAlchemy(app)
@@ -51,6 +52,7 @@ class Page(db.Model):
 def index():
   app.logger.debug(g.user)
   pages = Page.query.all()
+  app.logger.debug(pages)
   return render_template('index.html', user=g.user, pages=pages)
 
 @app.route('/watch', methods=['POST'])
@@ -74,6 +76,7 @@ def watch():
   db.session.add(page)
   for element in elements:
     db.session.add(element)
+  db.session.commit()
 
   return jsonify(success='ok')
 
@@ -143,8 +146,6 @@ def test():
   return render_template('test_goog.html',
       random=random.randint(50, 1000),
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
-
-db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', use_reloader=True)
