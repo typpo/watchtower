@@ -2,17 +2,20 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
-import urllib
+from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
 import json
 import random
 import os
 import sys
+from operator import attrgetter, add
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from core.models import Element, Page, User
+from core.models import Element, Version, Page, User
 from core.database import db
+from core.fingerprint import get_fingerprints
+from core.utils import get_blob
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
@@ -49,6 +52,7 @@ class Page(db.Model):
 
 @app.route("/")
 def index():
+  db.create_all()
   app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
@@ -56,28 +60,41 @@ def index():
 
 @app.route('/watch', methods=['POST'])
 def watch():
+  for p in ['url', 'name', 'selectors[]', 'names[]']:
+    if p not in request.form:
+      return jsonify(error='missing %s param' % p)
+
   url = request.form.get('url')
-  if url is None:
-    return jsonify(error='missing url param')
-  blob = request.form.get('blob')
-  if blob is None:
-    return jsonify(error='missing blob param')
-
-  page = Page(url=url, blob=blob)
-
+  page_name = request.form.get('name')
+  page = Page(name=page_name, url=url)
+  db.session.add(page)
   selectors = request.form.getlist('selectors[]')
-  if selectors is None:
-    return jsonify(error='missing selectors params')
+  selector_names = request.form.getlist('names[]')
+  fingerprints = get_fingerprints(url, selectors)
 
-  elements = [Element(page=page, selector=selector) for selector in selectors]
+  if len(selector_names) != len(selectors):
+    return jsonify(error='must have same number of names and selectors')
+
+  now = datetime.utcnow()
+  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+    element = Element(name=name, selector=selector, page=page)
+    version = Version(fingerprint=fingerprint, diff='', when=now, element=element)
+    db.session.add(element)
+    db.session.add(version)
 
   # save everything in the db
-  db.session.add(page)
-  for element in elements:
-    db.session.add(element)
   db.session.commit()
 
   return jsonify(success='ok')
+
+@app.route('/page/<int:page_id>')
+def page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  if not page:
+    return jsonify(error='invalid page id')
+  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements])
+  versions = sorted(versions, key=attrgetter('when'))
+  return render_template('page.html', page=page, versions=versions)
 
 @app.route('/placeholder')
 def placeholder():
@@ -95,9 +112,8 @@ def proxy():
     scheme ='http://'
   real_url = url
   if (parsed.netloc[:3] != 'www'):
-    real_url = scheme + '://www.' + parsed.netloc
-  response = urllib.urlopen(real_url)
-  html = Markup(response.read().decode('utf-8'))
+    real_url = parsed.scheme + '://www.' + parsed.netloc
+  html = get_blob(url)
 
   """
   soup = BeautifulSoup(html)

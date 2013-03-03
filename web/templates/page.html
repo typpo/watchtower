@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Changes for {{ page.name }}</h1>
+
+{% for version in versions %}
+<div>
+  {{ version.element.name }}
+  {{ version.change }}
+</div>
+{% endfor %}
+
+{% endblock %}

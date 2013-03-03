@@ -10,7 +10,7 @@ NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
-  browser = webdriver.Firefox() # Firefox for now
+  browser = webdriver.Chrome() # fuck firefox
   browser.get(url) # Load page
 
   # TODO selector needs to be js escaped for complicated
@@ -34,6 +34,14 @@ def get_fingerprint(browser, selector):
   eval_js = """
   var $ = window.jQuery;
   var $el = $('{{ SELECTOR }}');
+  if ($el.length < 1) {
+    return {
+      offset: {},
+      innerHTML: '',
+      outerHTML: '',
+      computedStyle: {}
+    }
+  }
   var computed_style = window.getComputedStyle($el.get(0));
   var style = {};
   for (var s in computed_style) {
@@ -140,5 +148,6 @@ def test_ab_bookingcom():
   print detect_ab_test('http://www.booking.com/city/us/new-york.en-us.html?sid=9d1b2e3670bdb8656e697473c451d44e;dcid=1', ['.promos tr:first'])
 
 if __name__ == '__main__':
+  test_fingerprint()
   #test_ab_detection()
-  test_ab_bookingcom()
+  #test_ab_bookingcom()
