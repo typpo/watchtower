@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
+from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify, json
 from flask.ext.openid import OpenID
 from datetime import datetime
 from urlparse import urlparse, urljoin
@@ -35,7 +35,7 @@ def index():
   app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
-  return render_template('index.html', user=g.user, pages=pages)
+  return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
 @app.route('/watch', methods=['GET', 'POST'])
 def watch():
@@ -57,7 +57,7 @@ def watch():
   now = datetime.utcnow()
   for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=fingerprint, diff='', when=now, element=element)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
     db.session.add(element)
     db.session.add(version)
 
@@ -91,6 +91,9 @@ def proxy():
   data = request.data
   url = request.args.get('url')
   parsed = urlparse(url)
+  scheme = parsed.scheme
+  if (scheme == ''):
+    scheme ='http://'
   real_url = url
   if (parsed.netloc[:3] != 'www'):
     real_url = parsed.scheme + '://www.' + parsed.netloc
@@ -114,7 +117,7 @@ def proxy():
 def lookup_current_user():
   g.user = None
   if 'openid' in session:
-    g.user = User.query.filter_by(openid=openid).first()
+    g.user = User.query.filter_by(openid=session['openid']).first()
 
 @oid.after_login
 def create_or_login(resp):
@@ -123,7 +126,9 @@ def create_or_login(resp):
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
-        return redirect(oid.get_next_url())
+        g.user.name = resp.fullname or resp.nickname
+        g.user.email = resp.email
+        return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email, next=oid.get_next_url()))
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
@@ -131,15 +136,40 @@ def create_or_login(resp):
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
-  if g.user is not None:
+  if (g.user is not None):
     return redirect(oid.get_next_url())
   if request.method == 'POST':
-    openid = request.values.get('openid')
+    openid = request.form['openid']
     if openid:
       return oid.try_login(openid, ask_for=['email', 'fullname',
                                             'nickname'])
-  return render_template('index.html', next=oid.get_next_url(),
+  return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
+
+@app.route('/create_profile', methods=['GET', 'POST'])
+def create_profile():
+  if request.method == 'POST':
+    name = request.form['name']
+    email = request.form['email']
+    g.user = User(name,email,session['openid'])
+    db.session.add(g.user)
+    db.session.commit()
+    return redirect(url_for('edit_profile', name=name, email=email, next=oid.get_next_url()))
+  return render_template('create_profile.html', name=request.args.get('name'),
+      email=request.args.get('email'), next=oid.get_next_url())
+
+@app.route('/profile', methods=['GET', 'POST'])
+def edit_profile():
+  form = dict(name=request.args.get('name'), email = request.args.get('email'))
+  if request.method == 'POST':
+    if (form['name'] and form['email']):
+      return redirect(oid.get_next_url())# url_for('edit_profile'))
+  return render_template('edit_profile.html', form=form, next=oid.get_next_url)
+
+@app.route('/logout')
+def logout():
+  session.pop('openid', None)
+  return redirect(oid.get_next_url())
 
 @app.route('/test')
 def test():
