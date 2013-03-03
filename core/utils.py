@@ -1,4 +1,4 @@
 import requests
 
-def getBlob(url):
+def get_blob(url):
   return requests.get(url).text

@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Changes for {{ url }}</h1>
+<h1>Changes for {{ page.name }}</h1>
 
+{% for change in changes %}
+<div>
+  {{ change.element.name }}
+  {{ change.diff }}
+</div>
 
 {% endblock %}
