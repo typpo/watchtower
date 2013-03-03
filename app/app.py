@@ -123,7 +123,7 @@ def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = User.query.filter_by(openid=resp.identity_url).first()
     if user is not None:
-        flash('Successfully signed in')
+        flash(u'Successfully signed in')
         g.user = user
         return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email))# oid.get_next_url())
     return redirect(url_for('create_profile', next=oid.get_next_url(),
@@ -136,7 +136,7 @@ def login():
   if (g.user is not None):
     return redirect(oid.get_next_url())
   if request.method == 'POST':
-    openid = request.args.get('openid')
+    openid = request.form['openid']
     if openid:
       return oid.try_login(openid, ask_for=['email', 'fullname',
                                             'nickname'])
