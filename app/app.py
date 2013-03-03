@@ -60,7 +60,7 @@ def new_page():
     return jsonify(error='must have same number of names and selectors')
 
   thread = Thread(target=add_page, args=(page, selectors, selector_names))
-  thread.run()
+  thread.start()
 
   # save everything in the db
   db.session.commit()
