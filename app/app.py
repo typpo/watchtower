@@ -96,6 +96,15 @@ def edit_page(page_id):
 
     return redirect(url_for('page/<page_id>', page_id=page.id))
 
+@app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
+def delete_page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  if not page:
+    return jsonify(error='invalid page id')
+  db.session.delete(page)
+  db.session.commit()
+  return redirect('/')
+
 
 @app.route('/proxy')
 def proxy():
