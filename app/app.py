@@ -17,11 +17,16 @@ from core.database import db
 from core.fingerprint import get_fingerprints
 from core.utils import get_blob
 
-app = Flask(__name__)
-app.secret_key = 'not a secret key'
-db.init_app(app)
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = 'not a secret key'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
+    db.init_app(app)
+    return app
+
+app = create_app()
+
 oid = OpenID(app, 'temp/openid')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
 
 @app.route("/")
 def index():
@@ -31,18 +36,18 @@ def index():
   app.logger.debug(pages)
   return render_template('index.html', user=g.user, pages=pages)
 
-@app.route('/watch', methods=['POST'])
+@app.route('/watch', methods=['GET', 'POST'])
 def watch():
   for p in ['url', 'name', 'selectors[]', 'names[]']:
-    if p not in request.form:
+    if p not in request.values:
       return jsonify(error='missing %s param' % p)
 
-  url = request.form.get('url')
-  page_name = request.form.get('name')
+  url = request.values.get('url')
+  page_name = request.values.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
-  selectors = request.form.getlist('selectors[]')
-  selector_names = request.form.getlist('names[]')
+  selectors = request.values.getlist('selectors[]')
+  selector_names = request.values.getlist('names[]')
   fingerprints = get_fingerprints(url, selectors)
 
   if len(selector_names) != len(selectors):
@@ -74,6 +79,11 @@ def placeholder():
   query = request.args.get('query')
   json_resp = json.dumps({'foo': 'bar'})
   return Response(json_resp, mimetype='application/json')
+
+@app.route('/edit_page')
+def edit():
+  url = request.args.get('url')
+  return render_template('edit_page.html', url=url)
 
 @app.route('/proxy')
 def proxy():

@@ -2,6 +2,12 @@ jQuery.fn.getPath = function () {
   if (this.length != 1) throw 'Requires one element.';
   var path, node = this;
   while (node.length) {
+
+    if (node.attr('id')) {
+      path = '#' + node.attr('id') + ' ' + path;
+      break;
+    }
+
     var realNode = node[0], name = realNode.localName;
     if (!name) break;
     name = name.toLowerCase();
@@ -21,6 +27,7 @@ jQuery.fn.getPath = function () {
 
 (function($) {
   var $currently_highlighting_element;
+  var selected_selectors = {};
   $('body *').unbind('click')
              .unbind('mousedown')
   .live('mouseover', function(e) {
@@ -68,16 +75,23 @@ jQuery.fn.getPath = function () {
     // allow bubbling
 
   }).live('mousedown', function() {
-    console.log($(this).getPath());
-    $currently_highlighting_element.addClass('watchtower-border-confirmed');
-    if (confirm('u want to add this?')) {
-
+    var path = $currently_highlighting_element.getPath();
+    if ($currently_highlighting_element.hasClass('watchtower-border-confirmed')) {
+      // TODO remove from list
+      $currently_highlighting_element.removeClass('watchtower-border-confirmed');
+      selected_selectors[path] = false;
     }
     else {
-      $currently_highlighting_element.removeClass('watchtower-border-confirmed');
+      // TODO add to list
+      $currently_highlighting_element.addClass('watchtower-border-confirmed');
+      selected_selectors[path] = true;
     }
     return false;
   });
+
+  window.__watchtower_get_selectors = function() {
+    return Object.keys(selected_selectors);
+  }
 
   // no navigating away
   window.onbeforeunload = function() {
