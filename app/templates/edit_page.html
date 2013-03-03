@@ -33,7 +33,7 @@
 <h1>Click on areas of the page you want to track.</h1>
 Currently tracking: <span ng-repeat="(selector, name) in selectors"><span ng-bind="name"></span><span ng-show="!$last">;&nbsp;</span></span>
 
-<form id="create_new_page" action="/new_page" method="POST">
+<form id="create_new_page" action="/page/new" method="POST">
 <input type="hidden" name="url" />
 <input type="hidden" name="name" />
 <input type="hidden" name="selectors" />

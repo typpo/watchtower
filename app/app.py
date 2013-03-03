@@ -38,12 +38,24 @@ def index():
   app.logger.debug(pages)
   return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
-@app.route('/new_page', methods=['GET', 'POST'])
+@app.route('/page/<int:page_id>', methods=['GET'])
+def page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  if not page:
+    return jsonify(error='invalid page id')
+  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
+  versions = sorted(versions, key=attrgetter('when'))
+  for version in versions:
+    version.diff=json.loads(version.diff)
+  unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
+  return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
+
+@app.route('/page/new', methods=['GET', 'POST'])
 def new_page():
   if request.method == 'GET':
-    return render_template('edit_page.html')
+    return render_template('new_page.html')
 
-  for p in ['url', 'name', 'selectors', 'names']:
+  for p in ['url', 'name']:
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
 
@@ -51,6 +63,20 @@ def new_page():
   page_name = request.form.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
+  # save everything in the db
+  db.session.commit()
+
+  # redirect to page for this page
+  return redirect('page/%s/edit' % page.id)
+
+@app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
+def edit_page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  if not page:
+    return jsonify(error='invalid page id')
+  if request.method == 'GET':
+    return render_template('edit_page.html', url=page.url)
+
   selectors = json.loads(request.form.get('selectors'))
   selector_names = json.loads(request.form.get('names'))
 
@@ -60,39 +86,12 @@ def new_page():
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
+  # asynchronously get fingerprints
   thread = Thread(target=add_page, args=(app.app_context(), page, selectors, selector_names))
   thread.start()
 
-  # save everything in the db
-  db.session.commit()
+  return redirect(url_for('page/<page_id>', page_id=page.id))
 
-  # redirect to page for this page
-  return redirect(url_for('page', page_id=page.id))
-  #return json.dumps([url, page_name, selectors, selector_names])
-
-def add_page(context, page, selectors, selector_names):
-  with context:
-    fingerprints = get_fingerprints(page.url, selectors)
-    now = datetime.utcnow()
-    for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
-      element = Element(name=name, selector=selector, page=page)
-      version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
-      db.session.add(element)
-      db.session.add(version)
-    db.session.commit()
-
-@app.route('/page/<int:page_id>')
-def page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  app.logger.debug(list(page.elements))
-  if not page:
-    return jsonify(error='invalid page id')
-  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
-  versions = sorted(versions, key=attrgetter('when'))
-  for version in versions:
-    version.diff=json.loads(version.diff)
-  unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
-  return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/proxy')
 def proxy():
@@ -183,6 +182,18 @@ def test():
   return render_template('test_goog.html',
       random=random.randint(50, 1000),
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
+
+def add_page(context, page, selectors, selector_names):
+  with context:
+    fingerprints = get_fingerprints(page.url, selectors)
+    now = datetime.utcnow()
+    for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+      element = Element(name=name, selector=selector, page=page)
+      version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
+      db.session.add(element)
+      db.session.add(version)
+    db.session.commit()
+
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', use_reloader=True)
