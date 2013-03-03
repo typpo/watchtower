@@ -20,15 +20,17 @@ function EditPageCtrl($scope, $http) {
       names.push($scope.selectors[selector]);
     }
 
+    /*
     var $cnp = $('#create_new_page');
     $cnp.find('input[name="url"]').val($scope.url);
     $cnp.find('input[name="name"]').val($scope.name);
     $cnp.find('input[name="selectors"]').val(JSON.stringify(selectors));
     $cnp.find('input[name="names"]').val(JSON.stringify(names));
     $cnp.submit();
-    /*
+    */
+    // TODO show loader
     $http({
-        url: '/new_page',
+        url: '/edit_page',
         method: "POST",
         params: {
           url: $scope.url,
@@ -39,7 +41,6 @@ function EditPageCtrl($scope, $http) {
      }).success(function(data) {
        window.location.href = '/';
      });
-     */
   }
 
   function adjust_iframe(oFrame) {

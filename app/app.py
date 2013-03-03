@@ -105,12 +105,14 @@ def edit_page(page_id):
     if len(selector_names) != len(selectors):
       return jsonify(error='must have same number of names and selectors')
 
+    update_page(app.app_context(), page, selectors, selector_names)
     # asynchronously get fingerprints
-    thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
-    thread.start()
+    #thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
+    #thread.start()
 
     #return redirect(url_for('page/<page_id>', page_id=page.id))
-    return redirect('/page/%d' % page.id)
+    #return redirect('/page/%d' % page.id)
+    return 'ok'
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
 def delete_page(page_id):
