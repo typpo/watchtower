@@ -34,6 +34,14 @@ def get_fingerprint(browser, selector):
   eval_js = """
   var $ = window.jQuery;
   var $el = $('{{ SELECTOR }}');
+  if ($el.length < 1) {
+    return {
+      offset: {},
+      innerHTML: '',
+      outerHTML: '',
+      computedStyle: {}
+    }
+  }
   var computed_style = window.getComputedStyle($el.get(0));
   var style = {};
   for (var s in computed_style) {
