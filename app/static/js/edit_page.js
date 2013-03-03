@@ -4,6 +4,7 @@ function EditPageCtrl($scope, $http) {
   $scope.url = 'http://google.com';
   $scope.name = 'home page';
   $scope.selectors = {};
+  $scope.deleted_element_ids = [];
 
   $scope.Init = function() {
     adjust_iframe(document.getElementById('proxy_frame'));
@@ -37,7 +38,8 @@ function EditPageCtrl($scope, $http) {
           url: $scope.url,
           name: $scope.name,
           selectors: JSON.stringify(selectors),
-          names: JSON.stringify(names)
+          names: JSON.stringify(names),
+          delete: JSON.stringify($scope.deleted_element_ids)
         }
      }).success(function(data) {
        $('#loader').hide();

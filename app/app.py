@@ -91,14 +91,14 @@ def edit_page(page_id):
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
     post_url = '/page/%d/edit' % page.id
-    return render_template('edit_page.html', url=page.url, name=page.name,
+    return render_template('edit_page.html', page=page,
                            selectors=selectors, names=names, post_url=post_url)
 
   # Update page
   try:
     selectors = json.loads(request.args.get('selectors'))
     selector_names = json.loads(request.args.get('names'))
-    delete = json.loads(request.form.get('delete'))
+    delete = json.loads(request.args.get('delete'))
   except ValueError:
     return jsonify(error='invalid json')
 
