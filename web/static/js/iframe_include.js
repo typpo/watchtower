@@ -21,24 +21,44 @@ jQuery.fn.getPath = function () {
 
 (function() {
   $('body *').unbind('*');
-  var currently_highlighting = false;
+  var $currently_highlighting_element;
   $('body *').live('mouseover', function(e) {
-    //if (currently_highlighting) return;
-    // mouseenter
     var $el = $(this);
+    var path = $el.getPath();
+    var tagname = $el.prop('tagName');
+    if ($currently_highlighting_element
+        && $currently_highlighting_element.parents().length > $el.parents().length) {
+      // not deeper in the DOM
+      return false;
+    }
+
+
+    // mouseenter
     //var $wrap = $el.wrap('<div></div>').addClass('watchtower-border-highlight');
     //$el.replaceWith($wrap);
+    $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
     $el.addClass('watchtower-border-highlight');
-    currently_highlighting = true;
+    // did it work?
+    if ($el.css('border-width') === '0px') {
+      $el.children().addClass('watchtower-border-highlight');
+      $el.children().children().addClass('watchtower-border-highlight');
+      // it didn't
+    }
+    else {
+      $currently_highlighting_element = $el;
+    }
 
     // allow bubbling.  some elements don't support border styles
+    // TODO only do this for certain types (that support border attr)
+    //e.stopPropagation();
+    //return false;
   }).live('mouseleave', function(e) {
     // mouseleave
     var $el = $(this);
     //$el.parent().remove();
     $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
 
-    currently_highlighting = false;
+    $currently_highlighting_element = null;
     // allow bubbling
   }).live('click', function() {
     console.log($(this).getPath());
