@@ -81,7 +81,7 @@ def proxy():
   real_url = url
   if (parsed.netloc[:3] != 'www'):
     real_url = parsed.scheme + '://www.' + parsed.netloc
-  html = utils.getBlob(url)
+  html = getBlob(url)
 
   """
   soup = BeautifulSoup(html)
