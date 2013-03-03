@@ -19,10 +19,11 @@ jQuery.fn.getPath = function () {
   return path;
 };
 
-(function() {
-  $('body *').unbind('*');
+(function($) {
   var $currently_highlighting_element;
-  $('body *').live('mouseover', function(e) {
+  $('body *').unbind('click')
+             .unbind('mousedown')
+  .live('mouseover', function(e) {
     var $el = $(this);
     var path = $el.getPath();
     var tagname = $el.prop('tagName');
@@ -47,8 +48,7 @@ jQuery.fn.getPath = function () {
       $currently_highlighting_element = $el;
     }
 
-    // allow bubbling.  some elements don't support border styles
-    // TODO only do this for certain types (that support border attr)
+    // allow bubbling
     //e.stopPropagation();
     //return false;
   }).live('mouseleave', function(e) {
@@ -62,8 +62,12 @@ jQuery.fn.getPath = function () {
   }).live('mousedown', function() {
     console.log($(this).getPath());
     $currently_highlighting_element.addClass('watchtower-border-confirm');
-    confirm('u want to add this?');
-    $currently_highlighting_element.removeClass('watchtower-border-confirm');
+    if (confirm('u want to add this?')) {
+
+    }
+    else {
+      $currently_highlighting_element.removeClass('watchtower-border-confirm');
+    }
     return false;
   });
 
@@ -71,4 +75,4 @@ jQuery.fn.getPath = function () {
   window.onbeforeunload = function() {
     return "Watchtower doesn't support navigation in Change Tracking mode.  Are you sure you want to navigate away?";
   }
-})();
+})(jQuery);
