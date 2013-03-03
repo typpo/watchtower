@@ -4,3 +4,4 @@ gunicorn
 selenium
 flask-login
 difflib
+Flask-OpenID
