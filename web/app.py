@@ -15,6 +15,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
+from core.utils import get_blob
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
@@ -32,19 +33,15 @@ def index():
 
 @app.route('/watch', methods=['POST'])
 def watch():
-
   for p in ['url', 'name', 'selectors[]', 'names[]']:
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
-
 
   url = request.form.get('url')
   page_name = request.form.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
-
-  blob = "TODO"
-
+  blob = get_blob(url)
   selectors = request.form.getlist('selectors[]')
   selector_names = request.form.getlist('names[]')
   
