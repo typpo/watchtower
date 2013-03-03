@@ -168,6 +168,7 @@ def edit_profile():
 
 @app.route('/logout')
 def logout():
+  g.user = None
   session.pop('openid', None)
   return redirect(oid.get_next_url())
 

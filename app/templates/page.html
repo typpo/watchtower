@@ -3,28 +3,28 @@
 {% block content %}
 <div><a href="fake.html">back to dashboard</a></div>
 <h1>Changes for {{ page.name }}</h1>
-<p>insert url for page here</p>
-{% for version in versions %}
+<p>{{ page.url }}</p>
 <div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
 <br>
 <table class="table table-striped" width="95%">
-<thead>
-<tr>
-<th>Tracked Element</th>
-<th>Change Detected</th>
-<th>Change</th>
-</tr>
-<tbody>
-<tr>
-<td>{{ version.element.name }}</td>
-<td>Timestamp here</td>
-<td>{{ version.change }}</td>
-</tr>
-</tbody>
+  <thead>
+    <tr>
+      <th>Tracked Element</th>
+      <th>Change Detected</th>
+      <th>Change</th>
+    </tr>
+    <tbody>
+      {% for version in versions %}
+      <tr>
+        <td>{{ version.element.name }}</td>
+        <td>{{ version.when }}</td>
+        <td>{{ version.change }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
 </table>
 </div>
 </body>
 </html>
-{% endfor %}
 
 {% endblock %}

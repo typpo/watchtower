@@ -58,7 +58,9 @@
               </div>
               {% else %}
               <p>
-                Signed in
+                <form action="/logout" method=pos>
+                  <input type=submit value="Sign out">
+                </form>
               </p>
               {% endif %}
             </li>

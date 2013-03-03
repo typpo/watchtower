@@ -9,7 +9,7 @@ from operator import attrgetter
 from datetime import datetime
 from flask import json
 
-from models import Page
+from models import Page, Version
 from database import db
 from fingerprint import get_fingerprints, diff_fingerprints
 
