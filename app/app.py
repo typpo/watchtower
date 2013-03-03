@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
+from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify, json
 from flask.ext.openid import OpenID
 from datetime import datetime
 from urlparse import urlparse, urljoin
@@ -56,7 +56,7 @@ def watch():
   now = datetime.utcnow()
   for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=fingerprint, diff='', when=now, element=element)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
     db.session.add(element)
     db.session.add(version)
 

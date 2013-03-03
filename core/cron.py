@@ -7,10 +7,11 @@ import sys
 import os
 from operator import attrgetter
 from datetime import datetime
+from flask import json
 
 from models import Page
 from database import db
-from fingerprint import get_fingerprints
+from fingerprint import get_fingerprints, diff_fingerprints
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.app import create_app
@@ -27,13 +28,13 @@ if __name__ == '__main__':
   for page in pages:    
     elements = page.elements
     selectors = [element.selector for element in elements]
-    old_fingerprints = [max(element.versions, key=attrgetter('when')).fingerprint for element in elements]
+    old_fingerprints = [json.loads(max(element.versions, key=attrgetter('when')).fingerprint) for element in elements]
     new_fingerprints = get_fingerprints(page.url, selectors)
 
     for element, old, new in zip(elements, old_fingerprints, new_fingerprints):
-      diffs = diff_fingerpints(old, new)
+      diffs = diff_fingerprints(old, new)
       if diffs:
-        version = Version(fingerprint=new, diff=diffs, when=now, element=element)
+        version = Version(fingerprint=json.dumps(new), diff=json.dumps(diffs), when=now, element=element)
         db.session.add(version)
     
     page.next_check = now + timedelta(minutes=page.frequency)

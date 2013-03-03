@@ -4,6 +4,7 @@ Models
 
 from database import db
 from datetime import datetime
+from flask import json
 
 class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
