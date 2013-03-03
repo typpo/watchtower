@@ -1,8 +1,10 @@
 function EditPageCtrl($scope, $http) {
+  $scope.pageid = pageid;
   $scope.iframe_visible = false;
   $scope.url = 'http://google.com';
   $scope.name = 'home page';
   $scope.selectors = {};
+  $scope.deleted_element_ids = [];
 
   $scope.Init = function() {
     adjust_iframe(document.getElementById('proxy_frame'));
@@ -28,18 +30,20 @@ function EditPageCtrl($scope, $http) {
     $cnp.find('input[name="names"]').val(JSON.stringify(names));
     $cnp.submit();
     */
-    // TODO show loader
+    $('#loader').show();
     $http({
-        url: '/edit_page',
+        url: '/page/' + $scope.pageid + '/edit',
         method: "POST",
         params: {
           url: $scope.url,
           name: $scope.name,
           selectors: JSON.stringify(selectors),
-          names: JSON.stringify(names)
+          names: JSON.stringify(names),
+          delete: JSON.stringify($scope.deleted_element_ids)
         }
      }).success(function(data) {
-       window.location.href = '/';
+       $('#loader').hide();
+       window.location.href = '/page/' + $scope.pageid;
      });
   }
 

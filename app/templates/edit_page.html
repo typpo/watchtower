@@ -22,11 +22,15 @@ Currently tracking:
 </form>
 </div>
 
-<iframe id="proxy_frame" src="/proxy?url={{url}}" width="100%"></iframe>
+<iframe id="proxy_frame" src="/proxy?url={{page.url}}" width="100%"></iframe>
 </div>
 
 {% endblock %}
 
 {% block scripts %}
+<script>
+var pageid = {{ page.id|tojson|safe }};
+
+</script>
 <script src="/static/js/edit_page.js"></script>
 {% endblock %}
