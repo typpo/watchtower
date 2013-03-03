@@ -13,7 +13,10 @@ class Page(db.Model):
   url = db.Column(db.String(1024))
   elements = db.relationship('Element',
                              backref='page', lazy='dynamic')
-  
+
+  frequency = db.Column(db.Integer, default=0)
+  last_checked = db.Column(db.Date, default=0)
+
   def __init__(self, name, url):
     self.name = name
     self.url = url

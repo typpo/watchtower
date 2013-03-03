@@ -148,5 +148,6 @@ def test_ab_bookingcom():
   print detect_ab_test('http://www.booking.com/city/us/new-york.en-us.html?sid=9d1b2e3670bdb8656e697473c451d44e;dcid=1', ['.promos tr:first'])
 
 if __name__ == '__main__':
+  test_fingerprint()
   #test_ab_detection()
-  test_ab_bookingcom()
+  #test_ab_bookingcom()
