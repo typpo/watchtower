@@ -45,9 +45,10 @@
           </ul>
           <ul class="nav pull-right">
             <li class="dropdown">
+              {% if not user %}
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
               <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                <form action="" method=post>
+                <form action="/login" method=post>
                   {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                   <p>
                     OpenID:
@@ -56,6 +57,11 @@
                     <input type=hidden name=next value="{{ next }}">
                 </form>
               </div>
+              {% else %}
+              <p>
+                Signed in
+              </p>
+              {% endif %}
             </li>
           </ul>
         </div>
