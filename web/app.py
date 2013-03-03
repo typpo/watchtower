@@ -20,7 +20,9 @@ def placeholder():
 
 @app.route('/test')
 def test():
-  return render_template('test.html', random=random.randint(0, 1000))
+  return render_template('test_goog.html',
+      random=random.randint(50, 1000),
+      randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', use_reloader=True)
