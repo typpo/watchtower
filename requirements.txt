@@ -1,4 +1,7 @@
 flask
-pymongo
+sqlalchemy
 gunicorn
 selenium
+flask-login
+difflib
+Flask-OpenID

@@ -3,6 +3,7 @@ from flask import Flask, request, redirect, session, url_for, render_template, R
 import urllib
 import urlparse
 import json
+import random
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
@@ -24,5 +25,11 @@ def proxy():
   response = urllib.urlopen('http://' + google)
   html = Markup(response.read())
   return render_template('proxy.html', html=html)
+@app.route('/test')
+def test():
+  return render_template('test_goog.html',
+      random=random.randint(50, 1000),
+      randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', use_reloader=True)
