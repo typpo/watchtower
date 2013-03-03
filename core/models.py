@@ -16,23 +16,26 @@ class Page(db.Model):
                              backref='page', lazy='dynamic')
 
   frequency = db.Column(db.Integer, default=60)   # minutes
-  next_check = db.Column(db.DateTime, default=datetime.now())
+  next_check = db.Column(db.DateTime)
 
-  def __init__(self, name, url):
+  def __init__(self, name, url, next_check=datetime.utcnow(), frequency=None):
     self.name = name
     self.url = url
-
+    self.next_check = next_check
+    if frequency:
+      self.frequency = frequency
+    
   def __repr__(self):
     return '<Page %r>' % self.url
 
 class Version(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  finger = db.Column(db.Text)
+  fingerprint = db.Column(db.Text)
   diff = db.Column(db.Text)
   when = db.Column(db.DateTime, key='when')
   element_id = db.Column(db.Integer, db.ForeignKey('element.id'))
 
-  def __init__(self, fingerprint, diff, when, element):
+  def __init__(self, fingerprint, diff, element, when=datetime.utcnow()):
     self.fingerprint = fingerprint
     self.diff = diff
     self.when = when
