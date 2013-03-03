@@ -2,6 +2,8 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
+
+from datetime import datetime
 import urllib
 from urlparse import urlparse
 import json
@@ -10,7 +12,7 @@ import os
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from core.models import Element, Page, User
+from core.models import Element, Version, Page, User
 from core.database import db
 
 app = Flask(__name__)
@@ -19,9 +21,9 @@ db.init_app(app)
 oid = OpenID(app, 'temp/openid')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
 
-
 @app.route("/")
 def index():
+  db.create_all()
   app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
@@ -29,28 +31,41 @@ def index():
 
 @app.route('/watch', methods=['POST'])
 def watch():
-  url = request.form.get('url')
-  if url is None:
-    return jsonify(error='missing url param')
-  blob = request.form.get('blob')
-  if blob is None:
-    return jsonify(error='missing blob param')
 
-  page = Page(url=url, blob=blob)
+  for p in ['url', 'name', 'selectors[]', 'names[]']:
+    if p not in request.form:
+      return jsonify(error='missing %s param' % p)
+
+
+  url = request.form.get('url')
+  page_name = request.form.get('name')
+  page = Page(name=page_name, url=url)
+  db.session.add(page)
+
+  blob = "TODO"
 
   selectors = request.form.getlist('selectors[]')
-  if selectors is None:
-    return jsonify(error='missing selectors params')
+  selector_names = request.form.getlist('names[]')
   
-  elements = [Element(page=page, selector=selector) for selector in selectors]
+  if len(selector_names) != len(selectors):
+    return jsonify(error='must have same number of names and selectors')
 
-  # save everything in the db
-  db.session.add(page)
-  for element in elements:
+  now = datetime.utcnow()
+  for name, selector in zip(selector_names, selectors):
+    element = Element(name=name, selector=selector, page=page)
+    version = Version(blob=blob, when=now, element_id=element.id)
     db.session.add(element)
+    db.session.add(version)
+  
+  # save everything in the db
   db.session.commit()
 
   return jsonify(success='ok')
+
+@app.route('/page/<int:page_id>')
+def page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  return render_template('page.html', page=page)
 
 @app.route('/placeholder')
 def placeholder():
