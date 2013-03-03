@@ -38,8 +38,6 @@ jQuery.fn.getPath = function () {
     }
 
     // mouseenter
-    //var $wrap = $el.wrap('<div></div>').addClass('watchtower-border-highlight');
-    //$el.replaceWith($wrap);
     $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
     $el.addClass('watchtower-border-highlight');
     $el.css({
@@ -49,9 +47,9 @@ jQuery.fn.getPath = function () {
     });
     // did it work?
     if ($el.css('outline-width') === '0px') {
+      // it didn't
       $el.children().addClass('watchtower-border-highlight');
       $el.children().children().addClass('watchtower-border-highlight');
-      // it didn't
     }
     else {
       $currently_highlighting_element = $el;
@@ -60,14 +58,15 @@ jQuery.fn.getPath = function () {
     // allow bubbling
     e.stopPropagation();
     return false;
+
   }).live('mouseleave', function(e) {
     // mouseleave
     var $el = $(this);
-    //$el.parent().remove();
     $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
 
     $currently_highlighting_element = null;
     // allow bubbling
+
   }).live('mousedown', function() {
     console.log($(this).getPath());
     $currently_highlighting_element.addClass('watchtower-border-confirmed');
