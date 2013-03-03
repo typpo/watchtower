@@ -36,7 +36,6 @@ def watch():
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
 
-
   url = request.form.get('url')
   page_name = request.form.get('name')
   page = Page(name=page_name, url=url)
