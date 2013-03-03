@@ -3,7 +3,7 @@
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
 import urllib
-import urlparse
+from urlparse import urlparse
 import json
 import random
 import os
@@ -62,9 +62,13 @@ def placeholder():
 def proxy():
   data = request.data
   url = request.args.get('url')
-  response = urllib.urlopen(url)
+  parsed = urlparse(url)
+  real_url = url
+  if (parsed.netloc[:3] != 'www'):
+    real_url = parsed.scheme + '://www.' + parsed.netloc
+  response = urllib.urlopen(real_url)
   html = Markup(response.read().decode('utf-8'))
-  return render_template('proxy.html', html=html)
+  return render_template('proxy.html', html=html, root=real_url)
 
 @app.before_request
 def lookup_current_user():
