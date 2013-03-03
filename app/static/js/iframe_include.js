@@ -4,7 +4,7 @@ jQuery.fn.getPath = function () {
   while (node.length) {
 
     if (node.attr('id')) {
-      path = '#' + node.attr('id') + ' ' + path;
+      path = '#' + node.attr('id') + (path ? ' ' + path : '');
       break;
     }
 
@@ -80,17 +80,21 @@ jQuery.fn.getPath = function () {
       // TODO remove from list
       $currently_highlighting_element.removeClass('watchtower-border-confirmed');
       selected_selectors[path] = false;
+      $(window.parent.document).trigger('watchtower-selectors-updated');
+      parent.selectors_updated();
     }
     else {
       // TODO add to list
       $currently_highlighting_element.addClass('watchtower-border-confirmed');
-      selected_selectors[path] = true;
+      selected_selectors[path] = prompt('Enter a name for this element', 'element name, eg. Call to Action Box');
+      $(window.parent.document).trigger('watchtower-selectors-updated');
+      parent.selectors_updated();
     }
     return false;
   });
 
   window.__watchtower_get_selectors = function() {
-    return Object.keys(selected_selectors);
+    return selected_selectors;
   }
 
   // no navigating away

@@ -5,6 +5,7 @@ from flask.ext.openid import OpenID
 from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
+import time
 import json
 import random
 import os
@@ -80,10 +81,10 @@ def placeholder():
   json_resp = json.dumps({'foo': 'bar'})
   return Response(json_resp, mimetype='application/json')
 
-@app.route('/edit_page')
-def edit():
-  url = request.args.get('url')
-  return render_template('edit_page.html', url=url)
+@app.route('/new_page')
+def new_page():
+  #url = request.args.get('url')
+  return render_template('edit_page.html')
 
 @app.route('/proxy')
 def proxy():
@@ -105,8 +106,9 @@ def proxy():
   return render_template('proxy.html', html=str(soup), root=real_url, )
   """
   watchtower_content_root = 'http://localhost:5000'   # TODO changeme
+  ts = time.time()
   return render_template('proxy.html', html=html, root=real_url, \
-      watchtower_content_root=watchtower_content_root)
+      watchtower_content_root=watchtower_content_root, timestamp=ts)
 
 @app.before_request
 def lookup_current_user():

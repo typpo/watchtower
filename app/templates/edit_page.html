@@ -1,11 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="height:50px;">
-<input id="save_page_selectors" type="submit" class="btn" value="Save" style="float:right;"/>
-<h1>Click on areas of the page you want to track.</h1>
+<div ng-controller="EditPageCtrl">
+
+<div ng-show="!iframe_visible">
+
+<form class="form-horizontal" ng-submit="LoadIframe()">
+  <div class="control-group">
+    <label class="control-label" for="page_url">URL to monitor</label>
+    <div class="controls">
+      <input type="text" id="page_url" ng-model="url" placeholder="http://...">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" ng-model="name" for="page_name">Page Name</label>
+    <div class="controls">
+      <input type="password" id="page_name" placeholder="Competitor's Landing Page">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn">Continue</button>
+    </div>
+  </div>
+</form>
+
 </div>
-<iframe id="proxy_frame" src="/proxy?url={{url}}" width="100%"></iframe>
+
+<div ng-show="iframe_visible">
+<div style="height:75px;">
+<input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
+<h1>Click on areas of the page you want to track.</h1>
+Currently tracking: <span ng-repeat="(selector, name) in selectors"><span ng-bind="name"></span><span ng-show="!$last">;&nbsp;</span></span>
+</div>
+
+<iframe id="proxy_frame" width="100%"></iframe>
+</div>
+
+</div>
 
 {% endblock %}
 
