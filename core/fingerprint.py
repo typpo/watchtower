@@ -10,7 +10,7 @@ NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
-  browser = webdriver.Firefox() # Firefox for now
+  browser = webdriver.Chrome() # fuck firefox
   browser.get(url) # Load page
 
   # TODO selector needs to be js escaped for complicated

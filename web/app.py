@@ -9,11 +9,12 @@ import json
 import random
 import os
 import sys
+from operator import attrgetter, add
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
-from core.utils import get_blob
+from core.fingerprint import get_fingerprints
 
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
@@ -39,17 +40,17 @@ def watch():
   page_name = request.form.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
-  blob = get_blob(url)
   selectors = request.form.getlist('selectors[]')
   selector_names = request.form.getlist('names[]')
+  fingerprints = get_fingerprints(url, selectors)
 
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
   now = datetime.utcnow()
-  for name, selector in zip(selector_names, selectors):
+  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(blob=blob, when=now, element_id=element.id)
+    version = Version(fingerprint=fingerprint, diff='', when=now, element=element)
     db.session.add(element)
     db.session.add(version)
 
@@ -61,7 +62,11 @@ def watch():
 @app.route('/page/<int:page_id>')
 def page(page_id):
   page = Page.query.filter_by(id=page_id).first()
-  return render_template('page.html', page=page)
+  if not page:
+    return jsonify(error='invalid page id')
+  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements])
+  versions = sorted(versions, key=attrgetter('when'))
+  return render_template('page.html', page=page, versions=versions)
 
 @app.route('/placeholder')
 def placeholder():
