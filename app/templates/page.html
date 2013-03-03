@@ -28,6 +28,13 @@
       {% endif %}
       {% endfor %}
       {% endfor %}
+      {% for element in unchanged_elements %}
+      <tr>
+        <td>{{ element.name }}</td>
+        <td>N/A</td>
+        <td>No Change</td>
+      </tr>
+      {% endfor %}
     </tbody>
 </table>
 </div>
