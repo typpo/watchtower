@@ -94,13 +94,11 @@ def page(page_id):
 def proxy():
   data = request.data
   url = request.args.get('url')
-  parsed = urlparse(url)
-  scheme = parsed.scheme
-  if (scheme == ''):
-    scheme ='http://'
-  real_url = url
-  if (parsed.netloc[:3] != 'www'):
-    real_url = parsed.scheme + '://www.' + parsed.netloc
+  if (url[:3] != 'htt'):
+    url = 'http://' + url
+  if (url[7:10] != 'www'):
+    url = url[:7] + 'www.' + url[7:]
+
   html = get_blob(url)
 
   """
@@ -114,7 +112,7 @@ def proxy():
   """
   watchtower_content_root = 'http://localhost:5000'   # TODO changeme
   ts = time.time()
-  return render_template('proxy.html', html=html, root=real_url, \
+  return render_template('proxy.html', html=html, root=url, \
       watchtower_content_root=watchtower_content_root, timestamp=ts)
 
 @app.before_request
