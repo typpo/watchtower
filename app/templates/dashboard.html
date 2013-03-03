@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="/page/new">New alert</a>
+
+<ul>
+  {% for page in pages %}
+  <li>
+    <a href="/page/{{ page.id }}">{{ page.name }}</a> - <a href={{ page.url }}>{{ page.url }}</a>
+&middot;
+<a href=/page/{{ page.id }}/edit>edit</a>
+&middot;
+<a href=/page/{{ page.id }}/delete>delete</a>
+  </li>
+  {% endfor %}
+</ul>
+<div class="lead">
+<h2 class="text-center">watchtower tracks changes to your competitor’s websites and alerts you to important changes instantly.</h2>
+</div>
+<p>test</p>
+{% endblock %}
