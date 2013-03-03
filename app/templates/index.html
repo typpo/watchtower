@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<a href="new_page">New alert</a>
+
 <ul>
   {% for page in pages %}
-  <li>{{ page }}</li>
+  <li>
+    <a href="/page/{{ page.id }}">
+    {{ page.name }}
+    </a>
+  </li>
   {% endfor %}
 </ul>
 {% endblock %}

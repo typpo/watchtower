@@ -37,8 +37,11 @@ def index():
   app.logger.debug(pages)
   return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
-@app.route('/watch', methods=['GET', 'POST'])
-def watch():
+@app.route('/new_page', methods=['GET', 'POST'])
+def new_page():
+  if request.method == 'GET':
+    return render_template('edit_page.html')
+
   for p in ['url', 'name', 'selectors', 'names']:
     if p not in request.values:
       return jsonify(error='missing %s param' % p)
@@ -63,8 +66,9 @@ def watch():
 
   # save everything in the db
   db.session.commit()
-
-  return jsonify(success='ok')
+  
+  # redirect to page for this page
+  return redirect(url_for('page', page_id=page.id))
 
 @app.route('/page/<int:page_id>')
 def page(page_id):
@@ -74,17 +78,6 @@ def page(page_id):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements])
   versions = sorted(versions, key=attrgetter('when'))
   return render_template('page.html', page=page, versions=versions)
-
-@app.route('/placeholder')
-def placeholder():
-  query = request.args.get('query')
-  json_resp = json.dumps({'foo': 'bar'})
-  return Response(json_resp, mimetype='application/json')
-
-@app.route('/new_page')
-def new_page():
-  #url = request.args.get('url')
-  return render_template('edit_page.html')
 
 @app.route('/proxy')
 def proxy():
