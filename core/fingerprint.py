@@ -6,6 +6,7 @@ import json
 import difflib
 import os
 
+# returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
   browser = webdriver.Firefox() # Firefox for now
   browser.get(url) # Load page
@@ -24,6 +25,8 @@ def get_fingerprints(url, selectors):
 
   return ret
 
+# returns the fingerprint of the first element corresponding to a
+# given selector
 def get_fingerprint(browser, selector):
   eval_js = """
   var $ = window.jQuery;
@@ -46,6 +49,11 @@ def get_fingerprint(browser, selector):
 
   return ret
 
+# returns a list of difference dicts
+# a difference dict has:
+#    - key: name of difference (eg. backgroundColor)
+#    - diff_amount:  amount of difference, if applicable
+#    - diff_unit:  unit of diff_amount, if applicable
 def diff_fingerprints(f1, f2):
   diffs = []
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
@@ -53,6 +61,7 @@ def diff_fingerprints(f1, f2):
   diffs.extend(diff_styles(f1['computedStyle'], f2['computedStyle']))
   return diffs
 
+# diffs the result of jQuery .offset() on an element
 def diff_offsets(o1, o2):
   diffs = []
   # Assumes keys are the same
@@ -69,6 +78,8 @@ def diff_offsets(o1, o2):
         })
   return diffs
 
+# diffs html.  straight up string diff.  usually we are interested
+# in outerhtml
 def diff_html(h1, h2):
   print h1, h2
   diffs = []
@@ -76,6 +87,7 @@ def diff_html(h1, h2):
     diffs.append('\n'.join(difflib.unified_diff(h1, h2)))
   return diffs
 
+# diffs the massaged results of getComputedStyle on elements
 def diff_styles(s1, s2):
   # Assumes keys are the same
   diffs = []
