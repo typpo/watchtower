@@ -3,7 +3,7 @@
 {% block content %}
 <div><a href="fake.html">back to dashboard</a></div>
 <h1>Changes for {{ page.name }}</h1>
-<p>insert url for page here</p>
+<p>{{ page.url }}</p>
 {% for version in versions %}
 <div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
 <br>
@@ -17,7 +17,7 @@
 <tbody>
 <tr>
 <td>{{ version.element.name }}</td>
-<td>Timestamp here</td>
+<td>{{ version.when }}</td>
 <td>{{ version.change }}</td>
 </tr>
 </tbody>
