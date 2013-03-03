@@ -50,7 +50,7 @@ def page(page_id):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
   versions = sorted(versions, key=attrgetter('when'))
   for version in versions:
-    version.diff=json.loads(version.diff)
+    version.diff = json.loads(version.diff)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
@@ -78,11 +78,15 @@ def edit_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
     return jsonify(error='invalid page id')
+
   if request.method == 'GET':
+    # Show page
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
+    #post_url = url_for('/page/<page_id>', page_id=page.id)  # why this not work
+    post_url = '/page/%d/edit' % page.id
     return render_template('edit_page.html', url=page.url, name=page.name, \
-        selectors=selectors, names=names)
+        selectors=selectors, names=names, post_url=post_url)
   else:
     # Update page
     selectors = json.loads(request.form.get('selectors'))
@@ -98,7 +102,8 @@ def edit_page(page_id):
     thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
     thread.start()
 
-    return redirect(url_for('page/<page_id>', page_id=page.id))
+    #return redirect(url_for('page/<page_id>', page_id=page.id))
+    return redirect('/page/%d' % page.id)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
 def delete_page(page_id):
@@ -204,6 +209,10 @@ def update_page(context, page, selectors, selector_names):
   with context:
     fingerprints = get_fingerprints(page.url, selectors)
     now = datetime.utcnow()
+
+    # TODO delete all current page selections
+
+    # add new selections
     for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
       element = Element(name=name, selector=selector, page=page)
       version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
