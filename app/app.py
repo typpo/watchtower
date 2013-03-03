@@ -43,7 +43,10 @@ def index():
   app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
-  return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
+  if g.user:
+    return render_template('dashboard.html', user=g.user, pages=user.pages)
+  else:
+    return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
 @app.route('/about')
 def about():
