@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+  <form class="form-horizontal" action="/page/new" method="post">
+    <div class="control-group">
+      <label class="control-label" for="url">URL to monitor</label>
+      <div class="controls">
+        <input type="text" name="url" placeholder="http://...">
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="name">Page Name</label>
+      <div class="controls">
+        <input type="text" name="name" placeholder="Competitor's Landing Page">
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="btn">Continue</button>
+      </div>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
