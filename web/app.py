@@ -2,9 +2,7 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
-
 from datetime import datetime
-import urllib
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
 import json
@@ -44,7 +42,7 @@ def watch():
   blob = get_blob(url)
   selectors = request.form.getlist('selectors[]')
   selector_names = request.form.getlist('names[]')
-  
+
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 
@@ -54,7 +52,7 @@ def watch():
     version = Version(blob=blob, when=now, element_id=element.id)
     db.session.add(element)
     db.session.add(version)
-  
+
   # save everything in the db
   db.session.commit()
 
@@ -79,8 +77,7 @@ def proxy():
   real_url = url
   if (parsed.netloc[:3] != 'www'):
     real_url = parsed.scheme + '://www.' + parsed.netloc
-  response = urllib.urlopen(real_url)
-  html = Markup(response.read().decode('utf-8'))
+  html = getBlob(url)
 
   """
   soup = BeautifulSoup(html)
