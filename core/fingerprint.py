@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from pyvirtualdisplay import Display
 import time
 import json
 import difflib
@@ -10,6 +11,8 @@ NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
+  display = Display(visible=0, size=(1024, 768))
+  display.start()
   browser = webdriver.Chrome() # fuck firefox
   browser.get(url) # Load page
 
@@ -25,6 +28,7 @@ def get_fingerprints(url, selectors):
   # check all selectors
   ret = [get_fingerprint(browser, sel) for sel in selectors]
   browser.close()
+  display.stop()
 
   return ret
 
