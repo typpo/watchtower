@@ -12,6 +12,10 @@ function EditPageCtrl($scope, $http) {
   }
 
   $scope.SavePage = function() {
+    // ok to navigate away now
+    // TODO only complain about unload if navigating in iframe
+    document.getElementById('proxy_frame').contentWindow.onbeforeunload = function() {};
+
     console.log($scope.selectors);
 
     var selectors = [];
@@ -29,6 +33,8 @@ function EditPageCtrl($scope, $http) {
           selectors: JSON.stringify(selectors),
           names: JSON.stringify(names)
         }
+     }).success(function(data) {
+       window.location.href = '/';
      });
   }
 
