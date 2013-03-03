@@ -125,7 +125,7 @@ def create_or_login(resp):
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
-        return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email))# oid.get_next_url())
+        return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email, next=oid.get_next_url()))
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
@@ -151,7 +151,7 @@ def create_profile():
     g.user = User(name,email,session['openid'])
     db.session.add(g.user)
     db.session.commit()
-    return redirect(url_for('edit_profile', name=name, email=email))# oid.get_next_url())
+    return redirect(url_for('edit_profile', name=name, email=email, next=oid.get_next_url()))
   return render_template('create_profile.html', name=request.args.get('name'),
       email=request.args.get('email'), next=oid.get_next_url())
 
@@ -160,8 +160,7 @@ def edit_profile():
   form = dict(name=request.args.get('name'), email = request.args.get('email'))
   if request.method == 'POST':
     if (form['name'] and form['email']):
-      pass
-      #return redirect(oid.get_next_url())# url_for('edit_profile'))
+      return redirect(oid.get_next_url())# url_for('edit_profile'))
   return render_template('edit_profile.html', form=form, next=oid.get_next_url)
 
 @app.route('/logout')
