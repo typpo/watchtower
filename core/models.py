@@ -3,6 +3,7 @@ Models
 """
 
 from database import db
+from datetime import datetime
 
 class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -14,8 +15,8 @@ class Page(db.Model):
   elements = db.relationship('Element',
                              backref='page', lazy='dynamic')
 
-  frequency = db.Column(db.Integer, default=0)
-  last_checked = db.Column(db.Date, default=0)
+  frequency = db.Column(db.Integer, default=60)   # minutes
+  next_check = db.Column(db.DateTime, default=datetime.now())
 
   def __init__(self, name, url):
     self.name = name
