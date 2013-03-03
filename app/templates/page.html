@@ -1,13 +1,37 @@
-{% extends 'base.html' %}
+<!-- {% extends 'base.html' %}
 
-{% block content %}
+{% block content %}-->
+<html>
+<head>
+<link href="base.css" rel="stylesheet">
+</head>
+<body>
+<div id="navbar"><img src="https://dl.dropbox.com/u/13158227/watchtowerlogo.png"></div>
+<div id="content">
+<div id="innernav"><a href="fake.html">back to dashboard</a></div>
 <h1>Changes for {{ page.name }}</h1>
-
+<p>insert url for page here</p>
 {% for version in versions %}
-<div>
-  {{ version.element.name }}
-  {{ version.change }}
+<div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
+<br>
+<table border="0" width="95%">
+<thead>
+<tr>
+<th>Tracked Element</th>
+<th>Change Detected</th>
+<th>Change</th>
+</tr>
+<tbody>
+<tr>
+<td>{{ version.element.name }}</td>
+<td>Timestamp here</td>
+<td>{{ version.change }}</td>
+</tr>
+</tbody>
+</table>
 </div>
+</body>
+</html>
 {% endfor %}
 
 {% endblock %}
