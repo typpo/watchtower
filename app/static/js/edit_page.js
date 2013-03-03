@@ -4,10 +4,7 @@ function EditPageCtrl($scope, $http) {
   $scope.name = 'home page';
   $scope.selectors = {};
 
-  $scope.LoadIframe = function() {
-    // TODO proper way is angular directive
-    $('#proxy_frame').attr('src', '/proxy?url=' + $scope.url);
-    $scope.iframe_visible = true;
+  $scope.Init = function() {
     adjust_iframe(document.getElementById('proxy_frame'));
   }
 
@@ -15,8 +12,6 @@ function EditPageCtrl($scope, $http) {
     // ok to navigate away now
     // TODO only complain about unload if navigating in iframe
     document.getElementById('proxy_frame').contentWindow.onbeforeunload = function() {};
-
-    console.log($scope.selectors);
 
     var selectors = [];
     var names = [];
@@ -66,6 +61,6 @@ function EditPageCtrl($scope, $http) {
 }
 
 function selectors_updated() {
-  // this is a terrible hack and I should be ashamed
+  // pass up from iframe - this is a terrible hack
   $(document).trigger('watchtower-selectors-updated');
 }

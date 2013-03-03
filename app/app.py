@@ -19,7 +19,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
-from core.utils import get_blob
+from core.utils import get_blob, is_production
 
 def create_app():
   app = Flask(__name__)
@@ -45,12 +45,28 @@ def index():
   app.logger.debug(pages)
   return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
 
-@app.route('/new_page', methods=['GET', 'POST'])
+@app.route('/about')
+def about():
+  return render_template('about.html')
+
+@app.route('/page/<int:page_id>', methods=['GET'])
+def page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  if not page:
+    return jsonify(error='invalid page id')
+  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
+  versions = sorted(versions, key=attrgetter('when'))
+  for version in versions:
+    version.diff=json.loads(version.diff)
+  unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
+  return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
+
+@app.route('/page/new', methods=['GET', 'POST'])
 def new_page():
   if request.method == 'GET':
-    return render_template('edit_page.html')
+    return render_template('new_page.html')
 
-  for p in ['url', 'name', 'selectors', 'names']:
+  for p in ['url', 'name']:
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
 
@@ -58,44 +74,48 @@ def new_page():
   page_name = request.form.get('name')
   page = Page(name=page_name, url=url)
   db.session.add(page)
-  selectors = json.loads(request.form.get('selectors'))
-  selector_names = json.loads(request.form.get('names'))
-
-  print url, page_name, selectors, selector_names
-
-  if len(selector_names) != len(selectors):
-    return jsonify(error='must have same number of names and selectors')
-
-  thread = Thread(target=add_page, args=(page, selectors, selector_names))
-  thread.start()
-
   # save everything in the db
   db.session.commit()
 
   # redirect to page for this page
-  return redirect(url_for('page', page_id=page.id))
-  #return json.dumps([url, page_name, selectors, selector_names])
+  return redirect('page/%s/edit' % page.id)
 
-def add_page(page, selectors, selector_names):
-  fingerprints = get_fingerprints(page.url, selectors)
-  now = datetime.utcnow()
-  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
-    element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
-    db.session.add(element)
-    db.session.add(version)
-  db.session.commit
-
-@app.route('/page/<int:page_id>')
-def page(page_id):
+@app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
+def edit_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
     return jsonify(error='invalid page id')
-  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements])
-  versions = sorted(versions, key=attrgetter('when'))
-  for version in versions:
-    version.diff=json.loads(version.diff)
-  return render_template('page.html', page=page, versions=versions)
+  if request.method == 'GET':
+    selectors = [el.selector for el in page.elements]
+    names = [el.name for el in page.elements]
+    return render_template('edit_page.html', url=page.url, name=page.name, \
+        selectors=selectors, names=names)
+  else:
+    # Update page
+    selectors = json.loads(request.form.get('selectors'))
+    selector_names = json.loads(request.form.get('names'))
+
+    if not selectors:
+      return jsonify(error='must supply one or more selectors')
+
+    if len(selector_names) != len(selectors):
+      return jsonify(error='must have same number of names and selectors')
+
+    # asynchronously get fingerprints
+    thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
+    thread.start()
+
+    return redirect(url_for('page/<page_id>', page_id=page.id))
+
+@app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
+def delete_page(page_id):
+  page = Page.query.filter_by(id=page_id).first()
+  if not page:
+    return jsonify(error='invalid page id')
+  db.session.delete(page)
+  db.session.commit()
+  return redirect('/')
+
 
 @app.route('/proxy')
 def proxy():
@@ -117,7 +137,7 @@ def proxy():
 
   return render_template('proxy.html', html=str(soup), root=real_url, )
   """
-  watchtower_content_root = 'http://localhost:5000'   # TODO changeme
+  watchtower_content_root = 'http://gowatchtower.com' if is_production() else 'http://localhost:5000'
   ts = time.time()
   return render_template('proxy.html', html=html, root=url, \
       watchtower_content_root=watchtower_content_root, timestamp=ts)
@@ -190,6 +210,18 @@ def test():
   return render_template('test_goog.html',
       random=random.randint(50, 1000),
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
+
+def update_page(context, page, selectors, selector_names):
+  with context:
+    fingerprints = get_fingerprints(page.url, selectors)
+    now = datetime.utcnow()
+    for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+      element = Element(name=name, selector=selector, page=page)
+      version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
+      db.session.add(element)
+      db.session.add(version)
+    db.session.commit()
+
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', use_reloader=True)

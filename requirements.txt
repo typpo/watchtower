@@ -7,3 +7,5 @@ Flask-SQLAlchemy
 BeautifulSoup
 requests
 twython
+pyvirtualdisplay
+pyscreenshot
