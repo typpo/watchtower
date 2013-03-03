@@ -1,37 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div ng-controller="EditPageCtrl">
+<div ng-controller="EditPageCtrl" ng-init="Init()">
 
-<div ng-show="!iframe_visible">
-
-<form class="form-horizontal" ng-submit="LoadIframe()">
-  <div class="control-group">
-    <label class="control-label" for="page_url">URL to monitor</label>
-    <div class="controls">
-      <input type="text" id="page_url" ng-model="url" placeholder="http://...">
-    </div>
-  </div>
-  <div class="control-group">
-    <label class="control-label" for="page_name">Page Name</label>
-    <div class="controls">
-      <input type="text" id="page_name" ng-model="name" placeholder="Competitor's Landing Page">
-    </div>
-  </div>
-  <div class="control-group">
-    <div class="controls">
-      <button type="submit" class="btn">Continue</button>
-    </div>
-  </div>
-</form>
-
-</div>
-
-<div ng-show="iframe_visible">
 <div style="height:75px;">
 <input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
-<h1>Click on areas of the page you want to track.</h1>
-Currently tracking: <span ng-repeat="(selector, name) in selectors"><span ng-bind="name"></span><span ng-show="!$last">;&nbsp;</span></span>
+<h3>Click on areas of the page you want to track.</h3>
+Currently tracking:
+{% for selector in selectors %}
+{{ selector }}
+{% endfor %}
 
 <form id="create_new_page" action="/page/new" method="POST">
 <input type="hidden" name="url" />
@@ -41,9 +19,7 @@ Currently tracking: <span ng-repeat="(selector, name) in selectors"><span ng-bin
 </form>
 </div>
 
-<iframe id="proxy_frame" width="100%"></iframe>
-</div>
-
+<iframe id="proxy_frame" src="/proxy?url={{url}}" width="100%"></iframe>
 </div>
 
 {% endblock %}

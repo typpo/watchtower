@@ -75,22 +75,26 @@ def edit_page(page_id):
   if not page:
     return jsonify(error='invalid page id')
   if request.method == 'GET':
-    return render_template('edit_page.html', url=page.url)
+    selectors = [el.selector for el in page.elements]
+    names = [el.name for el in page.elements]
+    return render_template('edit_page.html', url=page.url, name=page.name, \
+        selectors=selectors, names=names)
+  else:
+    # Update page
+    selectors = json.loads(request.form.get('selectors'))
+    selector_names = json.loads(request.form.get('names'))
 
-  selectors = json.loads(request.form.get('selectors'))
-  selector_names = json.loads(request.form.get('names'))
+    if not selectors:
+      return jsonify(error='must supply one or more selectors')
 
-  if not selectors:
-    return jsonify(error='must supply one or more selectors')
+    if len(selector_names) != len(selectors):
+      return jsonify(error='must have same number of names and selectors')
 
-  if len(selector_names) != len(selectors):
-    return jsonify(error='must have same number of names and selectors')
+    # asynchronously get fingerprints
+    thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
+    thread.start()
 
-  # asynchronously get fingerprints
-  thread = Thread(target=add_page, args=(app.app_context(), page, selectors, selector_names))
-  thread.start()
-
-  return redirect(url_for('page/<page_id>', page_id=page.id))
+    return redirect(url_for('page/<page_id>', page_id=page.id))
 
 
 @app.route('/proxy')
@@ -183,7 +187,7 @@ def test():
       random=random.randint(50, 1000),
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
 
-def add_page(context, page, selectors, selector_names):
+def update_page(context, page, selectors, selector_names):
   with context:
     fingerprints = get_fingerprints(page.url, selectors)
     now = datetime.utcnow()
