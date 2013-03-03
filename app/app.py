@@ -114,7 +114,7 @@ def proxy():
 
   return render_template('proxy.html', html=str(soup), root=real_url, )
   """
-  watchtower_content_root = 'http://watchtower.com' if is_production() else 'http://localhost:5000'
+  watchtower_content_root = 'http://gowatchtower.com' if is_production() else 'http://localhost:5000'
   ts = time.time()
   return render_template('proxy.html', html=html, root=url, \
       watchtower_content_root=watchtower_content_root, timestamp=ts)
