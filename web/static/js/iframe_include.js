@@ -20,17 +20,32 @@ jQuery.fn.getPath = function () {
 };
 
 (function() {
-  var prev_border_css;
-  console.log('hell');
-  //$('body *').unbind('*');
-  $('div').mouseover(function() {
+  $('body *').unbind('*');
+  var currently_highlighting = false;
+  $('body *').live('mouseover', function(e) {
+    if (currently_highlighting) return;
     // mouseenter
     console.log('mouseenter');
-    prev_border_css = $(this).css('border');
-    $(this).css('border', '10px solid #000');
-  }).mouseout(function() {
+    var $el = $(this);
+    $el.addClass('watchtower-border-highlight');
+    currently_highlighting = true;
+
+    // allow bubbling.  some elements don't support border styles
+  }).live('mouseleave', function(e) {
     // mouseleave
     console.log('mouseleave');
-    $(this).css('border', prev_border_css);
+    var $el = $(this);
+    $('.watchtower-border-highlight').removeClass('watchtower-border-highlight');
+
+    currently_highlighting = false;
+    // allow bubbling
+  }).live('click', function() {
+    console.log($(this).getPath());
+    return false;
   });
+
+  // no navigating away
+  window.onbeforeunload = function() {
+    return "Watchtower doesn't support navigation in Change Tracking mode.  Are you sure you want to navigate away?";
+  }
 })();
