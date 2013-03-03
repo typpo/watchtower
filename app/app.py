@@ -90,27 +90,44 @@ def edit_page(page_id):
     # Show page
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
-    #post_url = url_for('/page/<page_id>', page_id=page.id)  # why this not work
     post_url = '/page/%d/edit' % page.id
-    return render_template('edit_page.html', url=page.url, name=page.name, \
-        selectors=selectors, names=names, post_url=post_url)
-  else:
-    # Update page
+    return render_template('edit_page.html', url=page.url, name=page.name,
+                           selectors=selectors, names=names, post_url=post_url)
+  
+  # Update page
+  try:
     selectors = json.loads(request.form.get('selectors'))
     selector_names = json.loads(request.form.get('names'))
+    delete = json.loads(request.form.get('delete'))
+  except ValueError:
+    return jsonify(error='invalid json')
 
-    if not selectors:
-      return jsonify(error='must supply one or more selectors')
+  if not selectors:
+    return jsonify(error='must supply one or more selectors')
+  if len(selector_names) != len(selectors):
+    return jsonify(error='must have same number of names and selectors')
 
-    if len(selector_names) != len(selectors):
-      return jsonify(error='must have same number of names and selectors')
+  # get fingerprints
+  fingerprints = get_fingerprints(page.url, selectors)
+  now = datetime.utcnow()
 
-    # asynchronously get fingerprints
-    thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
-    thread.start()
+  # delete elements
+  for element_id in delete:
+    element = Element.query.filter_by(id=element_id).first()
+    if not element:
+      return jsonify(error='invalid element id')
+    db.session.delete(element)
 
-    #return redirect(url_for('page/<page_id>', page_id=page.id))
-    return redirect('/page/%d' % page.id)
+  # add new selections
+  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+    element = Element(name=name, selector=selector, page=page)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
+    db.session.add(element)
+    db.session.add(version)
+  db.session.commit()
+
+  #return redirect(url_for('page/<page_id>', page_id=page.id))
+  return redirect('/page/%d' % page.id)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
 def delete_page(page_id):
@@ -215,22 +232,6 @@ def test():
   return render_template('test_goog.html',
       random=random.randint(50, 1000),
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
-
-def update_page(context, page, selectors, selector_names):
-  with context:
-    fingerprints = get_fingerprints(page.url, selectors)
-    now = datetime.utcnow()
-
-    # TODO delete all current page selections
-
-    # add new selections
-    for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
-      element = Element(name=name, selector=selector, page=page)
-      version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
-      db.session.add(element)
-      db.session.add(version)
-    db.session.commit()
-
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', use_reloader=True)
