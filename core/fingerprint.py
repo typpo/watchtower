@@ -108,7 +108,7 @@ def diff_styles(s1, s2):
 def detect_ab_test(url, selectors):
   prints = []
   for i in range(NUM_AB_CHECKS):
-    prints.append(get_fingerprints('http://localhost:5000/test', selectors))
+    prints.append(get_fingerprints(url, selectors))
 
   for i in range(len(selectors)):
     prev_print = None
@@ -136,5 +136,9 @@ def test_diff():
 def test_ab_detection():
   print detect_ab_test('http://localhost:5000/test', ['#lucky'])
 
+def test_ab_bookingcom():
+  print detect_ab_test('http://www.booking.com/city/us/new-york.en-us.html?sid=9d1b2e3670bdb8656e697473c451d44e;dcid=1', ['.promos tr:first'])
+
 if __name__ == '__main__':
-  test_ab_detection()
+  #test_ab_detection()
+  test_ab_bookingcom()
