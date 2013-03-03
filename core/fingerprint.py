@@ -96,7 +96,7 @@ def diff_html(h1, h2):
   print h1, h2
   diffs = []
   if h1 != h2:
-    diffs.append('\n'.join(difflib.unified_diff(h1, h2)))
+    diffs.append(''.join(difflib.Differ().compare(h1, h2)))
   return diffs
 
 # diffs the massaged results of getComputedStyle on elements
