@@ -59,10 +59,11 @@ jQuery.fn.getPath = function () {
 
     $currently_highlighting_element = null;
     // allow bubbling
-  }).live('click', function() {
+  }).live('mousedown', function() {
     console.log($(this).getPath());
     $currently_highlighting_element.addClass('watchtower-border-confirm');
-    confirm('u want to do this?');
+    confirm('u want to add this?');
+    $currently_highlighting_element.removeClass('watchtower-border-confirm');
     return false;
   });
 
