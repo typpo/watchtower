@@ -3,6 +3,7 @@
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify
 from flask.ext.openid import OpenID
 import urllib
+import requests
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
 import json
@@ -66,8 +67,7 @@ def proxy():
   real_url = url
   if (parsed.netloc[:3] != 'www'):
     real_url = parsed.scheme + '://www.' + parsed.netloc
-  response = urllib.urlopen(real_url)
-  html = Markup(response.read().decode('utf-8'))
+  html = getHtml(url)
 
   """
   soup = BeautifulSoup(html)
@@ -112,6 +112,9 @@ def login():
                                             'nickname'])
   return render_template('index.html', next=oid.get_next_url(),
               error=oid.fetch_error())
+
+def getHtml(url):
+  return requests.get(url).text
 
 @app.route('/test')
 def test():
