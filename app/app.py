@@ -181,9 +181,7 @@ def create_or_login(resp):
       db.session.add(g.user)
       db.session.commit()
       user = g.user
-    return redirect(url_for('edit_profile', next=oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
+    return redirect(url_for('edit_profile', next=oid.get_next_url()))
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -209,7 +207,7 @@ def add_sub_reddit(reddits, sub, search):
 
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
-  form = dict(name=request.args.get('name'), email = request.args.get('email'))
+  form = dict(name=g.user.name, email=g.user.email)
   feed = []#twitter.getUserTimeline(screen_name="google")
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}

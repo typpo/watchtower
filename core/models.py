@@ -14,6 +14,8 @@ class User(db.Model):
   openid = db.Column(db.String(255))
   pages = db.relationship('Page',
                           backref='user', lazy='dynamic')
+  twitters = db.relationship('Twitter',
+                          backref='user', lazy='dynamic')
 
   def __init__(self, name, email, openid):
     self.openid = openid
@@ -47,6 +49,16 @@ class Page(db.Model):
 
   def elementsJSON(self):
     return [e.toJSON() for e in self.elements]
+
+class Twitter(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  handle = db.Column(db.String(128))
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+  def __init__(self, handle):
+    self.handle = handle
+  def elementsJSON(self):
+    return '<Twitter %r>' % self.handle
 
 class Version(db.Model):
   id = db.Column(db.Integer, primary_key=True)
