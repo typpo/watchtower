@@ -27,16 +27,20 @@
 </div>
 {% else %}
 <div class="row span12">
-<p class="label"></br>
-No alerts have been created
+</br>
+<p class="alert alert-error">
+No alerts have been created!
 </p>
-<p>
+</div>
+<div class="row span12">
+<p class="alert alert-info">
 Click "New alert" to start monitoring pages.
 </p>
 </div>
+</div>
 {% endif %}
 
-<div id=feed>
+<div id="feed">
 </div>
 
 {% block scripts %}

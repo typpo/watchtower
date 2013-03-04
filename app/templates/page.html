@@ -15,7 +15,7 @@
   <thead>
     <tr>
       <th>Tracked Element</th>
-      <th>Change Detected</th>
+      <th>Time</th>
       <th>Change</th>
     </tr>
     <tbody>
@@ -39,6 +39,7 @@
       {% endif %}
       {% endfor %}
       {% endfor %}
+      {#
       {% for element in unchanged_elements %}
       <tr>
         <td>{{ element.name }}</td>
@@ -46,6 +47,7 @@
         <td>No Change</td>
       </tr>
       {% endfor %}
+      #}
     </tbody>
 </table>
 </div>

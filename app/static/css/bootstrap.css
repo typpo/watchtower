@@ -6161,3 +6161,7 @@ a.badge:focus {
 .innerblock {
   padding:20px;
 }
+
+#feed a {
+  padding: 5px;
+}
