@@ -62,7 +62,6 @@ def show_page(page):
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
-@login_required
 def new_page():
   if request.method == 'GET':
     url = request.args.get('url')
@@ -76,7 +75,7 @@ def new_page():
   if not url.startswith('http'):
     url = 'http://' + url   # otherwise links to this url are interpreted as relative
   page_name = request.form.get('name')
-  page = Page(name=page_name, url=url, user_id=g.user.id)
+  page = Page(name=page_name, url=url, user_id=g.user.id if g.user else None)
   db.session.add(page)
   # save everything in the db
   db.session.commit()
