@@ -52,10 +52,7 @@ def about():
 
 @app.route('/page/<int:page_id>', methods=['GET'])
 @must_own_page
-def show_page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  if not page:
-    return jsonify(error='invalid page id')
+def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
   versions = sorted(versions, key=attrgetter('when'))
   for version in versions:
@@ -64,6 +61,7 @@ def show_page(page_id):
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
+@login_required
 def new_page():
   if request.method == 'GET':
     url = request.args.get('url')
@@ -75,7 +73,7 @@ def new_page():
 
   url = request.form.get('url')
   page_name = request.form.get('name')
-  page = Page(name=page_name, url=url)
+  page = Page(name=page_name, url=url, user_id=g.user.id)
   db.session.add(page)
   # save everything in the db
   db.session.commit()
@@ -85,11 +83,7 @@ def new_page():
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
 @must_own_page
-def edit_page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  if not page:
-    return jsonify(error='invalid page id')
-
+def edit_page(page):
   if request.method == 'GET':
     # Show page
     selectors = [el.selector for el in page.elements]
@@ -136,10 +130,7 @@ def edit_page(page_id):
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
 @must_own_page
-def delete_page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  if not page:
-    return jsonify(error='invalid page id')
+def delete_page(page):
   db.session.delete(page)
   db.session.commit()
   return redirect('/')

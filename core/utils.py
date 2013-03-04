@@ -18,11 +18,24 @@ def login_required(f):
   return decorated_function
 
 def must_own_page(f):
+  """
+  check that a user is logged in
+  check that the user owns this page
+  if the page exists and is not owned by any one, make it owned by current user
+  otherwise, flash a permission error
+  passes page to function (instead of page_id)
+  """
   @wraps(f)
   @login_required
   def decorated_function(page_id):
-    if page_id not in [page.id for page in g.user.pages]:
+    page = Page.query.filter_by(id=page_id).first()
+    if not page:
+      flash('You do not have permission to access this page')
+    if page.user_id is None:
+      page.user_id = g.user.id
+      db.session.add(page)
+    elif page.user_id != g.user.id:
       flash('You do not have permission to access this page')
       return redirect(request.referrer)
-    return f(page_id)
+    return f(page)
   return decorated_function

@@ -34,12 +34,13 @@ class Page(db.Model):
   next_check = db.Column(db.DateTime)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-  def __init__(self, name, url, next_check=datetime.utcnow(), frequency=None):
+  def __init__(self, name, url, user_id=None, next_check=datetime.utcnow(), frequency=None):
     self.name = name
     self.url = url
     self.next_check = next_check
     if frequency:
       self.frequency = frequency
+    self.user_id = user_id
 
   def __repr__(self):
     return '<Page %r>' % self.name
