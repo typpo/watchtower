@@ -5,7 +5,6 @@ flask-login
 Flask-OpenID
 Flask-SQLAlchemy
 BeautifulSoup
-requests
 praw
 requests==0.13.1
 twython
