@@ -113,7 +113,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
+  fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
   now = datetime.utcnow()
 
   # delete elements
