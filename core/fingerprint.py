@@ -15,21 +15,27 @@ NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
+  print 'getting fingerprints'
   display = Display(visible=0, size=(1024, 768))
   display.start()
-  browser = webdriver.Firefox() # fuck firefox
+  print 'star tbrowser'
+  browser = webdriver.Chrome() # fuck firefox
+  print 'load browser'
   browser.get(url) # Load page
 
   # inject jquery
+  print 'inject jquery'
   f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
   jquery_js = f.read();
   f.close()
   browser.execute_script(jquery_js)
 
   # check all selectors
+  print 'check sel'
   ret = [get_fingerprint(browser, sel) for sel in selectors]
 
   # screenshot
+  print 'screnshot'
   screenshot_local_path = '/tmp/%d%d' % (time.time(), random.randint(0, 1000))
   screenshot_url = ''
   if browser.save_screenshot(screenshot_local_path):
@@ -41,9 +47,11 @@ def get_fingerprints(url, selectors):
     screenshot_url = screenshot_remote_path
 
   # all done
+  print 'closing'
   browser.close()
   display.stop()
 
+  print 'ret'
   return ret, screenshot_url, screenshot_local_path
 
 # returns the fingerprint of the first element corresponding to a
