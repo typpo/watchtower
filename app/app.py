@@ -14,7 +14,6 @@ import random
 import os
 import sys
 from operator import attrgetter, add
-from yahoo.search.news import NewsSearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
