@@ -69,6 +69,7 @@
             <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                 <p>
+                  You have no choice but to...
                   <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
                   <button type=submit class=btn>
                     <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
@@ -77,8 +78,8 @@
             </ul>
             {% else %}
             <p>
-              <form action="/logout" method="post">
-                <a type=submit value="Sign out" class="btn" href="/">Sign Out</a>
+              <form action="/logout" method="get">
+                <button type=submit value="Sign out" class="btn" href="/">Sign Out</button>
               </form>
             </p>
             {% endif %}
