@@ -23,3 +23,5 @@ body {
   border:1px #ccc solid;
   padding:30px;
 }
+
+.share-buttons{float: right; margin-top:7px;}.share-buttons>iframe{vertical-align:top;}.twitter-share-button{width:80px!important;}
