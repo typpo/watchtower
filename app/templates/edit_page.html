@@ -5,7 +5,7 @@
 
 <div style="height:75px;">
 {% if preview %}
-<input id="save_page_selectors" type="submit" class="btn" value="Sign up to save" style="float:right;"/>
+<input id="save_page_selectors" type="submit" class="btn" value="Sign up to save this page" style="float:right;" disabled/>
 {% else %}
 <input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
 <a href="/page/{{page.id}}">&laquo; Back to overview</a>
