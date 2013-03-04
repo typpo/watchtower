@@ -10,6 +10,4 @@ requests
 pyvirtualdisplay
 pyscreenshot
 boto
-sqlalchemy-migrate
-Flask-Evolution
-Flask-Script
+alembic

@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 # manage.py
 
 from flask.ext.script import Manager
 from flask.ext.evolution import Evolution
 
-from app import app
+from app.app import app
 
 manager = Manager(app)
 evolution = Evolution(app)
