@@ -19,7 +19,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
-from core.utils import get_blob, is_production, login_required
+from core.utils import get_blob, is_production, login_required, must_own_page
 
 def create_app():
   app = Flask(__name__)
@@ -35,7 +35,7 @@ class TwythonOld(Twython):
 twitter = TwythonOld(Twython)
 app = create_app()
 
-oid = OpenID(app, 'temp/openid')
+oid = OpenID(app, '/tmp/openid')
 
 @app.route("/")
 def index():
@@ -51,8 +51,8 @@ def about():
   return render_template('about.html')
 
 @app.route('/page/<int:page_id>', methods=['GET'])
-@login_required
-def page(page_id):
+@must_own_page
+def show_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
     return jsonify(error='invalid page id')
@@ -64,7 +64,6 @@ def page(page_id):
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
-@login_required
 def new_page():
   if request.method == 'GET':
     url = request.args.get('url')
@@ -85,7 +84,7 @@ def new_page():
   return redirect('page/%s/edit' % page.id)
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
-@login_required
+@must_own_page
 def edit_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
@@ -134,7 +133,7 @@ def edit_page(page_id):
   return redirect('/page/%d' % page.id)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
-@login_required
+@must_own_page
 def delete_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
