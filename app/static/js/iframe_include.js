@@ -96,8 +96,17 @@ jQuery.fn.getPath = function () {
     return selected_selectors;
   }
 
+  window.__watchtower_select_element = function(selector, name) {
+    selected_selectors[selector] = name;
+    $(selector).addClass('watchtower-border-confirmed');
+  }
+
   // no navigating away
   window.onbeforeunload = function() {
     return "Watchtower doesn't support navigation in Change Tracking mode.  Are you sure you want to navigate away?";
+  }
+
+  window.onload = function() {
+    window.parent.iframe_loaded();
   }
 })(jQuery);
