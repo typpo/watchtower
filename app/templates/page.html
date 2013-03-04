@@ -5,9 +5,9 @@
 <h1>Changes for <a href="{{ page.url }}">{{ page.name }}</a></h1>
 <p><a href="{{ page.url }}">{{ page.url }}</a></p>
 <p>
-<a href="/page/{{ page.id }}/edit">edit</a>
+<i class="icon-edit"></i><a href="/page/{{ page.id }}/edit">edit</a>
 &middot;
-<a href="/page/{{ page.id }}/delete">delete</a>
+<i class="icon-remove"></i><a href="/page/{{ page.id }}/delete">delete</a>
 </p>
 <div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
 <br>
@@ -23,12 +23,15 @@
       <tr>
         <td rowspan={{ version.diff|length }}>{{ version.element.name }}</td>
         <td rowspan={{ version.diff|length }}>{{ version.when }}</td>
-        <td>{{ version.diff[0] }}</td>
+        <td>
+        <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}"/></a>
+      </td>
+        <!--<td>{{ version.diff[0] }}</td>-->
       </tr>
       {% for diff in version.diff %}
       {% if loop.index0 %}
       <tr>
-        <td>{{ diff }}</td>
+        <td>Change detected in <strong>{{ diff.key }}</strong></td>
       </tr>
       {% endif %}
       {% endfor %}

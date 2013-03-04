@@ -20,6 +20,7 @@ Currently tracking:
 </form>
 </div>
 
+<script src="/static/js/edit_page.js"></script>  {# must come before iframe #}
 <iframe id="proxy_frame" src="/proxy?url={{page.url}}" width="100%"></iframe>
 </div>
 
@@ -31,5 +32,4 @@ var pageid = {{ page.id|tojson|safe }};
 var elements = {{ page.elementsJSON()|tojson|safe }};
 
 </script>
-<script src="/static/js/edit_page.js"></script>
 {% endblock %}
