@@ -8,8 +8,9 @@
         <p>Error: {{error}}</p>
       {% endif %}
       OpenID:
-      <input type=text name=openid size=30 value="https://www.google.com/accounts/o8/id">
-      <input type=submit value="sign in" >
+      <button type=submit class=btn>test</button>
+      <input type=hidden type=text name=openid size=30 value="https://www.google.com/accounts/o8/id">
+      <input type=submit class=btn value="sign in" >
       <input type=hidden name=next value="{{next}}">
   </form>
 {% endblock %}
