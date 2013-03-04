@@ -5,9 +5,14 @@
 
 <table class="table table-striped" style="margin-top:20px;">
   <tbody>
+    <tr>
+      <th>Page</th>
+      <th>New changes</th>
+    </tr>
     {% for page in pages %}
       <tr>
         <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
+        <td>{{ page.num_new_changes  }}</td>
         <td><a href=/page/{{ page.id }}/edit>edit</a></td>
         <td><a href=/page/{{ page.id }}/delete>delete</a></td>
       </tr>
