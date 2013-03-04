@@ -6,7 +6,7 @@
 <ul>
   {% for page in pages %}
     <li>
-      <a href="/page/{{ page.id }}">{{ page.name }}</a> - <a href={{ page.url }}>{{ page.url }}</a>
+      <a href="/page/{{ page.id }}">{{ page.name or "View Changes" }}</a> - <a href={{ page.url }}>{{ page.url }}</a>
       &middot;
       <a href=/page/{{ page.id }}/edit>edit</a>
       &middot;
