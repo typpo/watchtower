@@ -96,11 +96,10 @@ def edit_page(page):
     # Show page
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
-    post_url = '/page/%d/edit' % page.id
     elements = page.elements
     return render_template('edit_page.html', page=page, url=page.url,
                            elements=page.elements,
-                           selectors=selectors, names=names, post_url=post_url)
+                           selectors=selectors, names=names)
 
   # Update page
   try:
@@ -156,7 +155,10 @@ def proxy():
     url = 'http://' + url
 
   html = get_blob(url)
-
+  
+  if html is None:
+    return 'Invalid url'
+  
   """
   soup = BeautifulSoup(html)
   for a in soup.findAll('a'):
