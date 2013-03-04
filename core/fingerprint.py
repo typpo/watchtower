@@ -9,6 +9,7 @@ import difflib
 import os
 import screenshots
 import hashlib
+from threading import Thread
 
 NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
@@ -32,12 +33,12 @@ def get_fingerprints(url, selectors):
   screenshot_local_path = '/tmp/%d%d' % (time.time(), random.randint(0, 1000))
   screenshot_url = ''
   if browser.save_screenshot(screenshot_local_path):
-    print 'SCREENSHOT'
     screenshot_remote_path = 'images/'  \
       + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
-    screenshots.upload_screenshot(screenshot_local_path, screenshot_remote_path)
+    thread = Thread(target=screenshots.upload_screenshot, \
+        args=(screenshot_local_path,screenshot_remote_path))
+    thread.start()
     screenshot_url = screenshot_remote_path
-    print 'Screenshot done'
 
   # all done
   browser.close()

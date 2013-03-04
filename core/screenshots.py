@@ -1,4 +1,5 @@
 from boto.s3.connection import S3Connection, Bucket, Key
+import hashlib
 
 def upload_screenshot(path, remote_path):
   conn = S3Connection('AKIAIZXASMHAKITV3X3Q', 'uhZLAKaSn2n/35cB3ZhgK7ow6rO0LALzybIiHFOg')

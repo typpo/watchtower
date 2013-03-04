@@ -23,10 +23,13 @@
       <tr>
         <td rowspan={{ version.diff|length }}>{{ version.element.name }}</td>
         <td rowspan={{ version.diff|length }}>{{ version.when }}</td>
+        {% if version.screenshot %}
         <td>
         <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}"/></a>
       </td>
-        <!--<td>{{ version.diff[0] }}</td>-->
+      {% else %}
+        <td>screenshot is processing.  text diff: {{ version.diff[0] }}</td>
+      {% endif %}
       </tr>
       {% for diff in version.diff %}
       {% if loop.index0 %}
