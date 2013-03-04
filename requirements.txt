@@ -6,6 +6,7 @@ Flask-OpenID
 Flask-SQLAlchemy
 BeautifulSoup
 requests
+praw
 twython
 pyvirtualdisplay
 pyscreenshot
