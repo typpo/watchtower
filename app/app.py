@@ -6,7 +6,7 @@ from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
 from threading import Thread
-from twython import Twython
+#from twython import Twython
 import time
 import praw
 import json
@@ -28,12 +28,14 @@ def create_app():
   db.init_app(app)
   return app
 
+"""
 class TwythonOld(Twython):
   def oldSearch(self, **kwargs):
     return self.get('https://search.twitter.com/search.json', params=kwargs)
+    """
 
-#reddit = praw.Reddit(user_agent='test')
-twitter = Twython()
+reddit = praw.Reddit(user_agent='test')
+#twitter = Twython()
 app = create_app()
 
 oid = OpenID(app, '/tmp/openid')
@@ -156,10 +158,10 @@ def proxy():
     url = 'http://' + url
 
   html = get_blob(url)
-  
+
   if html is None:
     return 'Invalid url'
-  
+
   """
   soup = BeautifulSoup(html)
   for a in soup.findAll('a'):
@@ -217,15 +219,14 @@ def add_sub_reddit(reddits, sub, search):
 def edit_profile():
   form = dict(name=g.user.name, email=g.user.email)
   feed = []
-  for tweet in g.user.twitters:
-    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
+#  for tweet in g.user.twitters:
+#    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
-  """
-  reddits = add_sub_reddit(reddits, 'worldnews', 'google')
-  reddits = add_sub_reddit(reddits, 'technology', 'google')
-  reddits = add_sub_reddit(reddits, 'news', 'google')
-  """
+  for red in g.user.pages:
+    reddits = add_sub_reddit(reddits, 'worldnews', red.name)
+    reddits = add_sub_reddit(reddits, 'technology', red.name)
+    reddits = add_sub_reddit(reddits, 'news', red.name)
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   if request.method == 'POST':
     twitadd = Twitter(request.form['addtweets'], user_id=g.user.id)
