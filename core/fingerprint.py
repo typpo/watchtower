@@ -3,9 +3,12 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from pyvirtualdisplay import Display
 import time
+import random
 import json
 import difflib
 import os
+import screenshots
+import hashlib
 
 NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
@@ -13,7 +16,7 @@ NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 def get_fingerprints(url, selectors):
   display = Display(visible=0, size=(1024, 768))
   display.start()
-  browser = webdriver.Chrome() # fuck firefox
+  browser = webdriver.Firefox() # fuck firefox
   browser.get(url) # Load page
 
   # inject jquery
@@ -21,6 +24,13 @@ def get_fingerprints(url, selectors):
   jquery_js = f.read();
   f.close()
   browser.execute_script(jquery_js)
+
+  screenshot_local_path = '/tmp/%d%d' % (time.time(), random.randint(0, 1000))
+  if browser.save_screenshot(screenshot_local_path):
+    print 'SCREENSHOT'
+    screenshot_remote_path = 'images/' + hashlib.sha1(path).hexdigest() + '.png'
+    screenshots.upload_screenshot(screenshot_local_path, screenshot_remote_path)
+    ret['screenshot_url'] = screenshot_remote_path
 
   # check all selectors
   ret = [get_fingerprint(browser, sel) for sel in selectors]
