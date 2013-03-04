@@ -241,7 +241,7 @@ def logout():
   g.user = None
   session['openid'] = None
   session.pop('openid', None)
-  return redirect(url_for('/', user=None))
+  return redirect(url_for('index', user=None))
 
 @app.route('/test')
 def test():
