@@ -7,10 +7,11 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- styles -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" />
     <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/main.css" rel="stylesheet">
     <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -47,9 +48,9 @@
             </a>
             </li>
             </ul>
-          <div class="btn-group pull-right">
+          <div class="btn-group pull-right" style="margin-top:15px;">
               {% if not user %}
-              <a class="btn btn-primary btn-large dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
+              <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
               <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 <form action="/login" method=post>
                   {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
