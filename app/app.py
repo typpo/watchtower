@@ -217,10 +217,12 @@ def edit_profile():
   feed = []#twitter.getUserTimeline(screen_name="google")
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
+  """
   reddits['google'] = []
   submissions = reddit.get_subreddit('worldnews').search('google', limit = 5)
   for sub in submissions:
     reddits['google'].append( (sub.url, sub.title ))
+  """
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   if request.method == 'POST':
     if (form['name'] and form['email']):
