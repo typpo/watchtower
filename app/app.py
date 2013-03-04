@@ -19,7 +19,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
-from core.utils import get_blob, is_production
+from core.utils import get_blob, is_production, login_required
 
 def create_app():
   app = Flask(__name__)
@@ -39,20 +39,19 @@ oid = OpenID(app, 'temp/openid')
 
 @app.route("/")
 def index():
-  db.create_all()
-  app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
   if g.user:
-    return render_template('dashboard.html', user=g.user, pages=user.pages)
+    return render_template('dashboard.html', user=g.user, pages=g.user.pages)
   else:
-    return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
+    return render_template('index.html', user=g.user)
 
 @app.route('/about')
 def about():
   return render_template('about.html')
 
 @app.route('/page/<int:page_id>', methods=['GET'])
+@login_required
 def page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
@@ -65,6 +64,7 @@ def page(page_id):
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
+@login_required
 def new_page():
   if request.method == 'GET':
     url = request.args.get('url')
@@ -85,6 +85,7 @@ def new_page():
   return redirect('page/%s/edit' % page.id)
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
@@ -134,6 +135,7 @@ def edit_page(page_id):
   return redirect('/page/%d' % page.id)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
+@login_required
 def delete_page(page_id):
   page = Page.query.filter_by(id=page_id).first()
   if not page:
@@ -170,6 +172,7 @@ def proxy():
 
 @app.before_request
 def lookup_current_user():
+  db.create_all() # TODO remove this once db is stable
   g.user = None
   if 'openid' in session:
     g.user = User.query.filter_by(openid=session['openid']).first()
@@ -183,7 +186,7 @@ def create_or_login(resp):
         g.user = user
         g.user.name = resp.fullname or resp.nickname
         g.user.email = resp.email
-        return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email, next=oid.get_next_url()))
+        return redirect(oid.get_next_url())
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
@@ -209,14 +212,14 @@ def create_profile():
     g.user = User(name,email,session['openid'])
     db.session.add(g.user)
     db.session.commit()
-    return redirect(url_for('edit_profile', name=name, email=email, next=oid.get_next_url()))
+    return redirect(url_for('edit_profile', name=name, email=email))
   return render_template('create_profile.html', name=request.args.get('name'),
-      email=request.args.get('email'), next=oid.get_next_url())
+      email=request.args.get('email'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
   form = dict(name=request.args.get('name'), email = request.args.get('email'))
-  feed = twitter.getUserTimeline(screen_name="google")
+  feed = [] #twitter.getUserTimeline(screen_name="google")
   if request.method == 'POST':
     if (form['name'] and form['email']):
       return redirect(oid.get_next_url())# url_for('edit_profile'))

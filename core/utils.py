@@ -1,5 +1,7 @@
 import requests
 import socket
+from functools import wraps
+from flask import g, request, redirect, url_for
 
 def get_blob(url):
   return requests.get(url).text
@@ -7,3 +9,10 @@ def get_blob(url):
 def is_production():
   return socket.gethostname().endswith('gowatchtower.com')
 
+def login_required(f):
+  @wraps(f)
+  def decorated_function(*args, **kwargs):
+    if g.user is None:
+      return redirect(url_for('login', next=request.url))
+    return f(*args, **kwargs)
+  return decorated_function

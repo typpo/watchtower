@@ -12,10 +12,14 @@ class User(db.Model):
   name = db.Column(db.String(255))
   email = db.Column(db.String(255))
   openid = db.Column(db.String(255))
+  pages = db.relationship('Page',
+                          backref='user', lazy='dynamic')
+
   def __init__(self, name, email, openid):
     self.openid = openid
     self.name = name
     self.email = email
+
   def __repr__ (self):
     return '<User %r>' % self.name
 
@@ -28,6 +32,7 @@ class Page(db.Model):
 
   frequency = db.Column(db.Integer, default=60)   # minutes
   next_check = db.Column(db.DateTime)
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
   def __init__(self, name, url, next_check=datetime.utcnow(), frequency=None):
     self.name = name
@@ -37,7 +42,7 @@ class Page(db.Model):
       self.frequency = frequency
 
   def __repr__(self):
-    return '<Page %r>' % self.url
+    return '<Page %r>' % self.name
 
   def elementsJSON(self):
     return [e.toJSON() for e in self.elements]
@@ -72,7 +77,7 @@ class Element(db.Model):
     self.page = page
 
   def __repr__(self):
-    return '<Element %r>' % self.selector
+    return '<Element %r>' % self.name
 
   def toJSON(self):
     return {
