@@ -235,19 +235,25 @@ def news():
 #    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
-  for red in g.user.pages:
-    reddits = add_sub_reddit(reddits, 'worldnews', red.name)
-    reddits = add_sub_reddit(reddits, 'technology', red.name)
-    reddits = add_sub_reddit(reddits, 'news', red.name)
+  threads = []
+  for page in g.user.pages:
+    reddits[page.name] = {}
+    for sub in ['worldnews', 'technology', 'news']:
+      thread = Thread(target=get_sub_reddit, args=(reddits[page.name], sub, page.name))
+      thread.start()
+      threads.append(thread)
+  for thread in threads:
+    thread.join()
+  for page_name, subreddits in reddits.items():
+    reddits[page_name] = reduce(add, subreddits.values(), [])
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   return jsonify(reddit=reddits, fb=fb, feed=feed)
 
-def add_sub_reddit(reddits, sub, search):
-  if (not search in reddits):
-    reddits[search] = []
-  submissions = reddit.get_subreddit(sub).search(search, limit = 5)
+def get_sub_reddit(results, name, search):
+  results[name] = []
+  submissions = reddit.get_subreddit(name).search(search, limit = 5)
   for sub in submissions:
-    reddits[search].append( (sub.url, sub.title ))
+    results[name].append( (sub.url, sub.title ))
   return reddits
 
 @app.route('/logout')
