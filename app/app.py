@@ -176,8 +176,10 @@ def proxy():
 def lookup_current_user():
   db.create_all() # TODO remove this once db is stable
   g.user = None
-  if 'openid' in session:
+  app.logger.debug(session['openid'])
+  if 'openid' in session and session['openid']:
     g.user = User.query.filter_by(openid=session['openid']).first()
+  app.logger.debug(g.user)
 
 @oid.after_login
 def create_or_login(resp):
@@ -231,8 +233,10 @@ def edit_profile():
 @app.route('/logout')
 def logout():
   g.user = None
+  session['openid'] = None
+  app.logger.debug(session['openid'])
   session.pop('openid', None)
-  return redirect(oid.get_next_url())
+  return redirect(url_for('/', user=None))
 
 def twitter_stream(results):
   print results;
