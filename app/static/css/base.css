@@ -1,8 +1,8 @@
 body {
-font-family: arial, sans-serif;
-font-size: 1em;
-margin:0;
-background-color:#F1F1F1;
+  font-family: arial, sans-serif;
+  font-size: 1em;
+  margin:0;
+  background-color:#F1F1F1;
 }
 
 @media (max-width:979px) {
@@ -11,21 +11,28 @@ background-color:#F1F1F1;
 	}
 }
 
+#flashes {
+  position: fixed;
+  top: 5px;
+  z-index: 999;
+  margin: auto;
+}
+
 #navbar {
-position: fixed;
-top:0px;
-margin:auto;
-height:80px;
-float: left;
-background-color:#333;
-width: 100%;
-padding-left:20px;
+  position: fixed;
+  top:0px;
+  margin:auto;
+  height:80px;
+  float: left;
+  background-color:#333;
+  width: 100%;
+  padding-left:20px;
 }
 
 #content {
-margin-top:60px;
-padding:20px;
-background-color:#FFF;
+  margin-top:60px;
+  padding:20px;
+  background-color:#FFF;
 }
 
 #innernav {
@@ -35,7 +42,7 @@ background-color:#FFF;
 }
 
 th {
-border: 2px solid #ccc;
+  border: 2px solid #ccc;
 }
 
 h1 {

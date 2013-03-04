@@ -55,7 +55,7 @@ def about():
 @must_own_page
 def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
-  versions = sorted(versions, key=attrgetter('when'))
+  versions = sorted(versions, key=attrgetter('when'), reverse=True)
   for version in versions:
     version.diff = json.loads(version.diff)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
