@@ -43,7 +43,7 @@ def get_fingerprints(url, selectors):
   browser.close()
   display.stop()
 
-  return ret, screenshot_url
+  return ret, screenshot_url, screenshot_local_path
 
 # returns the fingerprint of the first element corresponding to a
 # given selector
@@ -112,7 +112,9 @@ def diff_html(h1, h2):
   print h1, h2
   diffs = []
   if h1 != h2:
-    diffs.append(''.join(difflib.Differ().compare(h1, h2)))
+    if difflib.SequenceMatcher(None, h1, h2).ratio() < .7:
+      #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
+      diffs.append(''.join(difflib.context_diff(h1, h2)))
   return diffs
 
 # diffs the massaged results of getComputedStyle on elements
