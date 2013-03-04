@@ -56,7 +56,7 @@ def about():
 @app.route('/page/<int:page_id>', methods=['GET'])
 @must_own_page
 def show_page(page):
-  versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
+  versions = reduce(add, [[version for version in element.versions] for element in page.elements], [])
   versions = sorted(versions, key=attrgetter('when'))
   app.logger.debug(page.last_view)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
@@ -64,7 +64,11 @@ def show_page(page):
   db.session.add(page)
   db.session.commit()
   for version in versions:
-    version.diff = json.loads(version.diff)
+    # unserialize json when we pass it to page
+    try:
+      version.diff = json.loads(version.diff)
+    except:
+      version.diff = {}
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
