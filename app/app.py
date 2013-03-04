@@ -55,7 +55,7 @@ def about():
 @must_own_page
 def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
-  versions = sorted(versions, key=attrgetter('when'), reverse=True)
+  versions = sorted(versions, key=attrgetter('when'))
   for version in versions:
     version.diff = json.loads(version.diff)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
@@ -188,11 +188,10 @@ def create_or_login(resp):
 def login():
   if (g.user is not None):
     return redirect(oid.get_next_url())
-  if request.method == 'POST':
-    openid = request.form['openid']
-    if openid:
-      return oid.try_login(openid, ask_for=['email', 'fullname',
-                                            'nickname'])
+  if 'openid' in request.args:
+    openid = request.args['openid']
+    return oid.try_login(openid, ask_for=['email', 'fullname',
+                                          'nickname'])
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
 
