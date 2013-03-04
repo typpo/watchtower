@@ -59,12 +59,12 @@ def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
   versions = sorted(versions, key=attrgetter('when'))
   app.logger.debug(page.last_view)
-  for version in versions:
-    version.diff = json.loads(version.diff)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
   page.last_view = datetime.utcnow()
   db.session.add(page)
   db.session.commit()
+  for version in versions:
+    version.diff = json.loads(version.diff)
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
