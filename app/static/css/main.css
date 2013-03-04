@@ -4,3 +4,22 @@ body {
   margin-right: 10px;
   background-color: #e2e2e2;
 }
+
+
+#loader {
+  position:fixed;
+  top:30%;
+  left:50%;
+  color:#000;
+  background-color:#fff;
+  width:150px;
+  height:80px;
+  margin-top:-20px;
+  margin-left:-75px;
+  text-align:center;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  border-radius:6px;
+  border:1px #ccc solid;
+  padding:30px;
+}

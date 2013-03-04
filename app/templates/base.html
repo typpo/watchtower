@@ -7,33 +7,43 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- styles -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" />
     <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/main.css" rel="stylesheet">
     <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
-      </script>
-    <![endif]-->
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
+        </script>
+        <![endif]-->
     <!-- fav and touch icons
-    <link rel="shortcut icon" href="static/ico/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="static/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="static/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="static/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="static/ico/apple-touch-icon-57-precomposed.png">
-    -->
+         <link rel="shortcut icon" href="static/ico/favicon.ico">
+         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="static/ico/apple-touch-icon-144-precomposed.png">
+         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="static/ico/apple-touch-icon-114-precomposed.png">
+         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="static/ico/apple-touch-icon-72-precomposed.png">
+         <link rel="apple-touch-icon-precomposed" href="static/ico/apple-touch-icon-57-precomposed.png">
+         -->
     <!-- scripts -->
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
   </head>
   <body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
     <div class="navbar navbar-fixed-top navbar-inverse">
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="brand" href="/">
-          <img src="/static/images/watchtower_logo.png">
+            <img src="/static/images/watchtower_logo.png">
           </a>
           <ul class="nav">
             <li class="active">
@@ -42,42 +52,49 @@
               </a>
             </li>
             <li class="active">
-            <a href="/about">
-            about watchtower
-            </a>
-            </li>
-            </ul>
-          <div class="btn-group pull-right">
-              {% if not user %}
-              <a class="btn btn-primary btn-large dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
-              <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                <form action="/login" method=post>
-                  {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-                  <p>
-                    OpenID:
-                    <input type=text name=openid size=30 value="https://www.google.com/accounts/o8/id">
-                    <input type=submit value="Sign in">
-                    <input type=hidden name=next value="{{ next }}">
-                </form>
-              </div>
-              </div>
-              {% else %}
-              <p>
-                <form action="/logout" method=pos>
-                  <input type=submit value="Sign out">
-                </form>
-              </p>
-              {% endif %}
+              <a href="/about">
+                about watchtower
+              </a>
             </li>
           </ul>
+          <div class="btn-group pull-right" style="margin-top:15px;">
+            {% if not user %}
+            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
+            <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+              <form action="/login" method=post>
+                {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+                <p>
+                  OpenID:
+                  <input type=text name=openid size=30 value="https://www.google.com/accounts/o8/id">
+                  <input type=submit value="Sign in">
+                  <input type=hidden name=next value="{{ next }}">
+              </form>
+            </ul>
+            {% else %}
+            <p>
+              <form action="/logout" method=pos>
+                <input type=submit value="Sign out">
+              </form>
+            </p>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
+    
+    <div style="margin-top:80px;">
+      {% block content %}{% endblock %}
 
-    {% block content %}{% endblock %}
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="/static/js/app.js"></script>
-    {% block scripts %}{% endblock %}
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+      <script src="/static/js/app.js"></script>
+      {% block scripts %}{% endblock %}
+      
+      <div id="loader" style="display:none;">
+        <p style="text-align: center;"><img src="/static/images/loader.gif"/> </p>
+        <p>
+          Please wait while we process your request...
+        </p>
+      </div>
+    </div>
   </body>
 </html>

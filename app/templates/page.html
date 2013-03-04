@@ -2,8 +2,13 @@
 
 {% block content %}
 <div><a href="/">back to dashboard</a></div>
-<h1>Changes for {{ page.name }}</h1>
-<p>{{ page.url }}</p>
+<h1>Changes for <a href="{{ page.url }}">{{ page.name }}</a></h1>
+<p><a href="{{ page.url }}">{{ page.url }}</a></p>
+<p>
+<a href="/page/{{ page.id }}/edit">edit</a>
+&middot;
+<a href="/page/{{ page.id }}/delete">delete</a>
+</p>
 <div>Latest tracked changes&nbsp;<span class="smallred">x new alerts since last visit</span></div>
 <br>
 <table class="table table-striped" width="95%">

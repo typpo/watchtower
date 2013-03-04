@@ -223,7 +223,7 @@ textarea {
 
 body {
   margin: 0;
-  font-family: 'Lato',"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans',"Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -741,7 +741,7 @@ h6 {
   margin: 10px 0;
   font-family: inherit;
   font-weight: bold;
-  line-height: 20px;
+  line-height: 25px;
   color: inherit;
   text-rendering: optimizelegibility;
 }
@@ -3762,6 +3762,10 @@ input[type="submit"].btn.btn-mini {
 background-color: #5ca43a;
 }
 
+.btn-group .btn-primary:hover {
+background-color: #5ca43a;
+}
+
 .btn-group.open .btn-warning.dropdown-toggle {
   background-color: #f89406;
 }
@@ -6146,4 +6150,26 @@ a.badge:focus {
 
 .affix {
   position: fixed;
+}
+
+.calloutblock {
+  background-color: #FFFFFF;
+  border: 1px solid #6bbe45;
+  padding: 5px;
+  box-shadow: 0 2px 5px #ccc;
+}
+
+.normalblock {
+  background-color: #FFFFFF;
+  border: 1px solid #6bbe45;
+}
+
+.strong-green {
+  color: #66cc33;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.innerblock {
+  padding:20px;
 }

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="/page/new">New alert</a>
+
+<ul>
+  {% for page in pages %}
+    <li>
+      <a href="/page/{{ page.id }}">{{ page.name }}</a> - <a href={{ page.url }}>{{ page.url }}</a>
+      &middot;
+      <a href=/page/{{ page.id }}/edit>edit</a>
+      &middot;
+      <a href=/page/{{ page.id }}/delete>delete</a>
+    </li>
+  {% endfor %}
+</ul>
+
+{% if not pages %}
+<p>
+  No alerts have been created
+</p>
+{% endif %}
+
+{% endblock %}

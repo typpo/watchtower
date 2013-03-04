@@ -20,7 +20,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
-from core.utils import get_blob, is_production
+from core.utils import get_blob, is_production, login_required, must_own_page
 
 def create_app():
   app = Flask(__name__)
@@ -37,44 +37,47 @@ reddit = praw.Reddit(user_agent='test')
 twitter = TwythonOld(Twython)
 app = create_app()
 
-oid = OpenID(app, 'temp/openid')
+oid = OpenID(app, '/tmp/openid')
 
 @app.route("/")
 def index():
-  db.create_all()
-  app.logger.debug(g.user)
   pages = Page.query.all()
   app.logger.debug(pages)
-  return render_template('index.html', user=g.user, pages=pages, next=oid.get_next_url())
+  if g.user:
+    return render_template('dashboard.html', user=g.user, pages=g.user.pages)
+  else:
+    return render_template('index.html', user=g.user)
 
 @app.route('/about')
 def about():
   return render_template('about.html')
 
 @app.route('/page/<int:page_id>', methods=['GET'])
-def page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  if not page:
-    return jsonify(error='invalid page id')
+@must_own_page
+def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
   versions = sorted(versions, key=attrgetter('when'))
   for version in versions:
-    version.diff=json.loads(version.diff)
+    version.diff = json.loads(version.diff)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
+@login_required
 def new_page():
   if request.method == 'GET':
-    return render_template('new_page.html')
+    url = request.args.get('url')
+    return render_template('new_page.html', url=url)
 
   for p in ['url', 'name']:
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
 
   url = request.form.get('url')
+  if not url.startswith('http'):
+    url = 'http://' + url   # otherwise links to this url are interpreted as relative
   page_name = request.form.get('name')
-  page = Page(name=page_name, url=url)
+  page = Page(name=page_name, url=url, user_id=g.user.id)
   db.session.add(page)
   # save everything in the db
   db.session.commit()
@@ -83,37 +86,58 @@ def new_page():
   return redirect('page/%s/edit' % page.id)
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
-def edit_page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  if not page:
-    return jsonify(error='invalid page id')
+@must_own_page
+def edit_page(page):
   if request.method == 'GET':
+    # Show page
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
-    return render_template('edit_page.html', url=page.url, name=page.name, \
-        selectors=selectors, names=names)
-  else:
-    # Update page
+    post_url = '/page/%d/edit' % page.id
+    elements = page.elements
+    return render_template('edit_page.html', page=page, elements=page.elements,
+                           selectors=selectors, names=names, post_url=post_url)
+
+  # Update page
+  try:
     selectors = json.loads(request.form.get('selectors'))
     selector_names = json.loads(request.form.get('names'))
+    delete = json.loads(request.form.get('delete', '[]'))
+  except ValueError:
+    return jsonify(error='invalid json')
+  except TypeError:
+    return jsonify(form=repr(request.form))
 
-    if not selectors:
-      return jsonify(error='must supply one or more selectors')
+  # it's ok to delete but not add
+  #if not selectors:
+  #  return jsonify(error='must supply one or more selectors')
+  if len(selector_names) != len(selectors):
+    return jsonify(error='must have same number of names and selectors')
 
-    if len(selector_names) != len(selectors):
-      return jsonify(error='must have same number of names and selectors')
+  # get fingerprints
+  fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
+  now = datetime.utcnow()
 
-    # asynchronously get fingerprints
-    thread = Thread(target=update_page, args=(app.app_context(), page, selectors, selector_names))
-    thread.start()
+  # delete elements
+  for element_id in delete:
+    element = Element.query.filter_by(id=element_id).first()
+    if not element:
+      return jsonify(error='invalid element id')
+    db.session.delete(element)
 
-    return redirect(url_for('page/<page_id>', page_id=page.id))
+  # add new selections
+  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+    element = Element(name=name, selector=selector, page=page)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
+        element=element, screenshot=screenshot_url)
+    db.session.add(element)
+    db.session.add(version)
+  db.session.commit()
+
+  return redirect('/page/%d' % page.id)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
-def delete_page(page_id):
-  page = Page.query.filter_by(id=page_id).first()
-  if not page:
-    return jsonify(error='invalid page id')
+@must_own_page
+def delete_page(page):
   db.session.delete(page)
   db.session.commit()
   return redirect('/')
@@ -125,8 +149,6 @@ def proxy():
   url = request.args.get('url')
   if (url[:3] != 'htt'):
     url = 'http://' + url
-  if (url[7:10] != 'www'):
-    url = url[:7] + 'www.' + url[7:]
 
   html = get_blob(url)
 
@@ -146,6 +168,7 @@ def proxy():
 
 @app.before_request
 def lookup_current_user():
+  db.create_all() # TODO remove this once db is stable
   g.user = None
   if 'openid' in session:
     g.user = User.query.filter_by(openid=session['openid']).first()
@@ -159,7 +182,7 @@ def create_or_login(resp):
         g.user = user
         g.user.name = resp.fullname or resp.nickname
         g.user.email = resp.email
-        return redirect(url_for('edit_profile', name=resp.fullname or resp.nickname, email=resp.email, next=oid.get_next_url()))
+        return redirect(oid.get_next_url())
     return redirect(url_for('create_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
@@ -185,9 +208,9 @@ def create_profile():
     g.user = User(name,email,session['openid'])
     db.session.add(g.user)
     db.session.commit()
-    return redirect(url_for('edit_profile', name=name, email=email, next=oid.get_next_url()))
+    return redirect(url_for('edit_profile', name=name, email=email))
   return render_template('create_profile.html', name=request.args.get('name'),
-      email=request.args.get('email'), next=oid.get_next_url())
+      email=request.args.get('email'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
@@ -219,18 +242,6 @@ def test():
   return render_template('test_goog.html',
       random=random.randint(50, 1000),
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
-
-def update_page(context, page, selectors, selector_names):
-  with context:
-    fingerprints = get_fingerprints(page.url, selectors)
-    now = datetime.utcnow()
-    for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
-      element = Element(name=name, selector=selector, page=page)
-      version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
-      db.session.add(element)
-      db.session.add(version)
-    db.session.commit()
-
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', use_reloader=True)
