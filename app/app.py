@@ -108,8 +108,9 @@ def edit_page(page_id):
   except ValueError:
     return jsonify(error='invalid json')
 
-  if not selectors:
-    return jsonify(error='must supply one or more selectors')
+  # it's ok to delete but not add
+  #if not selectors:
+  #  return jsonify(error='must supply one or more selectors')
   if len(selector_names) != len(selectors):
     return jsonify(error='must have same number of names and selectors')
 

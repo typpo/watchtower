@@ -3,8 +3,9 @@ function EditPageCtrl($scope, $http) {
   $scope.iframe_visible = false;
   $scope.url = 'http://google.com';
   $scope.name = 'home page';
-  $scope.selectors = {};
-  $scope.deleted_element_ids = [];
+
+  var current_selectors = {};  // map from selector to name  (user-generated)
+  var old_selectors = {};   // map from selector to element obj  (backend-generated)
 
   $scope.Init = function() {
     adjust_iframe(document.getElementById('proxy_frame'));
@@ -13,6 +14,7 @@ function EditPageCtrl($scope, $http) {
       // mark elements
       for (var i=0; i < elements.length; i++) {
         var element = elements[i];
+        old_selectors[element.selector] = element;
         document.getElementById('proxy_frame')
           .contentWindow.__watchtower_select_element(element.selector, element.name);
       }
@@ -26,9 +28,20 @@ function EditPageCtrl($scope, $http) {
 
     var selectors = [];
     var names = [];
-    for (var selector in $scope.selectors) {
-      selectors.push(selector);
-      names.push($scope.selectors[selector]);
+    for (var selector in current_selectors) {
+      // choose new selectors
+      if (!old_selectors[selector]) {
+        selectors.push(selector);
+        names.push(current_selectors[selector]);
+      }
+    }
+
+    var deleted_element_ids = [];
+    for (var selector in old_selectors) {
+      // has anything gone missing?
+      if (!current_selectors[selector]) {
+        deleted_element_ids.push(old_selectors[selector].id);
+      }
     }
 
     /*
@@ -48,7 +61,7 @@ function EditPageCtrl($scope, $http) {
           name: $scope.name,
           selectors: JSON.stringify(selectors),
           names: JSON.stringify(names),
-          delete: JSON.stringify($scope.deleted_element_ids)
+          delete: JSON.stringify(deleted_element_ids)
         }
      }).success(function(data) {
        $('#loader').hide();
@@ -70,7 +83,7 @@ function EditPageCtrl($scope, $http) {
   }
 
   $(document).bind('watchtower-selectors-updated', function() {
-    $scope.selectors = document.getElementById('proxy_frame').contentWindow.__watchtower_get_selectors();
+    current_selectors = document.getElementById('proxy_frame').contentWindow.__watchtower_get_selectors();
   });
 }
 
