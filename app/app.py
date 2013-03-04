@@ -180,9 +180,7 @@ def create_or_login(resp):
       db.session.add(g.user)
       db.session.commit()
       user = g.user
-    return redirect(url_for('edit_profile', next=oid.get_next_url(),
-                            name=resp.fullname or resp.nickname,
-                            email=resp.email))
+    return redirect(oid.get_next_url())
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
