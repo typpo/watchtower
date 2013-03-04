@@ -31,7 +31,7 @@
       {% for diff in version.diff %}
       {% if loop.index0 %}
       <tr>
-        <td>{{ diff }}</td>
+        <td>Change detected in <strong>{{ diff.key }}</strong></td>
       </tr>
       {% endif %}
       {% endfor %}
