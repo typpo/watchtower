@@ -3247,11 +3247,6 @@ button.close {
 .btn:focus {
   color: #333333;
   text-decoration: none;
-  background-position: 0 -15px;
-  -webkit-transition: background-position 0.1s linear;
-     -moz-transition: background-position 0.1s linear;
-       -o-transition: background-position 0.1s linear;
-          transition: background-position 0.1s linear;
 }
 
 .btn:focus {
@@ -3372,11 +3367,6 @@ input[type="button"].btn-block {
 .btn-primary.disabled,
 .btn-primary[disabled] {
   color: #ffffff;
-}
-
-.btn-primary:active,
-.btn-primary.active {
-
 }
 
 .btn-warning {
@@ -4415,7 +4405,7 @@ background-color: #5ca43a;
   text-shadow: 0 1px 0 #ffffff;
 }
 
-na .brand:hover,
+.navbar .brand:hover,
 .navbar .brand:focus {
   text-decoration: none;
 }
