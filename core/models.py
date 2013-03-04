@@ -52,6 +52,7 @@ class Version(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   fingerprint = db.Column(db.Text)
   diff = db.Column(db.Text)
+  screenshot = db.Column(db.String(255))
   when = db.Column(db.DateTime, key='when')
   element_id = db.Column(db.Integer, db.ForeignKey('element.id'))
 

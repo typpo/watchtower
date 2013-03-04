@@ -110,7 +110,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints = get_fingerprints(page.url, selectors)
+  fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
   now = datetime.utcnow()
 
   # delete elements
@@ -123,7 +123,8 @@ def edit_page(page):
   # add new selections
   for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
+        element=element, screenshot=screenshot_url)
     db.session.add(element)
     db.session.add(version)
   db.session.commit()
