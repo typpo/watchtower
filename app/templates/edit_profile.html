@@ -8,25 +8,30 @@
       <dd>{{form.name}}
       <dt> Email:
       <dd>{{form.email}}
-      <input type=submit value="Go on" />
       <input type=hidden name=next value="{{next}}"/>
     <dl>
-    <span> Reddit feed of pages </span>
-    {% for item in reddit %}
-      {% for (url,text) in reddit[item] %}
-      <dt><a href={{url}} target="_blank">{{text}}</a>
-      {%endfor %}
-    {% endfor %}
+    {% if reddit %}
+      <span> Reddit feed of pages </span>
+      {% for item in reddit %}
+        {% for (url,text) in reddit[item] %}
+        <dt><a href={{url}} target="_blank">{{text}}</a>
+        {%endfor %}
+      {% endfor %}
+    {% endif %}
+    {% if feed %}
     <span> Twitter feed of pages </span>
-    {% for tweet in feed %}
-      <dt> Page:
-      <dd> {{ tweet['user']['screen_name'] }}
-      <dt> Tweet:
-      <dd> {{tweet['text'] }}
-    {% endfor %}
-    <span> Facebook feed of pages </span>
-    <dt> Facebook
-    <dd> {{ fb }}
+      {% for tweet in feed %}
+        <dt> Page:
+        <dd> {{ tweet['user']['screen_name'] }}
+        <dt> Tweet:
+        <dd> {{tweet['text'] }}
+      {% endfor %}
+    {% endif %}
+    {% if fb %}
+      <span> Facebook feed of pages </span>
+      <dt> Facebook
+      <dd> {{ fb }}
+    {% endif %}
   </form>
 {% endblock %}
 
