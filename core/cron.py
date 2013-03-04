@@ -37,7 +37,7 @@ if __name__ == '__main__':
         version = Version(fingerprint=json.dumps(new), diff=json.dumps(diffs), when=now, element=element, screenshot=screenshot_url)
         db.session.add(version)
 
-    page.next_check = now + timedelta(minutes=page.frequency)
+    page.next_check = page.next_check + timedelta(minutes=page.frequency)
     db.session.add(page)
 
   db.session.commit()
