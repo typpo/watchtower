@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href="/page/new">New alert</a>
+<a href="/page/new" class="btn-primary">New alert</a>
 
-<ul>
-  {% for page in pages %}
-    <li>
-      <a href="/page/{{ page.id }}">{{ page.name }}</a> - <a href={{ page.url }}>{{ page.url }}</a>
-      &middot;
-      <a href=/page/{{ page.id }}/edit>edit</a>
-      &middot;
-      <a href=/page/{{ page.id }}/delete>delete</a>
-    </li>
-  {% endfor %}
-</ul>
+<table class="table table-striped">
+  <tbody>
+    {% for page in pages %}
+      <tr>
+        <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
+        <td><a href=/page/{{ page.id }}/edit>edit</a></td>
+        <td><a href=/page/{{ page.id }}/delete>delete</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% if not pages %}
 <p>

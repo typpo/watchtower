@@ -31,13 +31,13 @@
   </head>
   <body>
     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul class=flashes>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+      {% if messages %}
+        <div id="flashes">
+          {% for message in messages %}
+            <p class=alert>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endwith %}
     <div class="navbar navbar-fixed-top navbar-inverse">
       <div class="navbar-inner">
