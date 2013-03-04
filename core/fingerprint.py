@@ -132,7 +132,9 @@ def diff_styles(s1, s2):
   # Assumes keys are the same
   diffs = []
   for style in s1:
-    if style not in s2 or s1[style] != s2[style]:
+    if style not in s2:
+      continue
+    if s1[style] != s2[style]:
       diffs.append({ \
         'key': style,
         'diff_amount': 'n/a',   # TODO detect units and provide amount if possible

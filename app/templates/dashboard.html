@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="row span12">
 <a href="/page/new" class="btn btn-primary">New alert</a>
-
+</div>
 {% if pages %}
+<div class="row span12">
 <table class="table table-striped" style="margin-top:20px;">
   <tbody>
     <tr>
@@ -22,12 +24,16 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% else %}
-<p></br>
-No alerts have been created </p>
+<div class="row span12">
+<p class="label"></br>
+No alerts have been created
+</p>
 <p>
 Click "New alert" to start monitoring pages.
 </p>
+</div>
 {% endif %}
 
 <div id=feed>
