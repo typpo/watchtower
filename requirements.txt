@@ -7,7 +7,6 @@ Flask-SQLAlchemy
 BeautifulSoup
 praw
 requests==0.13.1
-twython
 pyvirtualdisplay
 pyscreenshot
 boto
