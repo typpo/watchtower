@@ -69,10 +69,9 @@
             <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                 <p>
-                  OpenID:
                   <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
                   <button type=submit class=btn>
-                    <img src=googleimage />test</button>
+                    <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
                   <input type=hidden name=next value="{{next}}">
                 </form>
             </ul>
