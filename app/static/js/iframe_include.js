@@ -37,7 +37,6 @@ jQuery.fn.getPath = function () {
       return false;
     }
     var path = $el.getPath();
-    var tagname = $el.prop('tagName');
     if ($currently_highlighting_element
         && $currently_highlighting_element.parents().length > $el.parents().length) {
       // not deeper in the DOM
