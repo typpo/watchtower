@@ -72,6 +72,8 @@ def new_page():
       return jsonify(error='missing %s param' % p)
 
   url = request.form.get('url')
+  if not url.startswith('http'):
+    url = 'http://' + url   # otherwise links to this url are interpreted as relative
   page_name = request.form.get('name')
   page = Page(name=page_name, url=url, user_id=g.user.id)
   db.session.add(page)
