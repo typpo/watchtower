@@ -55,7 +55,7 @@ def about():
 @must_own_page
 def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
-  versions = sorted(versions, key=attrgetter('when'), reverse=True)
+  versions = sorted(versions, key=attrgetter('when'))
   for version in versions:
     version.diff = json.loads(version.diff)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
@@ -83,6 +83,12 @@ def new_page():
   # redirect to page for this page
   return redirect('page/%s/edit' % page.id)
 
+@app.route('/preview')
+def preview():
+  if request.method == 'GET':
+    url = request.args.get('url')
+    return render_template('edit_page.html', url=url, preview=True)
+
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
 @must_own_page
 def edit_page(page):
@@ -92,7 +98,8 @@ def edit_page(page):
     names = [el.name for el in page.elements]
     post_url = '/page/%d/edit' % page.id
     elements = page.elements
-    return render_template('edit_page.html', page=page, elements=page.elements,
+    return render_template('edit_page.html', page=page, url=page.url,
+                           elements=page.elements,
                            selectors=selectors, names=names, post_url=post_url)
 
   # Update page
@@ -112,7 +119,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
+  fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
   now = datetime.utcnow()
 
   # delete elements
@@ -187,11 +194,10 @@ def create_or_login(resp):
 def login():
   if (g.user is not None):
     return redirect(oid.get_next_url())
-  if request.method == 'POST':
-    openid = request.form['openid']
-    if openid:
-      return oid.try_login(openid, ask_for=['email', 'fullname',
-                                            'nickname'])
+  if 'openid' in request.args:
+    openid = request.args['openid']
+    return oid.try_login(openid, ask_for=['email', 'fullname',
+                                          'nickname'])
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
 
@@ -206,7 +212,7 @@ def add_sub_reddit(reddits, sub, search):
 
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
-  form = dict(name=request.args.get('name'), email = request.args.get('email'))
+  form = dict(name=g.user.name, email=g.user.email)
   feed = []#twitter.getUserTimeline(screen_name="google")
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}

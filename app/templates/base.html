@@ -47,7 +47,7 @@
           <ul class="nav">
             <li class="active">
               <a href="/">
-                home
+                Home
               </a>
             </li>
             <li class="active">
@@ -55,24 +55,30 @@
                 about watchtower
               </a>
             </li>
+            {% if user %}
+            <li class="active">
+              <a href="/profile">
+                my profile
+              </a>
+            </li>
+            {% endif %}
           </ul>
           <div class="btn-group pull-right" style="margin-top:10px;">
-            {% if not user %}
+            {% if not g.user %}
             <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
             <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-              <form action="/login" method=post>
                 {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                 <p>
-                  OpenID:
-                  <input type=text name=openid size=30 value="https://www.google.com/accounts/o8/id">
-                  <input type=submit value="Sign in">
-                  <input type=hidden name=next value="{{ next }}">
-              </form>
+                  <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
+                  <button type=submit class=btn>
+                    <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
+                  <input type=hidden name=next value="{{next}}">
+                </form>
             </ul>
             {% else %}
             <p>
-              <form action="/logout" method=pos>
-                <input type=submit value="Sign out" class="btn">
+              <form action="/logout" method="post">
+                <a type=submit value="Sign out" class="btn" href="/">Sign Out</a>
               </form>
             </p>
             {% endif %}
@@ -80,14 +86,14 @@
         </div>
       </div>
     </div>
-    
+
     <div style="margin-top:80px;">
       {% block content %}{% endblock %}
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
       <script src="/static/js/app.js"></script>
       {% block scripts %}{% endblock %}
-      
+
       <div id="loader" style="display:none;">
         <p style="text-align: center;"><img src="/static/images/loader.gif"/> </p>
         <p>

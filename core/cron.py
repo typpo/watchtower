@@ -30,7 +30,7 @@ if __name__ == '__main__':
     elements = page.elements
     selectors = [element.selector for element in elements]
     old_fingerprints = [json.loads(max(element.versions, key=attrgetter('when')).fingerprint) for element in elements]
-    new_fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
+    new_fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
 
     for element, old, new in zip(elements, old_fingerprints, new_fingerprints):
       diffs = diff_fingerprints(old, new)
