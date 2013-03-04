@@ -83,11 +83,12 @@ def new_page():
   # redirect to page for this page
   return redirect('page/%s/edit' % page.id)
 
-@app.route('/preview')
+@app.route('/preview', methods=['GET'])
 def preview():
-  if request.method == 'GET':
-    url = request.args.get('url')
-    return render_template('edit_page.html', url=url, preview=True)
+  url = request.args.get('url')
+  if g.user:
+    return redirect(url_for('new_page', url=url))
+  return render_template('edit_page.html', url=url, preview=True)
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
 @must_own_page
