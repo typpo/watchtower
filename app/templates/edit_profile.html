@@ -2,7 +2,6 @@
 
 {% block content %}
   <h2> Edit profile </h2>
-  <form action="" method=post>
     <dl>
       <dt> Name:
       <dd>{{form.name}}
@@ -19,6 +18,10 @@
       {% endfor %}
     {% endif %}
     {% if feed %}
+    <form action="/profile" method=post>
+    <input name=addtweets>
+    <button type=submit action="" class=btn>Add Twitter</button>
+    </form>
     <span> Twitter feed of pages </span>
       {% for tweet in feed %}
         <dt> Page:
@@ -32,7 +35,6 @@
       <dt> Facebook
       <dd> {{ fb }}
     {% endif %}
-  </form>
 {% endblock %}
 
 {% block scripts %}

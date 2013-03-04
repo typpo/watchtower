@@ -16,7 +16,7 @@ import sys
 from operator import attrgetter, add
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from core.models import Element, Version, Page, User
+from core.models import Element, Version, Twitter, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
 from core.utils import get_blob, is_production, login_required, must_own_page
@@ -33,7 +33,7 @@ class TwythonOld(Twython):
     return self.get('https://search.twitter.com/search.json', params=kwargs)
 
 #reddit = praw.Reddit(user_agent='test')
-twitter = TwythonOld(Twython)
+twitter = Twython()
 app = create_app()
 
 oid = OpenID(app, '/tmp/openid')
@@ -178,7 +178,7 @@ def proxy():
 def lookup_current_user():
   db.create_all() # TODO remove this once db is stable
   g.user = None
-  if 'openid' in session:
+  if 'openid' in session and session['openid']:
     g.user = User.query.filter_by(openid=session['openid']).first()
 
 @oid.after_login
@@ -216,7 +216,9 @@ def add_sub_reddit(reddits, sub, search):
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
   form = dict(name=g.user.name, email=g.user.email)
-  feed = []#twitter.getUserTimeline(screen_name="google")
+  feed = []
+  for tweet in g.user.twitters:
+    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
   """
@@ -226,18 +228,19 @@ def edit_profile():
   """
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   if request.method == 'POST':
-    if (form['name'] and form['email']):
-      return redirect(oid.get_next_url())# url_for('edit_profile'))
+    twitadd = Twitter(request.form['addtweets'], user_id=g.user.id)
+    db.session.add(twitadd)
+    request.form['addtweets'] == ''
+    # save everything in the db
+    db.session.commit()
   return render_template('edit_profile.html', reddit=reddits, fb=fb, feed=feed, form=form, next=oid.get_next_url)
 
 @app.route('/logout')
 def logout():
   g.user = None
+  session['openid'] = None
   session.pop('openid', None)
-  return redirect(oid.get_next_url())
-
-def twitter_stream(results):
-  print results;
+  return redirect(url_for('/', user=None))
 
 @app.route('/test')
 def test():
