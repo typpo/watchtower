@@ -55,8 +55,9 @@ class Twitter(db.Model):
   handle = db.Column(db.String(128))
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-  def __init__(self, handle):
+  def __init__(self, handle, user_id=None):
     self.handle = handle
+    self.user_id = user_id
   def elementsJSON(self):
     return '<Twitter %r>' % self.handle
 
