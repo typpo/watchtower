@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     for element, old, new in zip(elements, old_fingerprints, new_fingerprints):
       diffs = diff_fingerprints(old, new)
-      if diffs:
+      if diffs and new not in [version.fingerprint for version in element.versions]: # check against all previous fingerprints for this element
         version = Version(fingerprint=json.dumps(new), diff=json.dumps(diffs), when=now, element=element, screenshot=screenshot_url)
         db.session.add(version)
 
