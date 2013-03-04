@@ -45,7 +45,7 @@ def index():
   pages = Page.query.all()
   app.logger.debug(pages)
   if g.user:
-    return render_template('dashboard.html', user=g.user, pages=g.user.pages)
+    return render_template('dashboard.html', user=g.user, pages=list(g.user.pages))
   else:
     return render_template('index.html', user=g.user)
 

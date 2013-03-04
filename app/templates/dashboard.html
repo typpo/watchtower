@@ -3,11 +3,14 @@
 {% block content %}
 <a href="/page/new" class="btn btn-primary">New alert</a>
 
+{% if pages %}
 <table class="table table-striped" style="margin-top:20px;">
   <tbody>
     <tr>
       <th>Page</th>
       <th>New changes</th>
+      <th></th>
+      <th></th>
     </tr>
     {% for page in pages %}
       <tr>
@@ -19,8 +22,7 @@
     {% endfor %}
   </tbody>
 </table>
-
-{% if not pages %}
+{% else %}
 <p>
   No alerts have been created
 </p>
