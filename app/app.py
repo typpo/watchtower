@@ -177,13 +177,12 @@ def lookup_current_user():
 def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = User.query.filter_by(openid=resp.identity_url).first()
-    if user is not None:
-        flash(u'Successfully signed in')
-        g.user = user
-        g.user.name = resp.fullname or resp.nickname
-        g.user.email = resp.email
-        return redirect(oid.get_next_url())
-    return redirect(url_for('create_profile', next=oid.get_next_url(),
+    if user is None:
+      g.user = User(resp.fullname or resp.nickname, resp.email, session['openid'])
+      db.session.add(g.user)
+      db.session.commit()
+      user = g.user
+    return redirect(url_for('edit_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
 
@@ -200,17 +199,14 @@ def login():
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
 
-@app.route('/create_profile', methods=['GET', 'POST'])
-def create_profile():
-  if request.method == 'POST':
-    name = request.form['name']
-    email = request.form['email']
-    g.user = User(name,email,session['openid'])
-    db.session.add(g.user)
-    db.session.commit()
-    return redirect(url_for('edit_profile', name=name, email=email))
-  return render_template('create_profile.html', name=request.args.get('name'),
-      email=request.args.get('email'))
+def add_sub_reddit(reddits, sub, search):
+  if (not search in reddits):
+    reddits[search] = []
+  submissions = reddit.get_subreddit(sub).search(search, limit = 5)
+  for sub in submissions:
+    reddits[search].append( (sub.url, sub.title ))
+  return reddits
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
@@ -218,10 +214,9 @@ def edit_profile():
   feed = []#twitter.getUserTimeline(screen_name="google")
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
-  reddits['google'] = []
-  submissions = reddit.get_subreddit('worldnews').search('google', limit = 5)
-  for sub in submissions:
-    reddits['google'].append( (sub.url, sub.title ))
+  reddits = add_sub_reddit(reddits, 'worldnews', 'google')
+  reddits = add_sub_reddit(reddits, 'technology', 'google')
+  reddits = add_sub_reddit(reddits, 'news', 'google')
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   if request.method == 'POST':
     if (form['name'] and form['email']):

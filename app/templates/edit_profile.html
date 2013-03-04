@@ -12,7 +12,6 @@
       <input type=hidden name=next value="{{next}}"/>
     <dl>
     <span> Reddit feed of pages </span>
-    {{ reddit }}
     {% for item in reddit %}
       {% for (url,text) in reddit[item] %}
       <dt><a href={{url}} target="_blank">{{text}}</a>
