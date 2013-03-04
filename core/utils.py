@@ -2,6 +2,8 @@ import requests
 import socket
 from functools import wraps
 from flask import g, request, redirect, url_for, flash
+from core.models import Element, Version, Page, User
+from core.database import db
 
 def get_blob(url):
   return requests.get(url).text
