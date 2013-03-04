@@ -3,19 +3,26 @@
 {% block content %}
 <a href="/page/new" class="btn btn-primary">New alert</a>
 
+{% if pages %}
 <table class="table table-striped" style="margin-top:20px;">
   <tbody>
+    <tr>
+      <th>Page</th>
+      <th>New changes</th>
+      <th></th>
+      <th></th>
+    </tr>
     {% for page in pages %}
       <tr>
         <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
+        <td>{{ page.num_new_changes  }}</td>
         <td><a href=/page/{{ page.id }}/edit>edit</a></td>
         <td><a href=/page/{{ page.id }}/delete>delete</a></td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
-
-{% if not pages %}
+{% else %}
 <p>
   No alerts have been created
 </p>

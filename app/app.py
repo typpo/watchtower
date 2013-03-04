@@ -45,7 +45,7 @@ def index():
   pages = Page.query.all()
   app.logger.debug(pages)
   if g.user:
-    return render_template('dashboard.html', user=g.user, pages=g.user.pages)
+    return render_template('dashboard.html', user=g.user, pages=list(g.user.pages))
   else:
     return render_template('index.html', user=g.user)
 
@@ -58,17 +58,14 @@ def about():
 def show_page(page):
   versions = reduce(add, [[version for version in element.versions[1:]] for element in page.elements], [])
   versions = sorted(versions, key=attrgetter('when'))
-  num_since = 0
   app.logger.debug(page.last_view)
   for version in versions:
     version.diff = json.loads(version.diff)
-    if (version.when - page.last_view).total_seconds() >= 0:
-      num_since += 1
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
   page.last_view = datetime.utcnow()
   db.session.add(page)
   db.session.commit()
-  return render_template('page.html', num_since=num_since, page=page, versions=versions, unchanged_elements=unchanged_elements)
+  return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
 @app.route('/page/new', methods=['GET', 'POST'])
 def new_page():
