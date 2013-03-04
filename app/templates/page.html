@@ -23,7 +23,8 @@
       <tr>
         <td rowspan={{ version.diff|length }}>{{ version.element.name }}</td>
         <td rowspan={{ version.diff|length }}>{{ version.when }}</td>
-        <td>{{ version.diff[0] }}</td>
+        <td><img src="{{ version.screenshot }}"/></td>
+        <!--<td>{{ version.diff[0] }}</td>-->
       </tr>
       {% for diff in version.diff %}
       {% if loop.index0 %}
