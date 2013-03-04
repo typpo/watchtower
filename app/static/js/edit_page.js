@@ -8,6 +8,15 @@ function EditPageCtrl($scope, $http) {
 
   $scope.Init = function() {
     adjust_iframe(document.getElementById('proxy_frame'));
+
+    $(document).bind('watchtower-iframe-loaded', function() {
+      // mark elements
+      for (var i=0; i < elements.length; i++) {
+        var element = elements[i];
+        document.getElementById('proxy_frame')
+          .contentWindow.__watchtower_select_element(element.selector, element.name);
+      }
+    });
   }
 
   $scope.SavePage = function() {
@@ -68,4 +77,8 @@ function EditPageCtrl($scope, $http) {
 function selectors_updated() {
   // pass up from iframe - this is a terrible hack
   $(document).trigger('watchtower-selectors-updated');
+}
+
+function iframe_loaded() {
+  $(document).trigger('watchtower-iframe-loaded');
 }

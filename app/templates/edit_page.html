@@ -30,6 +30,7 @@ Currently tracking:
 {% block scripts %}
 <script>
 var pageid = {{ page.id|tojson|safe }};
+var elements = {{ page.elementsJSON()|tojson|safe }};
 
 </script>
 <script src="/static/js/edit_page.js"></script>

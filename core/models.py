@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper
 from database import db
 from datetime import datetime
-from flask import json
+import json
 
 class User(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +39,9 @@ class Page(db.Model):
   def __repr__(self):
     return '<Page %r>' % self.url
 
+  def elementsJSON(self):
+    return [e.toJSON() for e in self.elements]
+
 class Version(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   fingerprint = db.Column(db.Text)
@@ -70,4 +73,11 @@ class Element(db.Model):
 
   def __repr__(self):
     return '<Element %r>' % self.selector
+
+  def toJSON(self):
+    return {
+      'id': self.id, \
+      'name': self.name,  \
+      'selector': self.selector, \
+    }
 

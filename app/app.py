@@ -95,7 +95,8 @@ def edit_page(page_id):
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
     post_url = '/page/%d/edit' % page.id
-    return render_template('edit_page.html', page=page,
+    elements = page.elements
+    return render_template('edit_page.html', page=page, elements=page.elements,
                            selectors=selectors, names=names, post_url=post_url)
 
   # Update page
