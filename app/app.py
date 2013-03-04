@@ -83,11 +83,12 @@ def new_page():
   # redirect to page for this page
   return redirect('page/%s/edit' % page.id)
 
-@app.route('/preview')
+@app.route('/preview', methods=['GET'])
 def preview():
-  if request.method == 'GET':
-    url = request.args.get('url')
-    return render_template('edit_page.html', url=url, preview=True)
+  url = request.args.get('url')
+  if g.user:
+    return redirect(url_for('new_page', url=url))
+  return render_template('edit_page.html', url=url, preview=True)
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
 @must_own_page
@@ -96,11 +97,10 @@ def edit_page(page):
     # Show page
     selectors = [el.selector for el in page.elements]
     names = [el.name for el in page.elements]
-    post_url = '/page/%d/edit' % page.id
     elements = page.elements
     return render_template('edit_page.html', page=page, url=page.url,
                            elements=page.elements,
-                           selectors=selectors, names=names, post_url=post_url)
+                           selectors=selectors, names=names)
 
   # Update page
   try:
@@ -156,7 +156,10 @@ def proxy():
     url = 'http://' + url
 
   html = get_blob(url)
-
+  
+  if html is None:
+    return 'Invalid url'
+  
   """
   soup = BeautifulSoup(html)
   for a in soup.findAll('a'):
