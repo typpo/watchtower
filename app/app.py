@@ -84,6 +84,12 @@ def new_page():
   # redirect to page for this page
   return redirect('page/%s/edit' % page.id)
 
+@app.route('/preview')
+def preview():
+  if request.method == 'GET':
+    url = request.args.get('url')
+    return render_template('edit_page.html', url=url, preview=True)
+
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
 @must_own_page
 def edit_page(page):
@@ -93,7 +99,8 @@ def edit_page(page):
     names = [el.name for el in page.elements]
     post_url = '/page/%d/edit' % page.id
     elements = page.elements
-    return render_template('edit_page.html', page=page, elements=page.elements,
+    return render_template('edit_page.html', page=page, url=page.url,
+                           elements=page.elements,
                            selectors=selectors, names=names, post_url=post_url)
 
   # Update page

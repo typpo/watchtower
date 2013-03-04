@@ -4,14 +4,19 @@
 <div ng-controller="EditPageCtrl" ng-init="Init()">
 
 <div style="height:75px;">
+{% if preview %}
+<input id="save_page_selectors" type="submit" class="btn" value="Sign up to save" style="float:right;"/>
+{% else %}
 <input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
 <a href="/page/{{page.id}}">&laquo; Back to overview</a>
+{% endif %}
 <h3>Click on areas of the page you want to track.</h3>
 {% if names %}
 Currently tracking:
 {% for name in names %}{% if not loop.first %}, {% endif %}<strong>{{ name }}</strong>{% endfor %}
 {% endif %}
 
+{#
 <form id="create_new_page" action="{{ post_url }}" method="POST">
 <input type="hidden" name="url" />
 <input type="hidden" name="name" />
@@ -19,17 +24,23 @@ Currently tracking:
 <input type="hidden" name="names" />
 </form>
 </div>
+#}
 
 <script src="/static/js/edit_page.js"></script>  {# must come before iframe #}
-<iframe id="proxy_frame" src="/proxy?url={{page.url}}" width="100%"></iframe>
+<iframe id="proxy_frame" src="/proxy?url={{url}}" width="100%"></iframe>
 </div>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
+{% if preview %}
+var pageid = -1;
+var elements = {};
+{% else %}
 var pageid = {{ page.id|tojson|safe }};
 var elements = {{ page.elementsJSON()|tojson|safe }};
+{% endif %}
 
 </script>
 {% endblock %}
