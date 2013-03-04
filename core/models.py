@@ -52,9 +52,9 @@ class Version(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   fingerprint = db.Column(db.Text)
   diff = db.Column(db.Text)
-  screenshot = db.Column(db.String(255), default='')
   when = db.Column(db.DateTime, key='when')
   element_id = db.Column(db.Integer, db.ForeignKey('element.id'))
+  screenshot = db.Column(db.String(255), default='')
 
   def __init__(self, fingerprint, diff, element, when=datetime.utcnow()):
     self.fingerprint = fingerprint
