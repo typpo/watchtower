@@ -112,7 +112,7 @@ def diff_html(h1, h2):
   print h1, h2
   diffs = []
   if h1 != h2:
-    if difflib.SequenceMatcher(None, h1, h2).ratio() < .5:
+    if difflib.SequenceMatcher(None, h1, h2).ratio() < .7:
       #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
       diffs.append(''.join(difflib.context_diff(h1, h2)))
   return diffs
