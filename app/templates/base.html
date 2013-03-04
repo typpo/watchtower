@@ -53,12 +53,12 @@
             </li>
             <li class="active">
             <a href="/about">
-            about watchtower
+              about watchtower
             </a>
             </li>
             </ul>
           <div class="btn-group pull-right" style="margin-top:15px;">
-              {% if not user %}
+            {% if not user %}
               <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
               <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 <form action="/login" method=post>
@@ -69,33 +69,31 @@
                     <input type=submit value="Sign in">
                     <input type=hidden name=next value="{{ next }}">
                 </form>
-              </div>
-              </div>
-              {% else %}
+              </ul>
+            {% else %}
               <p>
                 <form action="/logout" method=pos>
                   <input type=submit value="Sign out">
                 </form>
               </p>
               {% endif %}
-            </li>
-          </ul>
+          </div>
         </div>
       </div>
     </div>
-<div style="margin-top:80px;">
-    {% block content %}{% endblock %}
+    <div style="margin-top:80px;">
+      {% block content %}{% endblock %}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/static/js/app.js"></script>
     {% block scripts %}{% endblock %}
-
-  <div id="loader" style="display:none;">
-    <p style="text-align: center;"><img src="/static/images/loader.gif"/> </p>
-    <p>
-    Please wait while we process your request...
-    </p>
-  </div>
-  </div>
+    
+    <div id="loader" style="display:none;">
+      <p style="text-align: center;"><img src="/static/images/loader.gif"/> </p>
+      <p>
+        Please wait while we process your request...
+      </p>
+    </div>
+    </div>
   </body>
 </html>
