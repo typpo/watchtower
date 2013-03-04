@@ -95,11 +95,13 @@ def edit_page(page):
 
   # Update page
   try:
-    selectors = json.loads(request.args.get('selectors'))
-    selector_names = json.loads(request.args.get('names'))
-    delete = json.loads(request.args.get('delete'))
+    selectors = json.loads(request.form.get('selectors'))
+    selector_names = json.loads(request.form.get('names'))
+    delete = json.loads(request.form.get('delete', '[]'))
   except ValueError:
     return jsonify(error='invalid json')
+  except TypeError:
+    return jsonify(form=repr(request.form))
 
   # it's ok to delete but not add
   #if not selectors:
@@ -142,8 +144,6 @@ def proxy():
   url = request.args.get('url')
   if (url[:3] != 'htt'):
     url = 'http://' + url
-  if (url[7:10] != 'www'):
-    url = url[:7] + 'www.' + url[7:]
 
   html = get_blob(url)
 

@@ -2,6 +2,7 @@ import requests
 import socket
 from functools import wraps
 from flask import g, request, redirect, url_for, flash
+from models import Page
 
 def get_blob(url):
   return requests.get(url).text
