@@ -17,7 +17,7 @@
     {% for page in pages %}
       <tr>
         <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
-        <td>{{ page.num_new_changes  }}</td>
+        <td>{{ page.num_new_changes or 0  }}</td>
         <td><a href=/page/{{ page.id }}/edit>edit</a></td>
         <td><a href=/page/{{ page.id }}/delete>delete</a></td>
       </tr>
@@ -39,11 +39,12 @@ Click "New alert" to start monitoring pages.
 </div>
 </div>
 {% endif %}
+{% if pages %}
 <div class="row span12">
-<p><h5>Social News on Sites You're Tracking</h5></p>
 <div id="feed">
 </div>
 </div>
+{% endif %}
 {% block scripts %}
 <script src="/static/js/dashboard.js"</script>
 {% endblock %}

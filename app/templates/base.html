@@ -87,7 +87,7 @@
         </div>
       </div>
     </div>
-    <div style="margin-top:80px;">
+    <div class="container" style="margin-top:80px;">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           <div id="flashes">
@@ -99,9 +99,7 @@
       {% endwith %}
       {% block content %}{% endblock %}
 
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
       <script src="/static/js/app.js"></script>
-      {% block scripts %}{% endblock %}
 
       <div id="loader" style="display:none;">
         <p style="text-align: center;"><img src="/static/images/loader.gif"/> </p>
@@ -112,13 +110,12 @@
     </div>
 
 {% block share %}
+<div class="row span12 text-center" style="padding-bottom:50px;">
 <div class="share-buttons">
   <div style="margin:0" class="fb-like" data-href="http://www.gowatchtower.com" data-send="false" data-layout="button_count" data-show-faces="false"></div>
   <a class="twitter-share-button" style="font-size:10px;" href="https://twitter.com/share" data-url="http://www.gowatchtower.com" data-counturl="http://www.gowatchtower.com" class="twitter-share-button" data-lang="en">Tweet</a>
   <g:plusone size="small" style="margin-left:0"></g:plusone>
 </div>
-
-
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -129,6 +126,7 @@
 }(document, 'script', 'facebook-jssdk'));</script>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+</div>
 {% endblock %}
   </body>
 </html>

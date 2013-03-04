@@ -1,9 +1,7 @@
 (function() {
-  if (typeof dashboard_loaded == 'undefined') {
-    dashboard_loaded = true;
-
     $.ajax('/news').done(function(data) {
-      $feed = $('#feed');
+      var $feed = $('#feed');
+      $feed.append('<p><h5>Social News on Sites You\'re Tracking</h5></p>');
       $.each(data.reddit, function(page, posts) {
         $.each(posts, function(i, item) {
           if (i < 5) {
@@ -12,5 +10,4 @@
         });
       });
     });
-  }
 })();
