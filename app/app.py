@@ -32,7 +32,7 @@ class TwythonOld(Twython):
   def oldSearch(self, **kwargs):
     return self.get('https://search.twitter.com/search.json', params=kwargs)
 
-reddit = praw.Reddit(user_agent='test')
+#reddit = praw.Reddit(user_agent='test')
 twitter = TwythonOld(Twython)
 app = create_app()
 
