@@ -210,18 +210,22 @@ def login():
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
 
-def add_sub_reddit(reddits, sub, search):
-  if (not search in reddits):
-    reddits[search] = []
-  submissions = reddit.get_subreddit(sub).search(search, limit = 5)
-  for sub in submissions:
-    reddits[search].append( (sub.url, sub.title ))
-  return reddits
-
 
 @app.route('/profile', methods=['GET', 'POST'])
-def edit_profile():
+@login_required
+def profile():
   form = dict(name=g.user.name, email=g.user.email)
+  if request.method == 'POST':
+    twitadd = Twitter(request.form['addtweets'], user_id=g.user.id)
+    db.session.add(twitadd)
+    request.form['addtweets'] == ''
+    # save everything in the db
+    db.session.commit()
+  return render_template('profile.html', form=form, next=oid.get_next_url())
+
+@app.route('/news', methods=['GET', 'POST'])
+@login_required
+def news():
   feed = []
 #  for tweet in g.user.twitters:
 #    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
@@ -232,13 +236,15 @@ def edit_profile():
     reddits = add_sub_reddit(reddits, 'technology', red.name)
     reddits = add_sub_reddit(reddits, 'news', red.name)
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
-  if request.method == 'POST':
-    twitadd = Twitter(request.form['addtweets'], user_id=g.user.id)
-    db.session.add(twitadd)
-    request.form['addtweets'] == ''
-    # save everything in the db
-    db.session.commit()
-  return render_template('edit_profile.html', reddit=reddits, fb=fb, feed=feed, form=form, next=oid.get_next_url)
+  return jsonify(reddit=reddits, fb=fb, feed=feed)
+
+def add_sub_reddit(reddits, sub, search):
+  if (not search in reddits):
+    reddits[search] = []
+  submissions = reddit.get_subreddit(sub).search(search, limit = 5)
+  for sub in submissions:
+    reddits[search].append( (sub.url, sub.title ))
+  return reddits
 
 @app.route('/logout')
 def logout():

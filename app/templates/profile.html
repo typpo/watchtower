@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2> Profile </h2>
+    <dl>
+      <dt> Name:
+      <dd>{{ form.name }}
+      <dt> Email:
+      <dd>{{ form.email }}
+      <input type=hidden name=next value="{{ next }}"/>
+    <dl>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/main.js"></script>
+{% endblock %}
