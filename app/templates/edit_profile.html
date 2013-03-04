@@ -11,6 +11,13 @@
       <input type=submit value="Go on" />
       <input type=hidden name=next value="{{next}}"/>
     <dl>
+    <span> Reddit feed of pages </span>
+    {{ reddit }}
+    {% for item in reddit %}
+      {% for (url,text) in reddit[item] %}
+      <dt><a href={{url}} target="_blank">{{text}}</a>
+      {%endfor %}
+    {% endfor %}
     <span> Twitter feed of pages </span>
     {% for tweet in feed %}
       <dt> Page:
@@ -18,6 +25,9 @@
       <dt> Tweet:
       <dd> {{tweet['text'] }}
     {% endfor %}
+    <span> Facebook feed of pages </span>
+    <dt> Facebook
+    <dd> {{ fb }}
   </form>
 {% endblock %}
 
