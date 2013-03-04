@@ -67,7 +67,8 @@ def page(page_id):
 @login_required
 def new_page():
   if request.method == 'GET':
-    return render_template('new_page.html')
+    url = request.args.get('url')
+    return render_template('new_page.html', url=url)
 
   for p in ['url', 'name']:
     if p not in request.form:
