@@ -118,12 +118,13 @@ def diff_offsets(o1, o2):
 # diffs html.  straight up string diff.  usually we are interested
 # in outerhtml
 def diff_html(h1, h2):
-  print h1, h2
   diffs = []
   if h1 != h2:
     if difflib.SequenceMatcher(None, h1, h2).ratio() < .7:
       #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
       diffs.append(''.join(difflib.context_diff(h1, h2)))
+    else:
+      print 'change detected, but it is below uniqueness ratio threshold'
   return diffs
 
 # diffs the massaged results of getComputedStyle on elements
