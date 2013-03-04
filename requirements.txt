@@ -5,6 +5,7 @@ flask-login
 Flask-OpenID
 Flask-SQLAlchemy
 BeautifulSoup
+praw
 requests==0.13.1
 twython
 pyvirtualdisplay

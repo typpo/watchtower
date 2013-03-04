@@ -25,19 +25,25 @@ def get_fingerprints(url, selectors):
   f.close()
   browser.execute_script(jquery_js)
 
-  screenshot_local_path = '/tmp/%d%d' % (time.time(), random.randint(0, 1000))
-  if browser.save_screenshot(screenshot_local_path):
-    print 'SCREENSHOT'
-    screenshot_remote_path = 'images/' + hashlib.sha1(path).hexdigest() + '.png'
-    screenshots.upload_screenshot(screenshot_local_path, screenshot_remote_path)
-    ret['screenshot_url'] = screenshot_remote_path
-
   # check all selectors
   ret = [get_fingerprint(browser, sel) for sel in selectors]
+
+  # screenshot
+  screenshot_local_path = '/tmp/%d%d' % (time.time(), random.randint(0, 1000))
+  screenshot_url = ''
+  if browser.save_screenshot(screenshot_local_path):
+    print 'SCREENSHOT'
+    screenshot_remote_path = 'images/'  \
+      + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
+    screenshots.upload_screenshot(screenshot_local_path, screenshot_remote_path)
+    screenshot_url = screenshot_remote_path
+    print 'Screenshot done'
+
+  # all done
   browser.close()
   display.stop()
 
-  return ret
+  return ret, screenshot_url
 
 # returns the fingerprint of the first element corresponding to a
 # given selector

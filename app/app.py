@@ -8,12 +8,12 @@ from BeautifulSoup import BeautifulSoup
 from threading import Thread
 from twython import Twython
 import time
+import praw
 import json
 import random
 import os
 import sys
 from operator import attrgetter, add
-#from yahoo.search.news import NewsSearch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Page, User
@@ -32,6 +32,7 @@ class TwythonOld(Twython):
   def oldSearch(self, **kwargs):
     return self.get('https://search.twitter.com/search.json', params=kwargs)
 
+#reddit = praw.Reddit(user_agent='test')
 twitter = TwythonOld(Twython)
 app = create_app()
 
@@ -97,9 +98,9 @@ def edit_page(page):
 
   # Update page
   try:
-    selectors = json.loads(request.form.get('selectors'))
-    selector_names = json.loads(request.form.get('names'))
-    delete = json.loads(request.form.get('delete', '[]'))
+    selectors = json.loads(request.args.get('selectors'))
+    selector_names = json.loads(request.args.get('names'))
+    delete = json.loads(request.args.get('delete', '[]'))
   except ValueError:
     return jsonify(error='invalid json')
   except TypeError:
@@ -112,7 +113,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints = get_fingerprints(page.url, selectors)
+  fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
   now = datetime.utcnow()
 
   # delete elements
@@ -125,7 +126,8 @@ def edit_page(page):
   # add new selections
   for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now, element=element)
+    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
+        element=element, screenshot=screenshot_url)
     db.session.add(element)
     db.session.add(version)
   db.session.commit()
@@ -174,13 +176,12 @@ def lookup_current_user():
 def create_or_login(resp):
     session['openid'] = resp.identity_url
     user = User.query.filter_by(openid=resp.identity_url).first()
-    if user is not None:
-        flash(u'Successfully signed in')
-        g.user = user
-        g.user.name = resp.fullname or resp.nickname
-        g.user.email = resp.email
-        return redirect(oid.get_next_url())
-    return redirect(url_for('create_profile', next=oid.get_next_url(),
+    if user is None:
+      g.user = User(resp.fullname or resp.nickname, resp.email, session['openid'])
+      db.session.add(g.user)
+      db.session.commit()
+      user = g.user
+    return redirect(url_for('edit_profile', next=oid.get_next_url(),
                             name=resp.fullname or resp.nickname,
                             email=resp.email))
 
@@ -197,26 +198,31 @@ def login():
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
 
-@app.route('/create_profile', methods=['GET', 'POST'])
-def create_profile():
-  if request.method == 'POST':
-    name = request.form['name']
-    email = request.form['email']
-    g.user = User(name,email,session['openid'])
-    db.session.add(g.user)
-    db.session.commit()
-    return redirect(url_for('edit_profile', name=name, email=email))
-  return render_template('create_profile.html', name=request.args.get('name'),
-      email=request.args.get('email'))
+def add_sub_reddit(reddits, sub, search):
+  if (not search in reddits):
+    reddits[search] = []
+  submissions = reddit.get_subreddit(sub).search(search, limit = 5)
+  for sub in submissions:
+    reddits[search].append( (sub.url, sub.title ))
+  return reddits
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 def edit_profile():
   form = dict(name=request.args.get('name'), email = request.args.get('email'))
-  feed = [] #twitter.getUserTimeline(screen_name="google")
+  feed = []#twitter.getUserTimeline(screen_name="google")
+  fb = [] #get_blob('https://graph.facebook.com/google/feed')
+  reddits = {}
+  """
+  reddits = add_sub_reddit(reddits, 'worldnews', 'google')
+  reddits = add_sub_reddit(reddits, 'technology', 'google')
+  reddits = add_sub_reddit(reddits, 'news', 'google')
+  """
+  #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   if request.method == 'POST':
     if (form['name'] and form['email']):
       return redirect(oid.get_next_url())# url_for('edit_profile'))
-  return render_template('edit_profile.html', feed=feed, form=form, next=oid.get_next_url)
+  return render_template('edit_profile.html', reddit=reddits, fb=fb, feed=feed, form=form, next=oid.get_next_url)
 
 @app.route('/logout')
 def logout():

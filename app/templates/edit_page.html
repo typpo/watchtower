@@ -5,13 +5,11 @@
 
 <div style="height:75px;">
 <input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
+<a href="/page/{{page.id}}">&laquo; Back to overview</a>
 <h3>Click on areas of the page you want to track.</h3>
 {% if names %}
 Currently tracking:
-{% for name in names %}
-{% if not loop.first %}, {% endif %}
-<strong>{{ name }}</strong>
-{% endfor %}
+{% for name in names %}{% if not loop.first %}, {% endif %}<strong>{{ name }}</strong>{% endfor %}
 {% endif %}
 
 <form id="create_new_page" action="{{ post_url }}" method="POST">

@@ -30,7 +30,7 @@ function EditPageCtrl($scope, $http) {
     var names = [];
     for (var selector in current_selectors) {
       // choose new selectors
-      if (!old_selectors[selector]) {
+      if (!old_selectors[selector] && current_selectors[selector]) {
         selectors.push(selector);
         names.push(current_selectors[selector]);
       }

@@ -223,7 +223,7 @@ textarea {
 
 body {
   margin: 0;
-  font-family: 'Open Sans',"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -1025,7 +1025,7 @@ pre code {
 }
 
 form {
-  margin: 0 0 20px;
+  margin: 0 0 10px;
 }
 
 fieldset {
@@ -4819,7 +4819,6 @@ na .brand:hover,
 .navbar-inverse .nav .active > a:focus {
   color: #ffffff;
   background-color: #333333;
-  border-left: 1px solid #222222;
 }
 
 .navbar-inverse .navbar-link {
@@ -6162,6 +6161,7 @@ a.badge:focus {
 .normalblock {
   background-color: #FFFFFF;
   border: 1px solid #6bbe45;
+  min-height:250px;
 }
 
 .strong-green {
