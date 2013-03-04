@@ -20,7 +20,8 @@ app = create_app()
 app.test_request_context().push()
 
 if __name__ == '__main__':
-  pages = list(Page.query.filter(Page.next_check < datetime.utcnow()))
+  #pages = list(Page.query.filter(Page.next_check < datetime.utcnow()))
+  pages = list(Page.query.all())
   print len(pages), 'pages due for checking'
 
   now = datetime.utcnow()
