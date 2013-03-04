@@ -22,21 +22,21 @@ app.test_request_context().push()
 if __name__ == '__main__':
   pages = list(Page.query.filter(Page.next_check < datetime.utcnow()))
   print len(pages), 'pages due for checking'
-  
+
   now = datetime.utcnow()
 
-  for page in pages:    
+  for page in pages:
     elements = page.elements
     selectors = [element.selector for element in elements]
     old_fingerprints = [json.loads(max(element.versions, key=attrgetter('when')).fingerprint) for element in elements]
-    new_fingerprints = get_fingerprints(page.url, selectors)
+    new_fingerprints, screenshot_url = get_fingerprints(page.url, selectors)
 
     for element, old, new in zip(elements, old_fingerprints, new_fingerprints):
       diffs = diff_fingerprints(old, new)
       if diffs:
-        version = Version(fingerprint=json.dumps(new), diff=json.dumps(diffs), when=now, element=element)
+        version = Version(fingerprint=json.dumps(new), diff=json.dumps(diffs), when=now, element=element, screenshot=screenshot_url)
         db.session.add(version)
-    
+
     page.next_check = now + timedelta(minutes=page.frequency)
     db.session.add(page)
 

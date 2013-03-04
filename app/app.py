@@ -97,9 +97,9 @@ def edit_page(page):
 
   # Update page
   try:
-    selectors = json.loads(request.form.get('selectors'))
-    selector_names = json.loads(request.form.get('names'))
-    delete = json.loads(request.form.get('delete', '[]'))
+    selectors = json.loads(request.args.get('selectors'))
+    selector_names = json.loads(request.args.get('names'))
+    delete = json.loads(request.args.get('delete', '[]'))
   except ValueError:
     return jsonify(error='invalid json')
   except TypeError:
