@@ -30,9 +30,6 @@ Currently tracking:
 <iframe id="proxy_frame" src="/proxy?url={{url}}" width="100%"></iframe>
 </div>
 
-{% endblock %}
-
-{% block scripts %}
 <script>
 {% if preview %}
 var pageid = -1;
@@ -43,6 +40,8 @@ var elements = {{ page.elementsJSON()|tojson|safe }};
 {% endif %}
 
 </script>
+
 {% endblock %}
+
 
 {% block share %}{% endblock %}
