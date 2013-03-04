@@ -223,7 +223,7 @@ textarea {
 
 body {
   margin: 0;
-  font-family: 'Lato',"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans',"Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 20px;
   color: #333333;
@@ -6162,10 +6162,15 @@ a.badge:focus {
 .normalblock {
   background-color: #FFFFFF;
   border: 1px solid #6bbe45;
+  padding:5px;
 }
 
 .strong-green {
   color: #66cc33;
   font-size: 1.2em;
   font-weight: bold;
+}
+
+.innerblock {
+  padding:20px;
 }
