@@ -40,8 +40,8 @@
 </div>
 {% endif %}
 {% if pages %}
-<div class="row span12">
-  <h2>Social News on Sites You're Tracking</h2>
+<div class="row span12" style="display: none" id="social">
+  <h3>Social News on Sites You're Tracking</h3>
   <div class="accordion" id="news">
   </div>
   <div class="accordion" id="twitter">
@@ -54,7 +54,7 @@
 
 <script type="text/html" id="news_page_tmpl">
   <div class="accordion-group">
-    <div class="accordion-heading" style="background-color: #eeeeee>
+    <div class="accordion-heading" style="background-color: #f9f9f9>
       <a class="accordion-toggle" data-toggle="collapse" data-parent="<%=parent%>" href="#collapse<%=page_id%>">
         <%=page%>
       </a>
