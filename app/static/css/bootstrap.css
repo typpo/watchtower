@@ -5116,7 +5116,7 @@ background-color: #5ca43a;
 .pager li > a,
 .pager li > span {
   display: inline-block;
-  padding: 5px 14px;
+  padding: 0px 15px;
   background-color: #fff;
   border: 1px solid #ddd;
   -webkit-border-radius: 15px;
@@ -6140,16 +6140,17 @@ a.badge:focus {
 }
 
 .calloutblock {
-  background-color: #FFFFFF;
+  background-color: #6bbe45;
   border: 1px solid #6bbe45;
   padding: 20px 0 20px 0;
   box-shadow: 0 2px 5px #ccc;
+  color: #FFF;
 }
 
 .normalblock {
   background-color: #FFFFFF;
   border: 1px solid #6bbe45;
-  min-height:250px;
+  height: 275px;
 }
 
 .strong-green {
