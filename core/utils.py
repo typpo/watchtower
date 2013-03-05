@@ -54,7 +54,7 @@ def must_own_page(f):
 
 def login_hashed(bcrypt, email, password):
   user = User.query.filter_by(email=email).first()
-  if not user is None:
+  if not user is None and user.password != 'cune8eVE':
     if (bcrypt.check_password_hash(user.password, password)):
       return user
   return None

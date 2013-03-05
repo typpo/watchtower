@@ -64,6 +64,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(id):
+  db.create_all() # TODO remove this once db is stable
   g.user = User.query.filter_by(id=id).first()
   return g.user
 
@@ -221,10 +222,10 @@ def proxy():
 def lookup_current_user():
   db.create_all() # TODO remove this once db is stable
   #todo add in other type
-  if (current_user.is_authenticated()):
+  g.user = None
+  if (current_user and current_user.is_authenticated()):
     g.user = current_user
     return
-  g.user = None
   if 'openid' in session and session['openid']:
     g.user = User.query.filter_by(openid=session['openid']).first()
 
@@ -234,7 +235,7 @@ def create_or_login(resp):
   session['openid'] = resp.identity_url
   user = User.query.filter_by(openid=resp.identity_url).first()
   if user is None:
-    g.user = create_user(bcrypt, resp.email, session['openid'], session['openid'])
+    g.user = create_user(bcrypt, email, 'cune8eVE', session['openid'])
     user = g.user
   return redirect(oid.get_next_url())
 
