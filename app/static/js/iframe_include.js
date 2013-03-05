@@ -54,6 +54,7 @@ jQuery.fn.getPath = function () {
     if ($el.css('outline-width') === '0px') {
       // it didn't
       $el.children().addClass('watchtower-border-highlight');
+      var oneoutline = false;
       $el.children().children().addClass('watchtower-border-highlight');
     }
     else {

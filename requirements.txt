@@ -10,4 +10,5 @@ pyvirtualdisplay
 pyscreenshot
 boto
 alembic
+flask-bcrypt
 Flask-Admin

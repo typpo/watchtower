@@ -17,14 +17,28 @@ class User(db.Model):
                           backref='user', lazy='dynamic')
   twitters = db.relationship('Twitter',
                           backref='user', lazy='dynamic')
+  password = db.Column(db.String(255))
 
-  def __init__(self, name, email, openid):
+  def get_id(self):
+    return self.id
+
+  def is_authenticated(self):
+    return True
+
+  def is_anonymous(self):
+    return False
+
+  def is_active(self):
+    return True
+
+  def __init__(self, name, email, password, openid=''):
     self.openid = openid
     self.name = name
     self.email = email
+    self.password = password
 
   def __repr__ (self):
-    return '<User %r>' % self.name
+    return '<User %r>' % self.email
 
 class Page(db.Model):
   id = db.Column(db.Integer, primary_key=True)

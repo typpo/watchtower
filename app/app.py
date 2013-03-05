@@ -2,6 +2,8 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify, json
 from flask.ext.openid import OpenID
+from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
+from flaskext.bcrypt import Bcrypt
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
@@ -15,13 +17,14 @@ import json
 import random
 import os
 import sys
+import bcrypt
 from operator import attrgetter, add
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Twitter, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
-from core.utils import get_blob, is_production, login_required, must_own_page
+from core.utils import create_user, get_blob, is_production, login_required, must_own_page, login_hashed
 
 def create_app():
   app = Flask(__name__)
@@ -56,6 +59,13 @@ reddit = praw.Reddit(user_agent='test')
 app = create_app()
 
 oid = OpenID(app, '/tmp/openid')
+bcrypt = Bcrypt(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+@login_manager.user_loader
+def load_user(id):
+  g.user = User.query.filter_by(id=id).first()
+  return g.user
 
 @app.route("/")
 def index():
@@ -210,20 +220,23 @@ def proxy():
 @app.before_request
 def lookup_current_user():
   db.create_all() # TODO remove this once db is stable
+  #todo add in other type
+  if (current_user.is_authenticated()):
+    g.user = current_user
+    return
   g.user = None
   if 'openid' in session and session['openid']:
     g.user = User.query.filter_by(openid=session['openid']).first()
 
+
 @oid.after_login
 def create_or_login(resp):
-    session['openid'] = resp.identity_url
-    user = User.query.filter_by(openid=resp.identity_url).first()
-    if user is None:
-      g.user = User(resp.fullname or resp.nickname, resp.email, session['openid'])
-      db.session.add(g.user)
-      db.session.commit()
-      user = g.user
-    return redirect(oid.get_next_url())
+  session['openid'] = resp.identity_url
+  user = User.query.filter_by(openid=resp.identity_url).first()
+  if user is None:
+    g.user = create_user(bcrypt, email, session['openid'], session['openid'])
+    user = g.user
+  return redirect(oid.get_next_url())
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -234,9 +247,22 @@ def login():
     openid = request.args['openid']
     return oid.try_login(openid, ask_for=['email', 'fullname',
                                           'nickname'])
+  if request.method == 'POST':
+    user_exists = User.query.filter_by(email=request.form['email']).first()
+    if not user_exists:
+      flash('Account Created')
+      g.user = create_user(bcrypt, request.form['email'], request.form['password'])
+      login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+    else:
+      g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
+      if not g.user:
+        flash('This email has an account. Incorrect Password')
+        return redirect(url_for('login'))
+      else:
+        login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+    return redirect(url_for('index'))
   return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
-
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -281,6 +307,7 @@ def get_sub_reddit(results, name, search):
 @app.route('/logout')
 def logout():
   g.user = None
+  logout_user()
   session['openid'] = None
   session.pop('openid', None)
   return redirect(url_for('index', user=None))
