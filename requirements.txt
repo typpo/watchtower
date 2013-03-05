@@ -11,3 +11,5 @@ pyvirtualdisplay
 pyscreenshot
 boto
 alembic
+flask-bcrypt
+flask-login

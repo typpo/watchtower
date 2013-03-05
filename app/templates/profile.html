@@ -3,8 +3,10 @@
 {% block content %}
 <h2> Profile </h2>
     <dl>
+      {% if form.name %}
       <dt> Name:
       <dd>{{ form.name }}
+      {% endif %}
       <dt> Email:
       <dd>{{ form.email }}
       <input type=hidden name=next value="{{ next }}"/>

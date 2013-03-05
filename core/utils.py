@@ -49,3 +49,16 @@ def must_own_page(f):
       return redirect(request.referrer or '/')
     return f(page)
   return decorated_function
+
+def login_hashed(bcrypt, email, password):
+  user = User.query.filter_by(email=email).first()
+  if not user is None:
+    if (bcrypt.check_password_hash(user.password, password)):
+      return user
+  return None
+
+def create_user(bcrypt, email, password, openid=''):
+  user = User('', email, bcrypt.generate_password_hash(password,10), openid)
+  db.session.add(user)
+  db.session.commit()
+  return user

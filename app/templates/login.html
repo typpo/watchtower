@@ -2,7 +2,15 @@
 
 {% block content %}
   <h2> sign in </h2>
-    <p>
+  <p>
+  <div class="control-group">
+    <form action="{{url_for('login')}}" method=post>
+      <dl>
+        <dd><input type="text" name=email placeholder="email">
+        <dd><input name=password type="password" placeholder="password">
+        <dd><input type=submit value=Login/Signup>
+      </dl>
+    </form>
       {% if error %}
         <p>Error: {{error}}</p>
       {% endif %}
