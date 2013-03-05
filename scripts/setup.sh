@@ -2,7 +2,7 @@
 
 pushd `dirname $0`
 
-sudo apt-get install python-virtualenv python-pip unzip
+sudo apt-get install python-virtualenv python-pip unzip build-essential python-dev
 sudo apt-get install xvfb
 sudo apt-get install xserver-xephyr
 sudo apt-get install tightvncserver
@@ -23,6 +23,8 @@ sudo mv chromedriver /usr/bin
 
 #python tests/basic_selenium.py
 python tests/basic_selenium_chrome.py
+
+mkdir tmp/watchtower
 
 echo "run 'source bin/active' to enter virtualenv"
 
