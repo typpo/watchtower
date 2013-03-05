@@ -8,7 +8,6 @@ from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
 from urlparse import urlparse, urljoin
-from BeautifulSoup import BeautifulSoup
 from threading import Thread
 #from twython import Twython
 import time
