@@ -254,7 +254,6 @@ def get_sub_reddit(results, name, search):
   submissions = reddit.get_subreddit(name).search(search, limit = 5)
   for sub in submissions:
     results[name].append( (sub.url, sub.title ))
-  return reddits
 
 @app.route('/logout')
 def logout():
