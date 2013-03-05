@@ -21,40 +21,59 @@
         <td><a href=/page/{{ page.id }}/edit><i class="icon-edit"></i> </a></td>
         <td><a href=/page/{{ page.id }}/delete><i class="icon-remove"></i> </a></td>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% else %}
 <div class="row span12">
 </br>
 <p class="alert alert-error">
-No alerts have been created!
+  No alerts have been created!
 </p>
 </div>
 <div class="row span12">
-<p class="alert alert-info">
-Click "New alert" to start monitoring pages.
-</p>
+  <p class="alert alert-info">
+    Click "New alert" to start monitoring pages.
+  </p>
 </div>
 </div>
 {% endif %}
 {% if pages %}
 <div class="row span12">
-<div id="feed_container">
-<ul id="feed">
-</ul>
-</div>
-</div>
+  <h2>Social News on Sites You're Tracking</h2>
+  <div class="accordion" id="news">
+  </div>
+<div>
 {% endif %}
 <div class="row span12">
-<div id="twitter_container">
-<ul id="twitter">
-</ul>
+  <div id="twitter_container">
+    <ul id="twitter">
+    </ul>
+  </div>
 </div>
-</div>
-{% block scripts %}
-<script src="/static/js/dashboard.js"</script>
 {% endblock %}
 
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+
+<script type="text/html" id="news_page_tmpl">
+  <div class="accordion-group">
+    <div class="accordion-heading" style="background-color: #eeeeee>
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#news" href="#collapse<%=page_id%>">
+        <%=page%>
+      </a>
+    </div>
+    <div id="collapse<%=page_id%>" class="accordion-body collapse in">
+      <%=inner%>
+    </div>
+  </div>
+</script>
+
+<script type="text/html" id="news_story_tmpl">
+  <div class="accordion-inner">
+    <a href="<%=link%>"><%=headline%></a>
+  </div>
+</script>
 {% endblock %}
+

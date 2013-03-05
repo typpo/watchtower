@@ -36,6 +36,7 @@
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    {% block scripts %}{% endblock %}
   </head>
   <body>
     <div class="navbar navbar-fixed-top navbar-inverse">
