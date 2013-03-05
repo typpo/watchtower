@@ -68,12 +68,13 @@ def load_user(id):
   g.user = User.query.filter_by(id=id).first()
   return g.user
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
   pages = Page.query.all()
   app.logger.debug(pages)
   if g.user:
     if (request.method =="POST"):
+      app.logger.debug(g.user)
       add = request.form['addtweets']
       if (add[0] != '#'):
         add = '#' + add

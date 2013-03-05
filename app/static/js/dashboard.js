@@ -23,7 +23,7 @@
     $twitter.append(
       '<h3> Twitter Feed </h3>' +
         '<dl>' +
-        '<form id=twitter_form action="{{ url_for("index") }}" method="post">' +
+        '<form id=twitter_form action="/" method="post">' +
         '<input type="text" name=addtweets placeholder="Topic">' +
         '<input type="submit" class="btn" value="Add Topic">' +
         '</form>' +
