@@ -8,7 +8,6 @@ from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
 from urlparse import urlparse, urljoin
-from BeautifulSoup import BeautifulSoup
 from threading import Thread
 #from twython import Twython
 import time
@@ -293,7 +292,7 @@ def news():
   threads = []
   for page in g.user.pages:
     reddits[page.name] = {}
-    for sub in ['worldnews', 'technology', 'news']:
+    for sub in ['technology', 'news', 'worldnews' ]:
       thread = Thread(target=get_sub_reddit, args=(reddits[page.name], sub, page.name))
       thread.start()
       threads.append(thread)
