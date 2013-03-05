@@ -168,8 +168,10 @@ def test_fingerprint():
   print get_fingerprints('http://www.google.com', ['#lga', '#mngb'])
 
 def test_diff():
-  fp1 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
-  fp2 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
+  #fp1 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
+  #fp2 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
+  fp1, screenshot_url, screenshot_path  = get_fingerprints('http://www.cnn.com', ['#cnn_maintt1imgbul div:eq(0)>div:eq(0)>div>a>img'])
+  fp2, screenshot_url, screenshot_path  = get_fingerprints('http://www.cnn.com', ['#cnn_maintt1imgbul div:eq(0)>div:eq(0)>div>a>img'])
   print diff_fingerprints(fp1[0], fp2[0])
 
 def test_ab_detection():
@@ -179,6 +181,7 @@ def test_ab_bookingcom():
   print detect_ab_test('http://www.booking.com/city/us/new-york.en-us.html?sid=9d1b2e3670bdb8656e697473c451d44e;dcid=1', ['.promos tr:first'])
 
 if __name__ == '__main__':
-  test_fingerprint()
+  #test_fingerprint()
+  test_diff()
   #test_ab_detection()
   #test_ab_bookingcom()
