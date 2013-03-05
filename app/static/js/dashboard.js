@@ -1,6 +1,7 @@
 (function() {
   $.ajax('/news').done(function(data) {
     var $feed = $('#news');
+    $('#social').show();
     if (Object.keys(data.reddit).length) {
       $feed.append('<h3>Reddit</h3>')
     }
