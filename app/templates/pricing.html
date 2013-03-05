@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- content goes here -->
+<div class="span12">
+	<div class="btn-group">
+		<button class="btn">Month-to-Month</button>
+		<button class="btn">6 Months (Save 10%)</button>
+		<button class="btn">1 Year (Save 25%)</button>
+	</div>
+<div class="row">
+<table class="table">
+<thead>
+<tr>
+<th></th>
+<th>Bronze</th>
+<th>Silver</th>
+<th>Gold<th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Price</td>
+<td>$9<p>per month</p></td>
+<td>$39<p>per month</p></td>
+<td>$99</p>per month</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/main.js"></script>
+{% endblock %}

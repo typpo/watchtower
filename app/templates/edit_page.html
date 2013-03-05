@@ -2,13 +2,11 @@
 
 {% block content %}
 <div ng-controller="EditPageCtrl" ng-init="Init()">
-
-<div style="height:75px;">
 {% if preview %}
 <input id="save_page_selectors" type="submit" class="btn" value="Sign up to save this page" style="float:right;" disabled/>
 {% else %}
-<input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn" value="Save" style="float:right;"/>
-<a href="/page/{{page.id}}">&laquo; Back to overview</a>
+<input id="save_page_selectors" ng-click="SavePage()" type="submit" class="btn btn-primary" value="Save" style="float:right;"/>
+<div><a href="/page/{{page.id}}">&larr; Back to overview</a></div>
 {% endif %}
 <h3>Click on areas of the page you want to track.</h3>
 {% if names %}
