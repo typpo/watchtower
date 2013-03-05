@@ -11,5 +11,4 @@ pyscreenshot
 boto
 alembic
 flask-bcrypt
-flask-login
 Flask-Admin

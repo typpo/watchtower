@@ -1,25 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2> sign in </h2>
+  <h2>Sign Up or Sign In</h2>
   <p>
   <div class="control-group">
-    <form action="{{url_for('login')}}" method=post>
+    <form action="{{url_for('login')}}" method="post" class="form">
       <dl>
         <dd><input type="text" name=email placeholder="email">
         <dd><input name=password type="password" placeholder="password">
-        <dd><input type=submit value=Login/Signup>
+        <dd><input type=submit value="Submit">
       </dl>
     </form>
       {% if error %}
         <p>Error: {{error}}</p>
       {% endif %}
-      OpenID:
-      <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
+      or...
+      <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method="post" class="form">
       <button type=submit action="" class=btn>
-        <img src=googleimage />test</button>
+        <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
       <input type=hidden name=next value="{{next}}">
   </form>
+</div>
 {% endblock %}
 
 {% block scripts %}
