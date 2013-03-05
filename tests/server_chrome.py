@@ -22,3 +22,4 @@ except NoSuchElementException:
 browser.close()
 
 display.stop()
+print 'Done.'
