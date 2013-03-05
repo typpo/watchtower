@@ -234,7 +234,7 @@ def create_or_login(resp):
   session['openid'] = resp.identity_url
   user = User.query.filter_by(openid=resp.identity_url).first()
   if user is None:
-    g.user = create_user(bcrypt, email, session['openid'], session['openid'])
+    g.user = create_user(bcrypt, resp.email, session['openid'], session['openid'])
     user = g.user
   return redirect(oid.get_next_url())
 
