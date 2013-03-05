@@ -42,7 +42,7 @@ def create_app():
       # Logic
       return True
   admin.add_view(MyModelView(Version, db.session, list_columns=['id', 'foreign_key']))
-  admin.add_view(MyModelView(Element, db.session, list_columns=['id', 'foreign_key']))
+  admin.add_view(ModelView(Element, db.session,))
   return app
 
 """
