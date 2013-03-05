@@ -79,9 +79,11 @@
             <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
                 {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
                 <p>
-                  <form action="{{url_for('login')}}" method=get>
+                  <form id="login_form" action="{{url_for('login')}}" method="post" class="form">
                     <dl>
-                      <dd><input type=submit value=Login/Signup>
+                      <dd><input type="text" name=email placeholder="email">
+                      <dd><input name="password" type="password" placeholder="password">
+                      <dd><input type="submit" class="btn" value="Sign up/Sign in">
                     </dl>
                   </form>
                   Or...
