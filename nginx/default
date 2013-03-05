@@ -12,4 +12,11 @@ server {
         proxy_read_timeout 40;
         proxy_pass http://localhost:5000/;
     }
+
+    location /admin {
+	deny all;
+    }
+    location /secret_admin_foo_ {
+        proxy_pass http://localhost:5000/admin;
+    }
 }

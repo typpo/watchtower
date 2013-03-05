@@ -99,7 +99,7 @@ class Version(db.Model):
     self.screenshot = screenshot
 
   def __repr__(self):
-    return '<Version %r at %r>' % (self.page_id, self.when)
+    return '<Version %r at %r>' % (self.element_id, self.when)
 
 class Element(db.Model):
   id = db.Column(db.Integer, primary_key=True)

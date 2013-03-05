@@ -36,7 +36,7 @@ def get_fingerprints(url, selectors):
 
   # screenshot
   print 'screnshot'
-  screenshot_local_path = '/tmp/%d%d' % (time.time(), random.randint(0, 1000))
+  screenshot_local_path = '/tmp/watchtower/%d%d' % (time.time(), random.randint(0, 1000))
   screenshot_url = ''
   if browser.save_screenshot(screenshot_local_path):
     screenshot_remote_path = 'images/'  \

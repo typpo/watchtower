@@ -44,7 +44,7 @@ def create_app():
     def is_accessible(self):
       # Logic
       return True
-  admin.add_view(MyModelView(Version, db.session, list_columns=['id', 'foreign_key']))
+  admin.add_view(MyModelView(Version, db.session, column_list=['id', 'foreign_key']))
   admin.add_view(ModelView(Element, db.session,))
   return app
 
