@@ -53,6 +53,10 @@ def index():
 def about():
   return render_template('about.html')
 
+@app.route('/pricing')
+def pricing():
+  return render_template('pricing.html')
+
 @app.route('/page/<int:page_id>', methods=['GET'])
 @must_own_page
 def show_page(page):
