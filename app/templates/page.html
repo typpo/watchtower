@@ -19,8 +19,8 @@
     <tbody>
       {% for version in versions %}
       <tr>
-        <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }}</td>
-        <td rowspan={{ version.diff|length + 1 }}>{{ version.when }}</td>
+        <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }} ({{version.element.id}})</td>
+        <td rowspan={{ version.diff|length + 1 }}>{{ version.when }} ({{version.id}})</td>
       {% if version.screenshot %}
         <td>
         <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}"/></a>
@@ -31,7 +31,7 @@
       </tr>
       {% for diff in version.diff  %}
       <tr>
-        <td>Change detected in <strong>{{ diff.key }}</strong></td>
+        <td>Change in <strong>{{ diff.key }}</strong></td>
       </tr>
       {% endfor %}
       {% endfor %}

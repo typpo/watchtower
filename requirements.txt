@@ -10,3 +10,4 @@ pyvirtualdisplay
 pyscreenshot
 boto
 alembic
+Flask-Admin

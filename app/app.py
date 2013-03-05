@@ -2,6 +2,8 @@
 
 from flask import Flask, request, redirect, session, url_for, render_template, Response, g, flash, Markup, jsonify, json
 from flask.ext.openid import OpenID
+from flask.ext.admin import Admin
+from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
@@ -26,6 +28,21 @@ def create_app():
   app.secret_key = 'not a secret key'
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
   db.init_app(app)
+  # admin setup
+  admin = Admin(app)
+  admin.add_view(ModelView(Page, db.session))
+  class MyModelView(ModelView):
+    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None, **kwargs):
+      for k, v in kwargs.iteritems():
+          setattr(self, k, v)
+
+      super(MyModelView, self).__init__(model, session, name=name, category=category, endpoint=endpoint, url=url)
+
+    def is_accessible(self):
+      # Logic
+      return True
+  admin.add_view(MyModelView(Version, db.session, list_columns=['id', 'foreign_key']))
+  admin.add_view(MyModelView(Element, db.session, list_columns=['id', 'foreign_key']))
   return app
 
 """
