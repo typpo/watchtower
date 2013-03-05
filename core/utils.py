@@ -54,12 +54,12 @@ def must_own_page(f):
 
 def login_hashed(bcrypt, email, password):
   user = User.query.filter_by(email=email).first()
-  if not user is None:
+  if user and not user.openid: # don't allow username/pw login for users signed up with open id
     if (bcrypt.check_password_hash(user.password, password)):
       return user
   return None
 
-def create_user(bcrypt, email, password, openid=''):
+def create_user(bcrypt, email, password, openid=None):
   user = User('', email, bcrypt.generate_password_hash(password,10), openid)
   db.session.add(user)
   db.session.commit()

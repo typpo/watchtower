@@ -250,13 +250,13 @@ def login():
   if request.method == 'POST':
     user_exists = User.query.filter_by(email=request.form['email']).first()
     if not user_exists:
-      flash('Account Created')
+      flash('Account created')
       g.user = create_user(bcrypt, request.form['email'], request.form['password'])
       login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
     else:
       g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
       if not g.user:
-        flash('This email has an account. Incorrect Password')
+        flash('Incorrect email or password')
         return redirect(url_for('login'))
       else:
         login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
