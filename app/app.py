@@ -4,6 +4,8 @@ from flask import Flask, request, redirect, session, url_for, render_template, R
 from flask.ext.openid import OpenID
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from flaskext.bcrypt import Bcrypt
+from flask.ext.admin import Admin
+from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
 from urlparse import urlparse, urljoin
 from BeautifulSoup import BeautifulSoup
@@ -29,6 +31,21 @@ def create_app():
   app.secret_key = 'not a secret key'
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
   db.init_app(app)
+  # admin setup
+  admin = Admin(app)
+  admin.add_view(ModelView(Page, db.session))
+  class MyModelView(ModelView):
+    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None, **kwargs):
+      for k, v in kwargs.iteritems():
+          setattr(self, k, v)
+
+      super(MyModelView, self).__init__(model, session, name=name, category=category, endpoint=endpoint, url=url)
+
+    def is_accessible(self):
+      # Logic
+      return True
+  admin.add_view(MyModelView(Version, db.session, list_columns=['id', 'foreign_key']))
+  admin.add_view(ModelView(Element, db.session,))
   return app
 
 """
@@ -63,11 +80,15 @@ def index():
 def about():
   return render_template('about.html')
 
+@app.route('/pricing')
+def pricing():
+  return render_template('pricing.html')
+
 @app.route('/page/<int:page_id>', methods=['GET'])
 @must_own_page
 def show_page(page):
   versions = reduce(add, [[version for version in element.versions] for element in page.elements], [])
-  versions = sorted(versions, key=attrgetter('when'))
+  versions = sorted(versions, key=attrgetter('when'), reverse=True)
   app.logger.debug(page.last_view)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
   page.last_view = datetime.utcnow()
@@ -76,8 +97,10 @@ def show_page(page):
   for version in versions:
     # unserialize json when we pass it to page
     try:
-      version.diff = json.loads(version.diff)
-    except:
+      version.diff = json.loads(version.diff)  # version.diff is actually an array of diffs
+      version.diff = [diff for diff in version.diff \
+          if not isinstance(diff, basestring) and diff['key'].strip() != '']
+    except ValueError:
       version.diff = {}
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 
@@ -261,20 +284,25 @@ def news():
 #    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
-  for red in g.user.pages:
-    reddits = add_sub_reddit(reddits, 'worldnews', red.name)
-    reddits = add_sub_reddit(reddits, 'technology', red.name)
-    reddits = add_sub_reddit(reddits, 'news', red.name)
+  threads = []
+  for page in g.user.pages:
+    reddits[page.name] = {}
+    for sub in ['worldnews', 'technology', 'news']:
+      thread = Thread(target=get_sub_reddit, args=(reddits[page.name], sub, page.name))
+      thread.start()
+      threads.append(thread)
+  for thread in threads:
+    thread.join()
+  for page_name, subreddits in reddits.items():
+    reddits[page_name] = reduce(add, subreddits.values(), [])
   #news=get_blob('https://api.usatoday.com/open/articles/topnews?search=google&api_key=asgn54b69rg7699v5skf8ur9')
   return jsonify(reddit=reddits, fb=fb, feed=feed)
 
-def add_sub_reddit(reddits, sub, search):
-  if (not search in reddits):
-    reddits[search] = []
-  submissions = reddit.get_subreddit(sub).search(search, limit = 5)
+def get_sub_reddit(results, name, search):
+  results[name] = []
+  submissions = reddit.get_subreddit(name).search(search, limit = 5)
   for sub in submissions:
-    reddits[search].append( (sub.url, sub.title ))
-  return reddits
+    results[name].append( (sub.url, sub.title ))
 
 @app.route('/logout')
 def logout():

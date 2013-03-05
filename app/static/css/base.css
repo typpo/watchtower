@@ -2,7 +2,7 @@ body {
   font-family: arial, sans-serif;
   font-size: 1em;
   margin:0;
-  background-color:#F1F1F1;
+  background-color:#FFF;
 }
 
 @media (max-width:979px) {
@@ -40,11 +40,6 @@ th {
 h1 {
 	font-size:1.5em;
 	font-weight:500px;
-}
-
-.smallred {
-	font-size: .7em;
-	color:#900000;
 }
 
 a {

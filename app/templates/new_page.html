@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div>
+<div class="row span12">
   <form class="form-horizontal" action="/page/new" method="post">
     <div class="control-group">
       <label class="control-label" for="url">URL to monitor</label>
       <div class="controls">
         {% if url %}
-        <input type="text" name="url" value="{{url}}" placeholder="http://...">
+        <input class="span5" type="text" name="url" value="{{url}}" placeholder="http://...">
         {% else %}
-        <input type="text" name="url" placeholder="http://...">
+        <input class="span5" type="text" name="url" placeholder="http://...">
         {% endif %}
       </div>
     </div>
     <div class="control-group">
       <label class="control-label" for="name">Page Name</label>
       <div class="controls">
-        <input type="text" name="name" placeholder="Competitor's Landing Page">
+        <input class="span5" type="text" name="name" placeholder="Competitor's Landing Page">
       </div>
     </div>
     <div class="control-group">
       <div class="controls">
-        <button type="submit" class="btn">Continue</button>
+        <button type="submit" class="btn btn-primary">Continue</button>
       </div>
     </div>
   </form>

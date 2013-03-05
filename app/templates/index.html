@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="span12 text-center" style="margin-top:10px; margin-bottom:40px;"><h2><strong>Watchtower monitors your competiton’s websites and alerts you to important changes instantly.</strong></h2></div>
-<div class="fluid-row calloutblock span12 lead text-center">
-Enter any URL to try it now
+<div class="span12 text-center" style="margin-top:10px; margin-bottom:40px;"><h2><strong>Watchtower monitors your competitor's websites and alerts you to important changes instantly.</strong></h2></div>
+<div class="row calloutblock span12 lead text-center">
+Enter any URL to try it now:
 <p>
 <div class="input-append">
   <form onSubmit="window.location.href='/preview?url=' + $('#monitor-url').val(); return false;">
@@ -14,26 +14,29 @@ Enter any URL to try it now
 </p>
 </div>
 <div class="span12 text-center lead" style="padding:20px;">Use watchtower to ...</div>
+<div class="row-fluid span12">
 <div class="span4 text-center normalblock">
 <div style="padding:20px;">
 <img src="/static/images/compass.png">
-<p class="strong-green">Track Product Direction &amp; Stragey</p> <p>Keep tabs on messaging, features, and A/B testing your competitors are running so you can respond appropriately.</p></div></div>
+<p class="strong-green">Track Product Strategy</p> <p>Keep tabs on messaging, features, A/B testing, and customizations your competitors are running so you can respond appropriately.</p></div></div>
 <div class="span4 text-center normalblock">
 <div style="padding:20px;">
 <img src="/static/images/eye.png">
-<p class="strong-green">Visually Compare Changes</p><p>Compare the old and new versions of your competitors product side by side and see content and designs changes highlighted.</p>
+<p class="strong-green">Visually Compare Changes</p><p>Compare the old and new versions of your competitors website and see content and designs changes highlighted.</p>
 </div>
 </div>
 <div class="span4 text-center normalblock">
 <div style="padding:20px;">
 <img src="/static/images/target.png">
-<p class="strong-green">Monitor Unlimited Sites</p><p>Create projects an add an unlimited number of URLs and pages to keep track of. Set the update frequency and how you want us to alert you.
+<p class="strong-green">Monitor Unlimited Sites</p><p>Create an unlimited number of pages to keep track of. Set the update frequency and how you want us to alert you.
 </p>
 </div>
 </div>
-<div class="span12 text-center" style="padding:50px;">“Know thy self, know thy enemy. A thousand battles, a thousand victories.”
+</div>
+<div class="span12 text-center" style="padding-top:50px;">“Know thy self, know thy enemy. A thousand battles, a thousand victories.”
 - Sun Tzu, The Art of War
-<p style="padding-top:15px; color:#999;">gowatchtower.com copyright 2013 | launch 2013 hackathon project of andyk, ianw, kylek, rogerw</p></div>
+<p style="padding-top:15px; color:#999;">gowatchtower.com copyright 2013 | launch 2013 hackathon project of andyk, ianw, kylek, rogerw</p>
+</div>
 </div>
 {% endblock %}
 

@@ -8,7 +8,9 @@ from core.database import db
 
 def get_blob(url):
   try:
-    return requests.get(url).text
+    headers = {}
+    headers['User-Agent'] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17"
+    return requests.get(url, headers=headers).text
   except ConnectionError:
     return None
 

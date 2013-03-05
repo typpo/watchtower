@@ -4,7 +4,6 @@ selenium
 flask-login
 Flask-OpenID
 Flask-SQLAlchemy
-BeautifulSoup
 praw
 requests
 pyvirtualdisplay
@@ -13,3 +12,4 @@ boto
 alembic
 flask-bcrypt
 flask-login
+Flask-Admin

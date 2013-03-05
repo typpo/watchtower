@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div><a href="/">&laquo; Dashboard</a></div>
-<h3>Changes for <a href="{{ page.url }}">{{ page.name }}</a></h3>
-<p><a href="{{ page.url }}">{{ page.url }}</a></p>
+<div><a href="/">&larr; Dashboard</a></div>
+<h3 style="line-height:20px!important">Changes for <a href="{{ page.url }}">{{ page.name }}</a></h3>
+<p>Page URL:&nbsp;<a href="{{ page.url }}">{{ page.url }}</a></p>
 <p>
-<i class="icon-edit"></i><a href="/page/{{ page.id }}/edit">edit</a>
-&middot;
-<i class="icon-remove"></i><a href="/page/{{ page.id }}/delete">delete</a>
+<a class="btn" href="/page/{{ page.id }}/edit"><i class="icon-edit"></i>edit</a>
+<a class="btn" href="/page/{{ page.id }}/delete"><i class="icon-remove"></i>delete</a>
 </p>
-<div><span class="label label-info">{{ page.num_new_changes }} new alerts since last visit</span></div>
-<br>
+<div style="padding:20px 0"><span class="alert alert-info">{{ page.num_new_changes }} new alerts since last visit</span></div>
 <table class="table table-striped" width="95%">
   <thead>
     <tr>
@@ -21,22 +19,20 @@
     <tbody>
       {% for version in versions %}
       <tr>
-        <td rowspan={{ version.diff|length }}>{{ version.element.name }}</td>
-        <td rowspan={{ version.diff|length }}>{{ version.when }}</td>
-        {% if version.screenshot %}
+        <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }} ({{version.element.id}})</td>
+        <td rowspan={{ version.diff|length + 1 }}>{{ version.when.strftime('%Y-%m-%d %H:%M') }} ({{version.id}})</td>
+      {% if version.screenshot %}
         <td>
         <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}"/></a>
-      </td>
+        </td>
       {% else %}
         <td>screenshot is processing.  text diff: {{ version.diff[0] }}</td>
       {% endif %}
       </tr>
-      {% for diff in version.diff %}
-      {% if loop.index0 %}
+      {% for diff in version.diff  %}
       <tr>
-        <td>Change detected in <strong>{{ diff.key }}</strong></td>
+        <td>Change in <strong>{{ diff.key }}</strong></td>
       </tr>
-      {% endif %}
       {% endfor %}
       {% endfor %}
       {#

@@ -6,7 +6,7 @@
 </div>
 {% if pages %}
 <div class="row span12">
-<table class="table table-striped" style="margin-top:20px;">
+<table class="table table-bordered table-striped" style="margin-top:20px;">
   <tbody>
     <tr>
       <th>Page</th>
@@ -41,7 +41,9 @@ Click "New alert" to start monitoring pages.
 {% endif %}
 {% if pages %}
 <div class="row span12">
-<div id="feed">
+<div id="feed_container">
+<ul id="feed">
+</ul>
 </div>
 </div>
 {% endif %}

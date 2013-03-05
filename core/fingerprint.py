@@ -20,7 +20,7 @@ def get_fingerprints(url, selectors):
   display.start()
   print 'star tbrowser'
   browser = webdriver.Chrome() # fuck firefox
-  print 'load browser'
+  print 'load browser @ %s' % url
   browser.get(url) # Load page
 
   # inject jquery
@@ -96,6 +96,8 @@ def diff_fingerprints(f1, f2):
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
   diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))
   diffs.extend(diff_styles(f1['computedStyle'], f2['computedStyle']))
+  if len(diffs) > 0:
+    print 'change detected'
   return diffs
 
 # diffs the result of jQuery .offset() on an element
@@ -103,6 +105,8 @@ def diff_offsets(o1, o2):
   diffs = []
   # Assumes keys are the same
   for key in o1:
+    if key not in o2:
+      continue
     if o1[key] != o2[key]:
       diffamnt = o2[key] - o1[key]
       if diffamnt > 10:
@@ -120,7 +124,7 @@ def diff_offsets(o1, o2):
 def diff_html(h1, h2):
   diffs = []
   if h1 != h2:
-    if difflib.SequenceMatcher(None, h1, h2).ratio() < .7:
+    if difflib.SequenceMatcher(None, h1, h2).ratio() > .6:
       #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
       diffs.append(''.join(difflib.context_diff(h1, h2)))
     else:
@@ -133,7 +137,7 @@ def diff_styles(s1, s2):
   diffs = []
   for style in s1:
     if style not in s2:
-      continue
+      continue # TODO may need to do this differently
     if s1[style] != s2[style]:
       diffs.append({ \
         'key': style,
@@ -168,8 +172,10 @@ def test_fingerprint():
   print get_fingerprints('http://www.google.com', ['#lga', '#mngb'])
 
 def test_diff():
-  fp1 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
-  fp2 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
+  #fp1 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
+  #fp2 = get_fingerprints('http://localhost:5000/test', ['#lucky'])
+  fp1, screenshot_url, screenshot_path  = get_fingerprints('http://www.cnn.com', ['#cnn_maintt1imgbul div:eq(0)>div:eq(0)>div>a>img'])
+  fp2, screenshot_url, screenshot_path  = get_fingerprints('http://www.cnn.com', ['#cnn_maintt1imgbul div:eq(0)>div:eq(0)>div>a>img'])
   print diff_fingerprints(fp1[0], fp2[0])
 
 def test_ab_detection():
@@ -179,6 +185,7 @@ def test_ab_bookingcom():
   print detect_ab_test('http://www.booking.com/city/us/new-york.en-us.html?sid=9d1b2e3670bdb8656e697473c451d44e;dcid=1', ['.promos tr:first'])
 
 if __name__ == '__main__':
-  test_fingerprint()
+  #test_fingerprint()
+  test_diff()
   #test_ab_detection()
   #test_ab_bookingcom()
