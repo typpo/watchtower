@@ -1,11 +1,3 @@
-
-body {
-  margin-left: 10px;
-  margin-right: 10px;
-  background-color: #e2e2e2;
-}
-
-
 #loader {
   position:fixed;
   top:30%;
@@ -17,11 +9,11 @@ body {
   margin-top:-20px;
   margin-left:-75px;
   text-align:center;
-  -moz-border-radius:6px;
-  -webkit-border-radius:6px;
-  border-radius:6px;
-  border:1px #ccc solid;
-  padding:30px;
+  -moz-border-radius:3px;
+  -webkit-border-radius:3px;
+  border-radius:3px;
+  border:2px #ccc solid;
+  padding:50px;
 }
 
 .share-buttons{float: right; margin-top:7px;}.share-buttons>iframe{vertical-align:top;}.twitter-share-button{width:80px!important;}
