@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+.container {
+width: 100%;
+}
+</style>
 <div ng-controller="EditPageCtrl" ng-init="Init()">
 {% if preview %}
 <input id="save_page_selectors" type="submit" class="btn" value="Sign up to save this page" style="float:right;" disabled/>
