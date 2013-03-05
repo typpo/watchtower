@@ -3,7 +3,7 @@
     var $feed = $('#news');
     $('#social').show();
     if (Object.keys(data.reddit).length) {
-      $feed.append('<h3>Reddit</h3>')
+      $feed.append('<h5>Reddit</h5>')
     }
     $.each(data.reddit, function(page, posts) {
       $feed.append(tmpl("news_page_tmpl", {
@@ -17,7 +17,7 @@
         }).join('')
       }));
     });
-                         
+
     $twitter = $('#twitter');
     $twitter.append(
       '<h6> Twitter Feed </h6>' +
