@@ -61,7 +61,7 @@ def pricing():
 @must_own_page
 def show_page(page):
   versions = reduce(add, [[version for version in element.versions] for element in page.elements], [])
-  versions = sorted(versions, key=attrgetter('when'))
+  versions = sorted(versions, key=attrgetter('when'), reverse=True)
   app.logger.debug(page.last_view)
   unchanged_elements = [element for element in page.elements if len(list(element.versions)) <= 1]
   page.last_view = datetime.utcnow()
@@ -70,8 +70,10 @@ def show_page(page):
   for version in versions:
     # unserialize json when we pass it to page
     try:
-      version.diff = json.loads(version.diff)
-    except:
+      version.diff = json.loads(version.diff)  # version.diff is actually an array of diffs
+      version.diff = [diff for diff in version.diff \
+          if not isinstance(diff, basestring) and diff['key'].strip() != '']
+    except ValueError:
       version.diff = {}
   return render_template('page.html', page=page, versions=versions, unchanged_elements=unchanged_elements)
 

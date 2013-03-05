@@ -10,5 +10,5 @@ def upload_screenshot(path, remote_path):
   k.set_contents_from_file(open(path, 'rb'))
   k.set_acl("public-read")
 
-  print 'uploaded to images/' + remote_path
+  print 'uploaded to https://s3.amazonaws.com/watchtower-screenshots/' + remote_path
   return True

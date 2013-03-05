@@ -20,7 +20,7 @@ def get_fingerprints(url, selectors):
   display.start()
   print 'star tbrowser'
   browser = webdriver.Chrome() # fuck firefox
-  print 'load browser'
+  print 'load browser @ %s' % url
   browser.get(url) # Load page
 
   # inject jquery
@@ -96,6 +96,8 @@ def diff_fingerprints(f1, f2):
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
   diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))
   diffs.extend(diff_styles(f1['computedStyle'], f2['computedStyle']))
+  if len(diffs) > 0:
+    print 'change detected'
   return diffs
 
 # diffs the result of jQuery .offset() on an element
@@ -122,7 +124,7 @@ def diff_offsets(o1, o2):
 def diff_html(h1, h2):
   diffs = []
   if h1 != h2:
-    if difflib.SequenceMatcher(None, h1, h2).ratio() < .7:
+    if difflib.SequenceMatcher(None, h1, h2).ratio() > .6:
       #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
       diffs.append(''.join(difflib.context_diff(h1, h2)))
     else:
