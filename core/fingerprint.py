@@ -103,6 +103,8 @@ def diff_offsets(o1, o2):
   diffs = []
   # Assumes keys are the same
   for key in o1:
+    if key not in o2:
+      continue
     if o1[key] != o2[key]:
       diffamnt = o2[key] - o1[key]
       if diffamnt > 10:
@@ -133,7 +135,7 @@ def diff_styles(s1, s2):
   diffs = []
   for style in s1:
     if style not in s2:
-      continue
+      continue # TODO may need to do this differently
     if s1[style] != s2[style]:
       diffs.append({ \
         'key': style,
