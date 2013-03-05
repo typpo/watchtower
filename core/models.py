@@ -67,7 +67,7 @@ class Page(db.Model):
   @property
   def num_new_changes(self):
     changes = reduce(add, [element.versions[1:] for element in self.elements], [])
-    return len([1 for version in changes if version.when > self.last_viewed])
+    return len([1 for version in changes if version.when > self.last_view])
 
   def elementsJSON(self):
     return [e.toJSON() for e in self.elements]

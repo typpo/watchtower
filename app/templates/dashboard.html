@@ -17,7 +17,7 @@
     {% for page in pages %}
       <tr>
         <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
-        <td>{{ page.num_new_changes or 0  }}</td>
+        <td>{{ page.num_new_changes }}</td>
         <td><a href=/page/{{ page.id }}/edit>edit</a></td>
         <td><a href=/page/{{ page.id }}/delete>delete</a></td>
       </tr>
