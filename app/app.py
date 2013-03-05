@@ -9,6 +9,7 @@ from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
 from urlparse import urlparse, urljoin
 from threading import Thread
+import twitter
 #from twython import Twython
 import time
 import praw
@@ -54,7 +55,7 @@ class TwythonOld(Twython):
     """
 
 reddit = praw.Reddit(user_agent='test')
-#twitter = Twython()
+twitter = twitter.Twitter(domain="search.twitter.com")
 app = create_app()
 
 oid = OpenID(app, '/tmp/openid')
@@ -72,6 +73,15 @@ def index():
   pages = Page.query.all()
   app.logger.debug(pages)
   if g.user:
+    if (request.method =="POST"):
+      add = request.form['addtweets']
+      if (add[0] != '#'):
+        add = '#' + add
+      twitadd = Twitter(add, user_id=g.user.id)
+      db.session.add(twitadd)
+      request.form['addtweets'] == ''
+      # save everything in the db
+      db.session.commit()
     return render_template('dashboard.html', user=g.user, pages=list(g.user.pages))
   else:
     return render_template('index.html', user=g.user)
@@ -274,7 +284,10 @@ def login():
 def profile():
   form = dict(name=g.user.name, email=g.user.email)
   if request.method == 'POST':
-    twitadd = Twitter(request.form['addtweets'], user_id=g.user.id)
+    add = request.form['addtweets']
+    if (add[0] != '#'):
+      add = '#' + add
+    twitadd = Twitter(add, user_id=g.user.id)
     db.session.add(twitadd)
     request.form['addtweets'] == ''
     # save everything in the db
@@ -285,8 +298,8 @@ def profile():
 @login_required
 def news():
   feed = []
-#  for tweet in g.user.twitters:
-#    feed.append(twitter.getUserTimeline(screen_name=tweet.handle))
+  for tweet in g.user.twitters:
+    feed.append(twitter.search(q='#' + tweet.handle))
   fb = [] #get_blob('https://graph.facebook.com/google/feed')
   reddits = {}
   threads = []

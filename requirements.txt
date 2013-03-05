@@ -12,3 +12,4 @@ boto
 alembic
 flask-bcrypt
 Flask-Admin
+twitter
