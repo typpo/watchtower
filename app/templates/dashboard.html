@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="row span12">
-<a href="/page/new" class="btn btn-primary">New alert</a>
+<a href="/page/new" class="btn btn-primary"><i class="icon-plus"></i> New alert</a>
 </div>
 {% if pages %}
 <div class="row span12">
@@ -11,15 +11,15 @@
     <tr>
       <th>Page</th>
       <th>New changes</th>
-      <th></th>
-      <th></th>
+      <th style="width:5px"></th>
+      <th style="width:5px"></th>
     </tr>
     {% for page in pages %}
       <tr>
         <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
         <td>{{ page.num_new_changes }}</td>
-        <td><a href=/page/{{ page.id }}/edit>edit</a></td>
-        <td><a href=/page/{{ page.id }}/delete>delete</a></td>
+        <td><a href=/page/{{ page.id }}/edit><i class="icon-edit"></i> </a></td>
+        <td><a href=/page/{{ page.id }}/delete><i class="icon-remove"></i> </a></td>
       </tr>
     {% endfor %}
   </tbody>
