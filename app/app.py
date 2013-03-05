@@ -235,7 +235,7 @@ def create_or_login(resp):
   session['openid'] = resp.identity_url
   user = User.query.filter_by(openid=resp.identity_url).first()
   if user is None:
-    g.user = create_user(bcrypt, resp.email, 'cune8eVE', session['openid'])
+    g.user = create_user(bcrypt, resp.email, None, session['openid'])
     user = g.user
   return redirect(oid.get_next_url())
 
@@ -251,13 +251,18 @@ def login():
   if request.method == 'POST':
     user_exists = User.query.filter_by(email=request.form['email']).first()
     if not user_exists:
-      flash('Account created')
-      g.user = create_user(bcrypt, request.form['email'], request.form['password'])
+      try:
+        g.user = create_user(bcrypt, request.form['email'], request.form['password'])
+      except ValueError as e:
+        flash(e.message)
+        return render_template('login.html', next=oid.get_next_url(),
+                               error=oid.fetch_error())
       login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+      flash('Account created')
     else:
       g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
       if not g.user:
-        flash('Incorrect email or password')
+        flash('Incorrect password')
         return redirect(url_for('login'))
       else:
         login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
