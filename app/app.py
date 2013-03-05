@@ -28,7 +28,7 @@ from core.utils import create_user, get_blob, is_production, login_required, mus
 def create_app():
   app = Flask(__name__)
   app.secret_key = 'not a secret key'
-  app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/watchtower.db'
+  app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
   db.init_app(app)
   # admin setup
   admin = Admin(app)
