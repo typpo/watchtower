@@ -13,13 +13,20 @@ from threading import Thread
 
 NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
+print 'starting virtual display & browser'
+display = Display(visible=0, size=(1024, 768))
+display.start()
+browser = webdriver.Chrome() # fuck firefox
+"""
+# all done
+print 'closing'
+browser.close()
+display.stop()
+"""
+
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors):
   print 'getting fingerprints'
-  display = Display(visible=0, size=(1024, 768))
-  display.start()
-  print 'star tbrowser'
-  browser = webdriver.Chrome() # fuck firefox
   print 'load browser @ %s' % url
   browser.get(url) # Load page
 
@@ -31,11 +38,31 @@ def get_fingerprints(url, selectors):
   browser.execute_script(jquery_js)
 
   # check all selectors
-  print 'check sel'
+  print 'check selectors'
   ret = [get_fingerprint(browser, sel) for sel in selectors]
 
   # screenshot
-  print 'screnshot'
+
+  # mask all non-elements, so chosen elements are highlighted
+  print 'masking page for screenshot'
+  mask_js = """
+  var $ = window.jQuery;
+  $(document).append('<div></div>').css({
+    background: 'rgba(0,0,0,0.3)',
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    'z-index':99998,
+  });
+  $('.watchtower-expose-for-screnshot').css({
+    'z-index': 99999,
+  });
+  """
+  browser.eval_js(mask_js)
+
+  print 'screenshot'
   screenshot_local_path = '/tmp/watchtower/%d%d' % (time.time(), random.randint(0, 1000))
   screenshot_url = ''
   if browser.save_screenshot(screenshot_local_path):
@@ -46,10 +73,7 @@ def get_fingerprints(url, selectors):
     thread.start()
     screenshot_url = screenshot_remote_path
 
-  # all done
-  print 'closing'
-  browser.close()
-  display.stop()
+  browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
 
   print 'ret'
   return ret, screenshot_url, screenshot_local_path
@@ -68,6 +92,7 @@ def get_fingerprint(browser, selector):
       computedStyle: {}
     }
   }
+  $el.addClass('watchtower-expose-for-screenshot');    // add class to highlight this in screenshot
   var computed_style = window.getComputedStyle($el.get(0));
   var style = {};
   for (var s in computed_style) {
