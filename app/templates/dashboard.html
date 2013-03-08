@@ -47,14 +47,9 @@
   <h3>Social News on Sites You're Tracking</h3>
   <div class="accordion" id="news">
   </div>
+  <div class="accordion" id="twitter">
 <div>
 {% endif %}
-<div class="row span12">
-  <div id="twitter_container">
-    <ul id="twitter">
-    </ul>
-  </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
@@ -62,8 +57,8 @@
 
 <script type="text/html" id="news_page_tmpl">
   <div class="accordion-group">
-    <div class="accordion-heading" style="background-color: #f9f9f9">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#news" href="#collapse<%=page_id%>">
+    <div class="accordion-heading" style="background-color: #f9f9f9>
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="<%=parent%>" href="#collapse<%=page_id%>">
         <%=page%>
       </a>
     </div>
@@ -76,6 +71,11 @@
 <script type="text/html" id="news_story_tmpl">
   <div class="accordion-inner">
     <a href="<%=link%>"><%=headline%></a>
+  </div>
+</script>
+<script type="text/html" id="twitter_tmpl">
+  <div class="accordion-inner">
+    <p><%=text%></p>
   </div>
 </script>
 {% endblock %}
