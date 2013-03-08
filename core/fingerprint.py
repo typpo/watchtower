@@ -89,7 +89,8 @@ def get_fingerprint(browser, selector):
       offset: {},
       innerHTML: '',
       outerHTML: '',
-      computedStyle: {}
+      computedStyle: {},
+      text: '',
     }
   }
   $el.addClass('watchtower-expose-for-screenshot');    // add class to highlight this in screenshot
@@ -104,7 +105,8 @@ def get_fingerprint(browser, selector):
     offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
     innerHTML: $el.html(),
     outerHTML: $el.parent().html(),
-    computedStyle: style
+    computedStyle: style,
+    text: $el.text(),
   };
   """.replace('{{ SELECTOR }}', selector)
   ret = browser.execute_script(eval_js)
@@ -113,17 +115,29 @@ def get_fingerprint(browser, selector):
 
 # returns a list of difference dicts
 # a difference dict has:
-#    - key: name of difference (eg. backgroundColor)
+#    - key: name of difference (eg. backgroundColor, text content, etc.)
 #    - diff_amount:  amount of difference, if applicable
 #    - diff_unit:  unit of diff_amount, if applicable
 def diff_fingerprints(f1, f2):
   diffs = []
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
-  diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))
+  diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))  # TODO disable this probably
   diffs.extend(diff_styles(f1['computedStyle'], f2['computedStyle']))
+  diffs.extend(diff_text(f1['text'], f2['text']))
   if len(diffs) > 0:
     print 'change detected'
   return diffs
+
+def diff_text(t1, t2):
+  if t1.strip() != t2.strip():
+    ratio = difflib.SequenceMatcher(None, t1, t2).ratio()
+    return [{ \
+      'key': 'text content',
+      'diff_amount': ratio,
+      'diff_unit': '%',
+    }]
+  return []
+
 
 # diffs the result of jQuery .offset() on an element
 def diff_offsets(o1, o2):
@@ -149,9 +163,14 @@ def diff_offsets(o1, o2):
 def diff_html(h1, h2):
   diffs = []
   if h1 != h2:
-    if difflib.SequenceMatcher(None, h1, h2).ratio() > .6:
+    ratio = difflib.SequenceMatcher(None, h1, h2).ratio()
+    if ratio > .6:
       #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
-      diffs.append(''.join(difflib.context_diff(h1, h2)))
+      diffs.append({ \
+        'key': 'html content': ''.join(difflib.context_diff(h1, h2)),
+        'diff_amount': ratio,
+        'diff_unit': '%',
+      })
     else:
       print 'change detected, but it is below uniqueness ratio threshold'
   return diffs
