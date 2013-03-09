@@ -58,26 +58,35 @@ def get_fingerprints(url, selectors, display=None, \
   # mask all non-elements, so chosen elements are highlighted
   print 'masking page for screenshot'
   mask_js = """
-  var $ = window.jQuery;
-  $(document).append('<div></div>').css({
-    background: 'rgba(0,0,0,0.3)',
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    'z-index':99998,
-  });
-  $('.watchtower-expose-for-screnshot').css({
-    'z-index': 99999,
-  });
+  jQuery.noConflict();
+  (function($) {
+    $('<div></div>').css({
+      background: 'rgba(0,0,0,0.3)',
+      width: '100%',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      'z-index': 99998,
+    }).height($(document).height()).appendTo('body');  // necessary to get FULL height of page in selenium screenshot
+    $('.watchtower-expose-for-screenshot').css({
+      'z-index': 99999,
+    }).each(function() {
+      var $el = $(this);
+      if ($el.css('position') === 'static') {
+        $el.css('position', 'relative');
+      }
+    });
+  })(jQuery);
   """
-  browser.eval_js(mask_js)
+  browser.execute_script(mask_js)
 
-  print 'screenshot'
-  screenshot_local_path = '/tmp/watchtower/%d%d' % (time.time(), random.randint(0, 1000))
+  # create tmp path
+  if not os.path.isdir('/tmp/watchtower'):
+    os.mkdir('/tmp/watchtower')
+  screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
+  print 'screenshot to', screenshot_local_path
   screenshot_url = ''
-  if browser.save_screenshot(screenshot_local_path):
+  if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
     screenshot_remote_path = 'images/'  \
       + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
     thread = Thread(target=screenshots.upload_screenshot, \
@@ -139,7 +148,8 @@ def diff_fingerprints(f1, f2):
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
   diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))  # TODO disable this probably
   diffs.extend(diff_styles(f1['computedStyle'], f2['computedStyle']))
-  diffs.extend(diff_text(f1['text'], f2['text']))
+  if 'text' in f1 and 'text' in f2:   # backwards compatibility 3/7/13
+    diffs.extend(diff_text(f1['text'], f2['text']))
   if len(diffs) > 0:
     print 'change detected'
   return diffs

@@ -1,3 +1,4 @@
+jQuery.noConflict();
 jQuery.fn.getPath = function () {
   if (this.length != 1) throw 'Requires one element.';
   var path, node = this;
