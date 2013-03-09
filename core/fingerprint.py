@@ -13,19 +13,31 @@ from threading import Thread
 
 NUM_AB_CHECKS = 5    # number of times we check the page for a different layout
 
-print 'starting virtual display & browser'
-display = Display(visible=0, size=(1024, 768))
-display.start()
-browser = webdriver.Chrome() # fuck firefox
-"""
-# all done
-print 'closing'
-browser.close()
-display.stop()
-"""
+def start_display():
+  print 'starting virtual display'
+  display = Display(visible=0, size=(1024, 768))
+  display.start()
+  return display
+
+def stop_display(display):
+  display.stop()
+
+def start_browser():
+  print 'starting browser'
+  browser = webdriver.Chrome() # fuck firefox
+  return browser
+
+def stop_browser(browser):
+  browser.close()
 
 # returns a list of fingerprints for each selector
-def get_fingerprints(url, selectors):
+def get_fingerprints(url, selectors, display=None, \
+    browser=None, cleanup_at_end=True):
+  if not display:
+    display = start_display()
+  if not browser:
+    browser = start_browser()
+
   print 'getting fingerprints'
   print 'load browser @ %s' % url
   browser.get(url) # Load page
@@ -74,6 +86,10 @@ def get_fingerprints(url, selectors):
     screenshot_url = screenshot_remote_path
 
   browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
+
+  if cleanup_at_end:
+    stop_display(display)
+    stop_browser(browser)
 
   print 'ret'
   return ret, screenshot_url, screenshot_local_path
@@ -133,6 +149,7 @@ def diff_text(t1, t2):
     ratio = difflib.SequenceMatcher(None, t1, t2).ratio()
     return [{ \
       'key': 'text content',
+      'diff': ''.join(difflib.context_diff(t1, t2)),
       'diff_amount': ratio,
       'diff_unit': '%',
     }]
@@ -167,7 +184,8 @@ def diff_html(h1, h2):
     if ratio > .6:
       #diffs.append(''.join(difflib.Differ().compare(h1, h2)))
       diffs.append({ \
-        'key': 'html content': ''.join(difflib.context_diff(h1, h2)),
+        'key': 'html content',
+        'diff': ''.join(difflib.context_diff(h1, h2)),
         'diff_amount': ratio,
         'diff_unit': '%',
       })
