@@ -46,6 +46,7 @@ def create_app():
       return True
   admin.add_view(MyModelView(Version, db.session, column_list=['id', 'foreign_key']))
   admin.add_view(ModelView(Element, db.session,))
+  admin.add_view(ModelView(User, db.session,))
   return app
 
 """
