@@ -39,23 +39,29 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
   </table>
 
 <h3 id="recent_changes">Recent Changes</h3>
-<table class="table table-bordered table-striped">
-{% for version in all_versions[:25] %}
-  <tr>
-  {% set page = (version|page_from_version) %}
-  {% set time = version.when.strftime('%b %d %I:%M %p') %}
+{% if all_versions %}
+  <table class="table table-bordered table-striped">
+  {% for version in all_versions[:25] %}
+    <tr>
+    {% set page = (version|page_from_version) %}
+    {% set time = version.when.strftime('%b %d %I:%M %p') %}
 
-  {% if time != prevtime %}
-    <td style="width: 150px"><abbr class="timeago" data-toggle="tooltip" title="{{version.when}}">{{ time }} GMT</abbr></td>
-    {% set prevtime = time %}
-  {% else %}
-    <td></td>
-  {% endif %}
+    {% if time != prevtime %}
+      <td style="width: 150px">
+        <abbr class="timeago" data-toggle="tooltip" title="{{version.when.isoformat()}}">{{ time }} UTC</abbr>
+      </td>
+      {% set prevtime = time %}
+    {% else %}
+      <td></td>
+    {% endif %}
 
-  <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <a href="https://s3.amazonaws.com/watchtower-screenshots/{{version.screenshot}}" target="_blank"><i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></a></td>
-  </tr>
-{% endfor %}
-</table>
+    <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <a href="https://s3.amazonaws.com/watchtower-screenshots/{{version.screenshot}}" target="_blank"><i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></a></td>
+    </tr>
+  {% endfor %}
+  </table>
+{% else %}
+  There's nothing here yet...
+{% endif %}
 {% include 'blocks/social.html' %}
 </div> {# end div right span #}
 </div> {# end div row #}
