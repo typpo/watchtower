@@ -69,6 +69,20 @@ def load_user(id):
   g.user = User.query.filter_by(id=id).first()
   return g.user
 
+def _jinja2_filter_element_from_version(version):
+  return Element.query.filter_by(id=version.element_id).first()
+
+def _jinja2_filter_page_from_element(element):
+  return Page.query.filter_by(id=element.page_id).first()
+
+def _jinja2_filter_page_from_version(version):
+  # better way?
+  return _jinja2_filter_page_from_element(_jinja2_filter_element_from_version(version))
+
+app.jinja_env.filters['element_from_version'] = _jinja2_filter_element_from_version
+app.jinja_env.filters['page_from_element'] = _jinja2_filter_page_from_element
+app.jinja_env.filters['page_from_version'] = _jinja2_filter_page_from_version
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
   pages = Page.query.all()
@@ -84,7 +98,21 @@ def index():
       request.form['addtweets'] == ''
       # save everything in the db
       db.session.commit()
-    return render_template('dashboard.html', user=g.user, pages=list(g.user.pages))
+    news_feed = []
+
+    pages = g.user.pages
+    all_versions = []
+    elementid_to_element = {}
+    for page in pages:
+      page_versions = []
+      for element in page.elements:
+        elementid_to_element[element.id] = element
+        page_versions.extend(element.versions)
+      all_versions.extend(page_versions)
+    all_versions = sorted(all_versions, key=attrgetter('when'), reverse=True)
+    print elementid_to_element
+    return render_template('dashboard.html', user=g.user, pages=pages, \
+        all_versions=all_versions, element_map=elementid_to_element)
   else:
     return render_template('index.html', user=g.user)
 

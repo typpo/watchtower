@@ -23,20 +23,6 @@
          <link rel="apple-touch-icon-precomposed" sizes="72x72" href="static/ico/apple-touch-icon-72-precomposed.png">
          <link rel="apple-touch-icon-precomposed" href="static/ico/apple-touch-icon-57-precomposed.png">
          -->
-    <!-- scripts -->
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-38986257-1']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    {% block scripts %}{% endblock %}
   </head>
   <body>
     <div class="navbar navbar-fixed-top navbar-inverse">
@@ -112,8 +98,6 @@
       {% endwith %}
       {% block content %}{% endblock %}
 
-      <script src="/static/js/app.js"></script>
-
       <div id="loader" style="display:none;">
         <p style="text-align: center;"><img src="/static/images/loader.gif"/> </p>
         <p>
@@ -121,6 +105,22 @@
         </p>
       </div>
     </div>
+
+<!-- scripts -->
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/app.js"></script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-38986257-1']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+{% block scripts %}{% endblock %}
 
 {% block share %}
 <div class="row span12 text-center" style="padding-bottom:50px;">

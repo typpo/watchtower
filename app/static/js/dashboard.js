@@ -1,4 +1,29 @@
 (function() {
+  var $screenshot_preview;
+  $('i.screenshot-preview').mouseenter(function() {
+    if ($screenshot_preview) $screenshot_preview.remove();
+    var $el = $(this);
+    var $img = $('<img></img>')
+      .attr('src',
+            'https://s3.amazonaws.com/watchtower-screenshots/'
+              + $el.data('screenshot-url'))
+      .css({
+        width: 300,
+        height: 'auto'
+      });
+    $screenshot_preview = $('<div></div>').append($img)
+      .css({
+        position: 'absolute',
+        top: $el.offset().top,
+        left: $el.offset().left + 30
+      }).appendTo('body').show();
+
+      console.log($el.offset().top);
+      console.log($el.offset().right);
+
+  }).mouseleave(function() {
+    if ($screenshot_preview) $screenshot_preview.remove();
+  });
   $.ajax('/news').done(function(data) {
     var $feed = $('#news');
     $('#social').show();

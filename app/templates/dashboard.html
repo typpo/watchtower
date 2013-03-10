@@ -9,6 +9,7 @@
 <p class="alert alert-info" style="margin-top:15px">
 Sorry, Watchtower is in closed beta and free accounts are NOT being processed for monitoring.  We'll notify you when scans have resumed.
 </p>
+<h3>Monitoring Overview</h3>
 <table class="table table-bordered table-striped" style="margin-top:20px;">
   <tbody>
     <tr>
@@ -27,6 +28,25 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
       {% endfor %}
     </tbody>
   </table>
+
+<h3>Recent Changes</h3>
+<table class="table table-bordered table-striped">
+{% for version in all_versions[:25] %}
+  <tr>
+  {% set page = (version|page_from_version) %}
+  {% set time = version.when.strftime('%b %d %I:%M %p') %}
+
+  {% if time != prevtime %}
+    <td style="width: 150px">{{ time }}</td>
+    {% set prevtime = time %}
+  {% else %}
+    <td></td>
+  {% endif %}
+
+  <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <a href="https://s3.amazonaws.com/watchtower-screenshots/{{version.screenshot}}" target="_blank"><i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></a></td>
+  </tr>
+{% endfor %}
+</table>
 </div>
 {% else %}
 <div class="row span12">
