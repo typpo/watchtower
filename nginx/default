@@ -14,9 +14,8 @@ server {
     }
 
     location /admin {
-	deny all;
-    }
-    location /secret_admin_foo_ {
+	auth_basic "Restricted";
+	auth_basic_user_file /home/watchtower/watchtower/nginx/htpasswd;
         proxy_pass http://localhost:5000/admin;
     }
 }
