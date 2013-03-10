@@ -48,7 +48,7 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
 
     {% if time != prevtime %}
       <td style="width: 150px">
-        <abbr class="timeago" data-toggle="tooltip" title="{{version.when.isoformat()}}">{{ time }} UTC</abbr>
+        <abbr class="timeago" data-toggle="tooltip" title="{{version.when.isoformat()}}+0:00">{{ time }} UTC</abbr>
       </td>
       {% set prevtime = time %}
     {% else %}
