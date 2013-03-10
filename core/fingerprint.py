@@ -112,10 +112,11 @@ def get_fingerprint(browser, selector):
   if ($el.length < 1) {
     return {
       offset: {},
-      innerHTML: '',
-      outerHTML: '',
+      //innerHTML: '',
+      //outerHTML: '',
       computedStyle: {},
       text: '',
+      srcs: '',
     }
   }
   $el.addClass('watchtower-expose-for-screenshot');    // add class to highlight this in screenshot
@@ -126,12 +127,17 @@ def get_fingerprint(browser, selector):
       style[s] = computed_style[s];
     }
   }
+  var srcs = '';
+  $el.find('*:[src]').not('script').each(function() {
+    srcs += $(this).attr('src') + '|';
+  });
   return {
     offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
-    innerHTML: $el.html(),
-    outerHTML: $el.parent().html(),
+    //innerHTML: $el.html(),
+    //outerHTML: $el.parent().html(),
     computedStyle: style,
     text: $el.text(),
+    srcs: srcs,
   };
   """.replace('{{ SELECTOR }}', selector)
   ret = browser.execute_script(eval_js)
@@ -146,10 +152,12 @@ def get_fingerprint(browser, selector):
 def diff_fingerprints(f1, f2):
   diffs = []
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
-  diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))  # TODO disable this probably
+  #diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))  # disabled because text+srcs is better
   diffs.extend(diff_styles(f1['computedStyle'], f2['computedStyle']))
   if 'text' in f1 and 'text' in f2:   # backwards compatibility 3/7/13
     diffs.extend(diff_text(f1['text'], f2['text']))
+  if 'srcs' in f1 and 'srcs' in f2:   # backwards compatibility 3/7/13
+    diffs.extend(diff_srcs(f1['srcs'], f2['srcs']))
   if len(diffs) > 0:
     print 'change detected'
   return diffs
@@ -162,6 +170,15 @@ def diff_text(t1, t2):
       'diff': ''.join(difflib.context_diff(t1, t2)),
       'diff_amount': ratio,
       'diff_unit': '%',
+    }]
+  return []
+
+def diff_srcs(s1, s2):
+  if s1.strip() != s2.strip():
+    return [{ \
+      'key': 'image content source',
+      'diff_amount': 'n/a',
+      'diff_unit': 'n/a',
     }]
   return []
 
@@ -257,7 +274,7 @@ def test_ab_bookingcom():
   print detect_ab_test('http://www.booking.com/city/us/new-york.en-us.html?sid=9d1b2e3670bdb8656e697473c451d44e;dcid=1', ['.promos tr:first'])
 
 if __name__ == '__main__':
-  #test_fingerprint()
-  test_diff()
+  test_fingerprint()
+  #test_diff()
   #test_ab_detection()
   #test_ab_bookingcom()
