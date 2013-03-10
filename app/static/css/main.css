@@ -20,4 +20,13 @@ i.screenshot-preview {
   cursor: pointer;
 }
 
+ul#left_nav {
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+  -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
+  box-shadow: 0 1px 4px rgba(0,0,0,.065);
+}
+
 .share-buttons{float: right; margin-top:7px;}.share-buttons>iframe{vertical-align:top;}.twitter-share-button{width:80px!important;}

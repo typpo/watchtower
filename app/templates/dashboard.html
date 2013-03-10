@@ -1,15 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row span12">
-<a href="/page/new" class="btn btn-primary"><i class="icon-plus"></i> New alert</a>
-</div>
 {% if pages %}
-<div class="row span12">
+<div class="row">
+<div class="span3">
+<ul id="left_nav" class="nav nav-list affix">
+  <li class="nav-header">Control Panel</li>
+  <li><a href="#overview"><i class="icon-plus"></i> New Alert</a></li>
+  <li><a href="#overview"><i class="icon-th-list"></i> Overview</a></li>
+  <li><a href="#recent_changes"><i class="icon-eye-open"></i> Recent Changes</a></li>
+  <li><a href="#social_news"><i class="icon-share"></i> Social News</a></li>
+</ul>
+</div>
+<div class="span9">
+<a href="/page/new" class="btn btn-primary"><i class="icon-plus"></i> New alert</a>
 <p class="alert alert-info" style="margin-top:15px">
 Sorry, Watchtower is in closed beta and free accounts are NOT being processed for monitoring.  We'll notify you when scans have resumed.
 </p>
-<h3>Monitoring Overview</h3>
+
+<h3 id="overview">Monitoring Overview</h3>
 <table class="table table-bordered table-striped" style="margin-top:20px;">
   <tbody>
     <tr>
@@ -29,7 +38,7 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
     </tbody>
   </table>
 
-<h3>Recent Changes</h3>
+<h3 id="recent_changes">Recent Changes</h3>
 <table class="table table-bordered table-striped">
 {% for version in all_versions[:25] %}
   <tr>
@@ -47,7 +56,8 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
   </tr>
 {% endfor %}
 </table>
-</div>
+</div> {# end div right span #}
+</div> {# end div row #}
 {% else %}
 <div class="row span12">
 </br>
@@ -64,7 +74,7 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
 {% endif %}
 {% if pages %}
 <div class="row span12" style="display: none" id="social">
-  <h3>Social News on Sites You're Tracking</h3>
+  <h3 id="social_news">Social News</h3>
   <div class="accordion" id="news">
   </div>
   <div class="accordion" id="twitter">

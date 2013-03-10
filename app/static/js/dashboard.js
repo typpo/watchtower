@@ -1,4 +1,5 @@
 (function() {
+  // recent changes feed screenshot previews
   var $screenshot_preview;
   $('i.screenshot-preview').mouseenter(function() {
     if ($screenshot_preview) $screenshot_preview.remove();
