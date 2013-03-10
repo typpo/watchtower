@@ -46,7 +46,7 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
   {% set time = version.when.strftime('%b %d %I:%M %p') %}
 
   {% if time != prevtime %}
-    <td style="width: 150px">{{ time }}</td>
+    <td style="width: 150px"><abbr class="timeago" data-toggle="tooltip" title="{{version.when}}">{{ time }} GMT</abbr></td>
     {% set prevtime = time %}
   {% else %}
     <td></td>
@@ -77,6 +77,7 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
 {% endblock %}
 
 {% block scripts %}
+<script src="/static/js/jquery.timeago.js"></script>
 <script src="/static/js/dashboard.js"></script>
 
 <script type="text/html" id="news_page_tmpl">

@@ -1,4 +1,6 @@
 (function() {
+  // fuzzy time ago
+  $("abbr.timeago").timeago().tooltip();
   // recent changes feed screenshot previews
   var $screenshot_preview;
   $('i.screenshot-preview').mouseenter(function() {
