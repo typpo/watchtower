@@ -17,7 +17,7 @@
     $screenshot_preview = $('<div></div>').append($img)
       .css({
         position: 'absolute',
-        top: $el.offset().top,
+        top: $el.offset().top - 100,
         left: $el.offset().left + 30
       }).appendTo('body').show();
   }).mouseleave(function() {
