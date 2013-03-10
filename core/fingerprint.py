@@ -70,6 +70,7 @@ def get_fingerprints(url, selectors, display=None, \
     }).height($(document).height()).appendTo('body');  // necessary to get FULL height of page in selenium screenshot
     $('.watchtower-expose-for-screenshot').css({
       'z-index': 99999,
+      'outline': '2px solid red',
     }).each(function() {
       var $el = $(this);
       if ($el.css('position') === 'static') {
