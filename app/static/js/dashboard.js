@@ -17,10 +17,6 @@
         top: $el.offset().top,
         left: $el.offset().left + 30
       }).appendTo('body').show();
-
-      console.log($el.offset().top);
-      console.log($el.offset().right);
-
   }).mouseleave(function() {
     if ($screenshot_preview) $screenshot_preview.remove();
   });
