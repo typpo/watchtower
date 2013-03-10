@@ -87,6 +87,7 @@ def get_fingerprints(url, selectors, display=None, \
   screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
   print 'screenshot to', screenshot_local_path
   screenshot_url = ''
+  # TODO only save screenshot if there's a diff
   if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
     screenshot_remote_path = 'images/'  \
       + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
@@ -97,9 +98,9 @@ def get_fingerprints(url, selectors, display=None, \
 
   browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
 
-  if cleanup_at_end:
-    stop_display(display)
-    stop_browser(browser)
+  #if cleanup_at_end:
+  stop_browser(browser)
+  stop_display(display)
 
   print 'ret'
   return ret, screenshot_url, screenshot_local_path
