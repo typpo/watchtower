@@ -6,8 +6,9 @@
   <div class="control-group">
     <form action="{{url_for('login')}}" method="post" class="form">
       <dl>
-        <dd><input class="input" type="text" name=email placeholder="email">
-        <dd><input class-"input" name="password" type="password" placeholder="password">
+        <dd><input class="input" type="text" name="email" placeholder="email">
+        <dd><input class="input" name="password" type="password" placeholder="password">
+        <dd><input type="hidden" name="timezone" value="America/Los_Angeles">
         <dd><input class="btn" type="submit" value="Submit">
       </dl>
     </form>
