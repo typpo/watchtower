@@ -115,7 +115,7 @@ def get_fingerprint(browser, selector):
     return {
       offset: {},
       //innerHTML: '',
-      //outerHTML: '',
+      outerHTML: '',
       computedStyle: {},
       text: '',
       srcs: '',
@@ -136,7 +136,7 @@ def get_fingerprint(browser, selector):
   return {
     offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
     //innerHTML: $el.html(),
-    //outerHTML: $el.parent().html(),
+    outerHTML: $('<div>').append($el.clone()).html(),
     computedStyle: style,
     text: $el.text(),
     srcs: srcs,
