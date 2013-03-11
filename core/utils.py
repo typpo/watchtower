@@ -62,7 +62,8 @@ def login_hashed(bcrypt, email, password):
 def create_user(bcrypt, email, password, openid=None):
   if not '@' in email[1:-1]: # TODO: do this right
     raise ValueError('Invalid email address')
-  user = User('', email, bcrypt.generate_password_hash(password,10), openid)
+  pw = bcrypt.generate_password_hash(password,10) if password else None
+  user = User('', email, pw, openid)
   db.session.add(user)
   db.session.commit()
   return user
