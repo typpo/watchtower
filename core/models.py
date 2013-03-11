@@ -18,6 +18,7 @@ class User(db.Model):
   twitters = db.relationship('Twitter',
                           backref='user', lazy='dynamic')
   password = db.Column(db.String(255))
+  timezone = db.Column(db.String(64), default='America/Los_Angeles')
 
   def get_id(self):
     return self.id
@@ -31,11 +32,12 @@ class User(db.Model):
   def is_active(self):
     return True
 
-  def __init__(self, name, email, password, openid=''):
-    self.openid = openid
+  def __init__(self, name, email, password, timezone, openid=''):
+    self.timezone = timezone
     self.name = name
     self.email = email
     self.password = password
+    self.openid = openid
 
   def __repr__ (self):
     return '<User %r>' % self.email

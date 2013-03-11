@@ -19,6 +19,7 @@ import random
 import os
 import sys
 import bcrypt
+import pytz
 from operator import attrgetter, add
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -296,7 +297,7 @@ def create_or_login(resp):
   session['openid'] = resp.identity_url
   user = User.query.filter_by(openid=resp.identity_url).first()
   if user is None:
-    g.user = create_user(bcrypt, resp.email, None, session['openid'])
+    g.user = create_user(bcrypt=bcrypt, email=resp.email, password=None, timezone=resp.timezone, openid=session['openid'])
     user = g.user
   return redirect(oid.get_next_url())
 
@@ -308,12 +309,16 @@ def login():
   if 'openid' in request.args:
     openid = request.args['openid']
     return oid.try_login(openid, ask_for=['email', 'fullname',
-                                          'nickname'])
+                                          'nickname', 'timezone'])
   if request.method == 'POST':
     user_exists = User.query.filter_by(email=request.form['email']).first()
     if not user_exists:
       try:
-        g.user = create_user(bcrypt, request.form['email'], request.form['password'])
+        timezone = pytz.timezone(request.form['timezone']).zone
+      except pytz.exceptions.UnknownTimeZoneError:
+        timezone = 'America/Los_Angeles'
+      try:
+        g.user = create_user(bcrypt=bcrypt, email=request.form['email'], password=request.form['password'], timezone=timezone)
       except ValueError as e:
         flash(e.message)
         return render_template('login.html', next=oid.get_next_url(),
