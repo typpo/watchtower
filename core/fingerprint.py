@@ -145,6 +145,8 @@ def get_fingerprint(browser, selector):
       //innerHTML: $el.html(),
       outerHTML: $('<div>').append($el.clone()).html(),
       computedStyle: style,
+
+      // TODO convert text and srcs to arrays, after diffing works well enough
       text: $el.clone().children().remove().end().text() + '|' + $el.children(':reallyvisible').text(),
       srcs: srcs,
     };
