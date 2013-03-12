@@ -13,3 +13,4 @@ pyvirtualdisplay
 requests
 selenium
 twitter
+pytz
