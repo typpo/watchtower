@@ -22,7 +22,7 @@ import bcrypt
 import pytz
 from operator import attrgetter, add
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Twitter, Page, User
 from core.database import db
 from core.fingerprint import get_fingerprints
@@ -84,27 +84,21 @@ def _jinja2_filter_page_from_version(version):
   return _jinja2_filter_page_from_element(_jinja2_filter_element_from_version(version))
 
 def _jinja2_filter_to_local_datetime(dt):
-  return babel.format_datetime(dt)
+  return format_datetime(dt)
+
+def _jinja2_fn_localize_with_tz(date, tz_str):
+  if not tz_str:  # necessary for backwards compatibility 3/11 some accounts don't have this set; alembic migration apparently isn't setting default?
+    tz_str = 'America/Los_Angeles'
+  ret = pytz.utc.localize(date).astimezone(pytz.timezone(tz_str))
+  print ret.isoformat()
+  return ret
 
 app.jinja_env.filters['element_from_version'] = _jinja2_filter_element_from_version
 app.jinja_env.filters['page_from_element'] = _jinja2_filter_page_from_element
 app.jinja_env.filters['page_from_version'] = _jinja2_filter_page_from_version
 app.jinja_env.filters['to_local_datetime'] = _jinja2_filter_to_local_datetime
+app.jinja_env.globals['localize_with_tz'] = _jinja2_fn_localize_with_tz
 
-@babel.localeselector
-def get_locale():
-  # if a user is logged in, use the locale from the user settings
-  if g.user is not None:
-    return g.user.locale
-  # otherwise try to guess the language from the user accept
-  # header the browser transmits.  We support de/fr/en in this
-  # example.  The best match wins.
-  return 'en' #request.accept_languages.best_match(['de', 'fr', 'en'])
-
-@babel.timezoneselector
-def get_timezone():
-  if g.user is not None:
-    return g.user.timezone
 
 @app.route("/", methods=['GET', 'POST'])
 def index():

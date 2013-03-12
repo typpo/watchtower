@@ -1,7 +1,6 @@
 Flask-Admin
 Flask-OpenID
 Flask-SQLAlchemy
-Flask-Babel
 alembic
 boto
 flask
@@ -14,3 +13,4 @@ pyvirtualdisplay
 requests
 selenium
 twitter
+pytz
