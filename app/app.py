@@ -85,7 +85,7 @@ def _jinja2_filter_to_local_datetime(dt):
   return format_datetime(dt)
 
 def _jinja2_fn_localize_with_tz(date, tz_str):
-  if not tz_str:
+  if not tz_str:  # necessary for backwards compatibility 3/11 some accounts don't have this set; alembic migration apparently isn't setting default?
     tz_str = 'America/Los_Angeles'
   ret = pytz.timezone(tz_str).localize(date)
   print ret.isoformat()
