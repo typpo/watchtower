@@ -31,7 +31,7 @@
       </tr>
       {% for diff in version.diff  %}
       <tr>
-        <td>Change in <strong>{{ diff.key }}</strong></td>
+        <td>Change in <strong>{{ diff.key }}: {{ diff }}</strong></td>
       </tr>
       {% endfor %}
       {% endfor %}
