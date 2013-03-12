@@ -113,6 +113,16 @@ def get_fingerprint(browser, selector):
     window.onerror = function() {
       console.log(arguments);
     }
+    function eltext($el) {
+        var str = '';
+        $el.children().each(function() {
+          var $child = $(this);
+          if ($child.is(':visible')) {
+            str += $child.clone().children().remove().end().text() + '|';
+          }
+        });
+        return str;
+    }
     $.extend(
       $.expr[ ":" ],
       { reallyvisible : function (a) { return !(jQuery(a).is(':hidden') || jQuery(a).parents(':hidden').length); }}
@@ -147,12 +157,14 @@ def get_fingerprint(browser, selector):
       computedStyle: style,
 
       // TODO convert text and srcs to arrays, after diffing works well enough
-      text: $el.clone().children().remove().end().text() + '|' + $el.children(':reallyvisible').text(),
+      text: $el.clone().children().remove().end().text() + '|' + eltext($el),
       srcs: srcs,
     };
   })(jQuery);
   """.replace('{{ SELECTOR }}', selector)
   ret = browser.execute_script(eval_js)
+
+  print ret['text']
 
   return ret
 
