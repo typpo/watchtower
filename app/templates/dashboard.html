@@ -44,11 +44,11 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
   {% for version in all_versions[:25] %}
     <tr>
     {% set page = (version|page_from_version) %}
-    {% set time = version.when.strftime('%b %d %I:%M %p') %}
+    {% set time = localize_with_tz(version.when, user.timezone) %}
 
     {% if time != prevtime %}
       <td style="width: 150px">
-        <abbr class="timeago" data-toggle="tooltip" title="{{version.when.isoformat()}}+0:00">{{ time }} UTC</abbr>
+        <abbr class="timeago" data-toggle="tooltip" title="{{time.isoformat()}}">{{time.strftime('%b %d %I:%m %p %Z')}}</abbr>
       </td>
       {% set prevtime = time %}
     {% else %}

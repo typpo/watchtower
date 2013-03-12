@@ -1,7 +1,6 @@
 Flask-Admin
 Flask-OpenID
 Flask-SQLAlchemy
-Flask-Babel
 alembic
 boto
 flask
