@@ -95,7 +95,6 @@ app.jinja_env.filters['element_from_version'] = _jinja2_filter_element_from_vers
 app.jinja_env.filters['page_from_element'] = _jinja2_filter_page_from_element
 app.jinja_env.filters['page_from_version'] = _jinja2_filter_page_from_version
 app.jinja_env.filters['to_local_datetime'] = _jinja2_filter_to_local_datetime
-#app.jinja_env.filters['isodate_with_tz'] = _jinja2_filter_isodate_with_tz
 app.jinja_env.globals['localize_with_tz'] = _jinja2_fn_localize_with_tz
 
 
