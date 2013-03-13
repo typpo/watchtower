@@ -19,7 +19,7 @@
     <tbody>
       {% for version in versions %}
       <tr data-version-id="{{ version.id}}" data-element-id="{{ version.element.id }}">
-        <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }}</td>
+        <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }}: {{ version.element.selector}}</td>
         <td rowspan={{ version.diff|length + 1 }}>{{ version.when.strftime('%Y-%m-%d %H:%M') }}</td>
       {% if version.screenshot %}
         <td>

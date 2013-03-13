@@ -113,15 +113,28 @@ def get_fingerprint(browser, selector):
     window.onerror = function() {
       console.log(arguments);
     }
-    function eltext($el) {
-        var str = '';
-        $el.children().each(function() {
-          var $child = $(this);
-          if ($child.is(':visible')) {
-            str += $child.clone().children().remove().end().text() + '|';
+    function eldetails($el) {
+      var strs = [];
+      var srcs = [];
+      $el.find('*').not('style,noscript,script').each(function () {
+        var $child = $(this);
+        if ($child.is(':visible')
+          && $child.css('visibility') !== 'hidden'
+          && $child.css('opacity') !== 0) {
+          // note that visibility, opacity hidden still consume space in the layout
+          var txt = $child.clone().children().remove().end().text();
+          if ($.trim(txt) !== '') {
+            strs.push(txt);
           }
-        });
-        return str;
+          if ($child.prop('tagName') === 'IMG') {
+            srcs.push($child.attr('src'));
+          }
+        }
+      })
+      return {
+        'strs': strs,
+        'srcs': srcs
+      };
     }
     $.extend(
       $.expr[ ":" ],
@@ -146,10 +159,7 @@ def get_fingerprint(browser, selector):
         style[s] = computed_style[s];
       }
     }
-    var srcs = '';
-    $el.find('img:reallyvisible').each(function() {
-      srcs += $(this).attr('src') + '|';
-    });
+    var details = eldetails($el);
     return {
       offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
       //innerHTML: $el.html(),
@@ -157,8 +167,9 @@ def get_fingerprint(browser, selector):
       computedStyle: style,
 
       // TODO convert text and srcs to arrays, after diffing works well enough
-      text: $el.clone().children().remove().end().text() + '|' + eltext($el),
-      srcs: srcs,
+      text: $.trim($el.clone().children().remove().end().text()) + '|' + details.strs.join('|'),
+      srcs: ($el.prop('tagName') === 'IMG' ? $(this).attr('src') : '')
+            + '|' + details.srcs.join('|'),
     };
   })(jQuery);
   """.replace('{{ SELECTOR }}', selector)
