@@ -114,8 +114,8 @@ def get_fingerprint(browser, selector):
       console.log(arguments);
     }
     function eldetails($el) {
-      var strs = [];
-      var srcs = [];
+      var strs = [$.trim($el.clone().children().remove().end().text())];
+      var srcs = $el.prop('tagName') === 'IMG' ? [$el.attr('src')] : [];
       $el.find('*').not('style,noscript,script').each(function () {
         var $child = $(this);
         if ($child.is(':visible')
@@ -136,10 +136,6 @@ def get_fingerprint(browser, selector):
         'srcs': srcs
       };
     }
-    $.extend(
-      $.expr[ ":" ],
-      { reallyvisible : function (a) { return !(jQuery(a).is(':hidden') || jQuery(a).parents(':hidden').length); }}
-    );
     var $el = $('{{ SELECTOR }}');
     if ($el.length < 1 || !$el.is(':visible')) {
       return {
@@ -167,9 +163,8 @@ def get_fingerprint(browser, selector):
       computedStyle: style,
 
       // TODO convert text and srcs to arrays, after diffing works well enough
-      text: $.trim($el.clone().children().remove().end().text()) + '|' + details.strs.join('|'),
-      srcs: ($el.prop('tagName') === 'IMG' ? $(this).attr('src') : '')
-            + '|' + details.srcs.join('|'),
+      text: details.strs.join('|'),
+      srcs: details.srcs.join('|'),
     };
   })(jQuery);
   """.replace('{{ SELECTOR }}', selector)
