@@ -1,5 +1,6 @@
 from boto.s3.connection import S3Connection, Bucket, Key
 import hashlib
+import os
 
 def upload_screenshot(path, remote_path):
   conn = S3Connection('AKIAIZXASMHAKITV3X3Q', 'uhZLAKaSn2n/35cB3ZhgK7ow6rO0LALzybIiHFOg')
@@ -11,4 +12,8 @@ def upload_screenshot(path, remote_path):
   k.set_acl("public-read")
 
   print 'uploaded to https://s3.amazonaws.com/watchtower-screenshots/' + remote_path
+
+  # delete local file
+  os.remove(path)
+
   return True
