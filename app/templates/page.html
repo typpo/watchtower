@@ -12,29 +12,35 @@
 <table class="table table-striped" width="95%">
   <thead>
     <tr>
-      <th>Tracked Element</th>
-      <th>Time</th>
-      <th>Change</th>
+      <th style="width:100px">Tracking</th>
+      <th style="width:200px">Time</th>
+      <th>Version Notes</th>
     </tr>
     <tbody>
       {% for version in versions %}
-      <tr data-version-id="{{ version.id}}" data-element-id="{{ version.element.id }}">
-        <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }}: {{ version.element.selector}}</td>
-        <td rowspan={{ version.diff|length + 1 }}>{{ version.when.strftime('%Y-%m-%d %H:%M') }}</td>
-      {% if version.screenshot %}
-        <td>
-        <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}"/></a>
-        </td>
-      {% else %}
-        <td>screenshot is processing.  text diff: {{ version.diff[0] }}</td>
-      {% endif %}
-      </tr>
-      {% for diff in version.diff  %}
-      <tr>
-        <td>Change in <strong>{{ diff.key }}: {{ diff }}</strong></td>
-      </tr>
+        <tr data-version-id="{{ version.id}}" data-element-id="{{ version.element.id }}">
+          <td rowspan={{ version.diff|length + 1 }}>{{ version.element.name }}</td>
+          <td rowspan={{ version.diff|length + 1 }}>{{ version.when.strftime('%Y-%m-%d %H:%M') }}</td>
+        {% if version.screenshot %}
+          <td>
+          {% if not loop.last %}
+          {% set prev_version = versions[loop.index0 + 1] %}
+          <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ prev_version.screenshot }}"/></a>
+          <span style="font-size: 45px">&rarr;</span>
+          {% endif %}
+          <a target="_blank" href="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}" border="0"><img style="height: 400px; width:auto;" src="https://s3.amazonaws.com/watchtower-screenshots/{{ version.screenshot }}"/></a>
+          </td>
+        {% else %}
+          <td>screenshot is processing.  text diff: {{ version.diff[0] }}</td>
+        {% endif %}
+        </tr>
+        {% for diff in version.diff  %}
+          <tr>
+            <td>Change in <strong>{{ diff.key }}</strong></td>
+          </tr>
+        {% endfor %}
       {% endfor %}
-      {% endfor %}
+
       {#
       {% for element in unchanged_elements %}
       <tr>
