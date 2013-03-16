@@ -109,40 +109,68 @@ def get_fingerprints(url, selectors, display=None, \
 # given selector
 def get_fingerprint(browser, selector):
   eval_js = """
-  var $ = window.jQuery;
-  var $el = $('{{ SELECTOR }}');
-  if ($el.length < 1) {
+  return (function($) {
+    window.onerror = function() {
+      console.log(arguments);
+    }
+    function eldetails($el) {
+      var strs = [$.trim($el.clone().children().remove().end().text())];
+      var srcs = $el.prop('tagName') === 'IMG' ? [$el.attr('src')] : [];
+      $el.find('*').not('style,noscript,script').each(function () {
+        var $child = $(this);
+        if ($child.is(':visible')
+          && $child.css('visibility') !== 'hidden'
+          && $child.css('opacity') !== 0) {
+          // note that visibility, opacity hidden still consume space in the layout
+          var txt = $child.clone().children().remove().end().text();
+          if ($.trim(txt) !== '') {
+            strs.push(txt);
+          }
+          if ($child.prop('tagName') === 'IMG') {
+            srcs.push($child.attr('src'));
+          }
+        }
+      })
+      return {
+        'strs': strs,
+        'srcs': srcs
+      };
+    }
+    var $el = $('{{ SELECTOR }}');
+    if ($el.length < 1 || !$el.is(':visible')) {
+      return {
+        offset: {},
+        //innerHTML: '',
+        outerHTML: '',
+        computedStyle: {},
+        text: '',
+        srcs: '',
+      }
+    }
+    $el.addClass('watchtower-expose-for-screenshot');    // add class to highlight this in screenshot
+    var computed_style = window.getComputedStyle($el.get(0));
+    var style = {};
+    for (var s in computed_style) {
+      if (!computed_style.hasOwnProperty(s)) {   // !hasOwnProperty is required because it's half array, half object
+        style[s] = computed_style[s];
+      }
+    }
+    var details = eldetails($el);
     return {
-      offset: {},
-      //innerHTML: '',
-      outerHTML: '',
-      computedStyle: {},
-      text: '',
-      srcs: '',
-    }
-  }
-  $el.addClass('watchtower-expose-for-screenshot');    // add class to highlight this in screenshot
-  var computed_style = window.getComputedStyle($el.get(0));
-  var style = {};
-  for (var s in computed_style) {
-    if (!computed_style.hasOwnProperty(s)) {   // !hasOwnProperty is required because it's half array, half object
-      style[s] = computed_style[s];
-    }
-  }
-  var srcs = '';
-  $el.find('*:[src]').not('script').each(function() {
-    srcs += $(this).attr('src') + '|';
-  });
-  return {
-    offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
-    //innerHTML: $el.html(),
-    outerHTML: $('<div>').append($el.clone()).html(),
-    computedStyle: style,
-    text: $el.text(),
-    srcs: srcs,
-  };
+      offset: $el.offset(),   // TODO some edge cases in which offset is not accurate
+      //innerHTML: $el.html(),
+      outerHTML: $('<div>').append($el.clone()).html(),
+      computedStyle: style,
+
+      // TODO convert text and srcs to arrays, after diffing works well enough
+      text: details.strs.join('|'),
+      srcs: details.srcs.join('|'),
+    };
+  })(jQuery);
   """.replace('{{ SELECTOR }}', selector)
   ret = browser.execute_script(eval_js)
+
+  print ret['text']
 
   return ret
 
@@ -167,20 +195,23 @@ def diff_fingerprints(f1, f2):
 def diff_text(t1, t2):
   if t1.strip() != t2.strip():
     ratio = difflib.SequenceMatcher(None, t1, t2).ratio()
+    #if ratio < .6:  # 40% different
     return [{ \
       'key': 'text content',
-      'diff': ''.join(difflib.context_diff(t1, t2)),
-      'diff_amount': ratio,
+      'diff': '%s vs. %s' % (t1, t2), #''.join(difflib.context_diff(t1, t2)),
+      'diff_amount': (1 - ratio) * 100,
       'diff_unit': '%',
     }]
   return []
 
 def diff_srcs(s1, s2):
   if s1.strip() != s2.strip():
+    ratio = difflib.SequenceMatcher(None, s1, s2).ratio()
     return [{ \
       'key': 'image content source',
-      'diff_amount': 'n/a',
-      'diff_unit': 'n/a',
+      'diff': '%s vs. %s' % (s1, s2),
+      'diff_amount': (1 - ratio) * 100,
+      'diff_unit': '%',
     }]
   return []
 
@@ -215,7 +246,7 @@ def diff_html(h1, h2):
       diffs.append({ \
         'key': 'html content',
         'diff': ''.join(difflib.context_diff(h1, h2)),
-        'diff_amount': ratio,
+        'diff_amount': (1 - ratio) * 100,
         'diff_unit': '%',
       })
     else:
