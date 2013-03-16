@@ -199,7 +199,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
+  fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors, record_screenshot=True)
   now = datetime.utcnow()
 
   # delete elements
@@ -226,7 +226,6 @@ def delete_page(page):
   db.session.delete(page)
   db.session.commit()
   return redirect('/')
-
 
 @app.route('/proxy')
 def proxy():

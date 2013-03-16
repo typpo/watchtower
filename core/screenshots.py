@@ -13,7 +13,8 @@ def upload_screenshot(path, remote_path):
 
   print 'uploaded to https://s3.amazonaws.com/watchtower-screenshots/' + remote_path
 
-  # delete local file
-  os.remove(path)
+  # delete local file if applicable
+  if os.path.exists(path):
+    os.remove(path)
 
   return True

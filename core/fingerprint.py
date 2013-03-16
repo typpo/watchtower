@@ -32,7 +32,7 @@ def stop_browser(browser):
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors, display=None, \
-    browser=None, cleanup_at_end=True):
+    browser=None, cleanup_at_end=True, record_screenshot=False):
   if not display:
     display = start_display()
   if not browser:
@@ -87,13 +87,13 @@ def get_fingerprints(url, selectors, display=None, \
   screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
   print 'screenshot to', screenshot_local_path
   screenshot_url = ''
-  # TODO only save screenshot if there's a diff
   if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
     screenshot_remote_path = 'images/'  \
       + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
-    thread = Thread(target=screenshots.upload_screenshot, \
-        args=(screenshot_local_path,screenshot_remote_path))
-    thread.start()
+    if record_screenshot:
+      thread = Thread(target=screenshots.upload_screenshot, \
+          args=(screenshot_local_path,screenshot_remote_path))
+      thread.start()
     screenshot_url = screenshot_remote_path
 
   browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
