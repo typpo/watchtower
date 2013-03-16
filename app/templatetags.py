@@ -1,4 +1,8 @@
-
+import sys
+import os
+import pytz
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from core.models import Element, Version, Twitter, Page, User
 
 def filter_element_from_version(version):
   return Element.query.filter_by(id=version.element_id).first()
@@ -8,7 +12,7 @@ def filter_page_from_element(element):
 
 def filter_page_from_version(version):
   # better way?
-  return _jinja2_filter_page_from_element(_jinja2_filter_element_from_version(version))
+  return filter_page_from_element(filter_element_from_version(version))
 
 def filter_to_local_datetime(dt):
   return format_datetime(dt)
