@@ -19,6 +19,7 @@ import os
 import sys
 import bcrypt
 import pytz
+import templatetags
 from operator import attrgetter, add
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -56,7 +57,7 @@ class TwythonOld(Twython):
     return self.get('https://search.twitter.com/search.json', params=kwargs)
     """
 
-reddit = praw.Reddit(user_agent='test')
+#reddit = praw.Reddit(user_agent='test')
 twitter = twitter.Twitter(domain="search.twitter.com")
 app = create_app()
 
@@ -71,38 +72,18 @@ def load_user(id):
   g.user = User.query.filter_by(id=id).first()
   return g.user
 
-def _jinja2_filter_element_from_version(version):
-  return Element.query.filter_by(id=version.element_id).first()
-
-def _jinja2_filter_page_from_element(element):
-  return Page.query.filter_by(id=element.page_id).first()
-
-def _jinja2_filter_page_from_version(version):
-  # better way?
-  return _jinja2_filter_page_from_element(_jinja2_filter_element_from_version(version))
-
-def _jinja2_filter_to_local_datetime(dt):
-  return format_datetime(dt)
-
-def _jinja2_fn_localize_with_tz(date, tz_str):
-  if not tz_str:  # necessary for backwards compatibility 3/11 some accounts don't have this set; alembic migration apparently isn't setting default?
-    tz_str = 'America/Los_Angeles'
-  ret = pytz.utc.localize(date).astimezone(pytz.timezone(tz_str))
-  print ret.isoformat()
-  return ret
-
-app.jinja_env.filters['element_from_version'] = _jinja2_filter_element_from_version
-app.jinja_env.filters['page_from_element'] = _jinja2_filter_page_from_element
-app.jinja_env.filters['page_from_version'] = _jinja2_filter_page_from_version
-app.jinja_env.filters['to_local_datetime'] = _jinja2_filter_to_local_datetime
-app.jinja_env.globals['localize_with_tz'] = _jinja2_fn_localize_with_tz
+app.jinja_env.filters['element_from_version'] = templatetags.filter_element_from_version
+app.jinja_env.filters['page_from_element'] = templatetags.filter_page_from_element
+app.jinja_env.filters['page_from_version'] = templatetags.filter_page_from_version
+app.jinja_env.filters['to_local_datetime'] = templatetags.filter_to_local_datetime
+app.jinja_env.globals['localize_with_tz'] = templatetags.fn_localize_with_tz
 
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
   pages = Page.query.all()
-  app.logger.debug(pages)
   if g.user:
+    app.logger.debug(pages)
     if (request.method =="POST"):
       app.logger.debug(g.user)
       add = request.form['addtweets']
@@ -258,15 +239,6 @@ def proxy():
   if html is None:
     return 'Invalid url'
 
-  """
-  soup = BeautifulSoup(html)
-  for a in soup.findAll('a'):
-    a['href'] = urljoin(a['href'], real_url)
-  for img in soup.findAll('img'):
-    img['src'] = urljoin(img['src'], real_url)
-
-  return render_template('proxy.html', html=str(soup), root=real_url, )
-  """
   watchtower_content_root = 'http://gowatchtower.com' if is_production() else 'http://localhost:5000'
   ts = time.time()
   return render_template('proxy.html', html=html, root=url, \
@@ -346,6 +318,7 @@ def profile():
 @app.route('/news', methods=['GET', 'POST'])
 @login_required
 def news():
+  return jsonify({})
   feed = []
   for tweet in g.user.twitters:
     feed.append(twitter.search(q='#' + tweet.handle))
