@@ -22,8 +22,20 @@
       }).appendTo('body').show();
   }).mouseleave(function() {
     if ($screenshot_preview) $screenshot_preview.remove();
+  }).on('click', function() {
+    var $el = $(this);
+    $('#lightbox_image').attr('src', 'https://s3.amazonaws.com/watchtower-screenshots/'
+              + $el.data('screenshot-url')).bind('load', function() {
+      $('#lightbox').lightbox({
+        resizeToFit: true
+      });
+    });
+    return false;
   });
   $.ajax('/news').done(function(data) {
+    if (!data || !data.reddit) {
+      return;
+    }
     var $feed = $('#news');
     $('#social').show();
     if (Object.keys(data.reddit).length) {

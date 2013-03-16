@@ -55,7 +55,7 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
       <td></td>
     {% endif %}
 
-    <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <a href="https://s3.amazonaws.com/watchtower-screenshots/{{version.screenshot}}" target="_blank"><i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></a></td>
+    <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></td>
     </tr>
   {% endfor %}
   </table>
@@ -67,24 +67,34 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
 </div> {# end div row #}
 {% else %}
 <div class="row span12">
-</br>
-<p class="alert alert-error">
-  No alerts have been created!
-</p>
-</div>
-<div class="row span12">
-  <p class="alert alert-info">
-    Click "New alert" to start monitoring pages.
+  </br>
+  <p class="alert alert-error">
+    No alerts have been created!
   </p>
 </div>
+<div class="row span12">
+    <p class="alert alert-info">
+      Click "New alert" to start monitoring pages.
+    </p>
 </div>
 {% include 'blocks/social.html' %}
 {% endif %}
+
+<div id="lightbox" class="lightbox hide fade"  tabindex="-1" role="dialog" aria-hidden="true">
+  <div class='lightbox-header'>
+    <button type="button" class="close" data-dismiss="lightbox" aria-hidden="true">&times;</button>
+  </div>
+  <div class='lightbox-content'>
+    <img id="lightbox_image" src="/static/images/loader.gif">
+    <!--<div class="lightbox-caption"><p id="lightbox_caption"></p></div>-->
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src="/static/js/jquery.timeago.js"></script>
 <script src="/static/js/dashboard.js"></script>
+<script src="/static/js/bootstrap-lightbox.js"></script>
 
 <script type="text/html" id="news_page_tmpl">
   <div class="accordion-group">
@@ -111,3 +121,6 @@ Sorry, Watchtower is in closed beta and free accounts are NOT being processed fo
 </script>
 {% endblock %}
 
+{% block css %}
+<link href="/static/css/bootstrap-lightbox.min.css" rel="stylesheet">
+{% endblock %}
