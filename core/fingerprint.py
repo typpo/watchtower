@@ -92,15 +92,15 @@ def get_fingerprints(url, selectors, display=None, \
       + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
     if record_screenshot:
       thread = Thread(target=screenshots.upload_screenshot, \
-          args=(screenshot_local_path,screenshot_remote_path))
+          args=(screenshot_local_path,screenshot_remote_path,True))
       thread.start()
     screenshot_url = screenshot_remote_path
 
   browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
 
   #if cleanup_at_end:
-  stop_browser(browser)
-  stop_display(display)
+  browser.close()
+  display.stop()
 
   print 'ret'
   return ret, screenshot_url, screenshot_local_path

@@ -38,7 +38,6 @@ if __name__ == '__main__':
       print 'new screenshot', screenshot_url
       if screenshot_url:
         screenshots.upload_screenshot(screenshot_local, screenshot_url)
-
     else:
       for element, old, new in zip(elements, old_fingerprints, new_fingerprints):
         diffs = diff_fingerprints(old, new)
