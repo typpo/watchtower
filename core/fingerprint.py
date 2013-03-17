@@ -29,6 +29,7 @@ def start_browser():
 
 def stop_browser(browser):
   browser.close()
+  browser.quit()
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors, display=None, \
@@ -99,8 +100,8 @@ def get_fingerprints(url, selectors, display=None, \
   browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
 
   #if cleanup_at_end:
-  browser.close()
-  display.stop()
+  stop_browser(browser)
+  stop_display(display)
 
   print 'ret'
   return ret, screenshot_url, screenshot_local_path
