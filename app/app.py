@@ -271,17 +271,25 @@ def login():
   if (g.user is not None):
     return redirect(oid.get_next_url())
   if 'openid' in request.args:
+    print 'OPENID'
     openid = request.args['openid']
     return oid.try_login(openid, ask_for=['email', 'fullname',
                                           'nickname', 'timezone'])
   if request.method == 'POST':
+    print 'POST'
     user_exists = User.query.filter_by(email=request.form['email']).first()
     if not user_exists:
-      try:
-        timezone = pytz.timezone(request.form['timezone']).zone
-      except pytz.exceptions.UnknownTimeZoneError:
+      if 'timezone' in request.form:
+        try:
+          timezone = pytz.timezone(request.form['timezone']).zone
+          print 'tz'
+        except pytz.exceptions.UnknownTimeZoneError:
+          print 'tzexcept'
+          timezone = 'America/Los_Angeles'
+      else:
         timezone = 'America/Los_Angeles'
       try:
+        print 'CREATE W PASS'
         g.user = create_user(bcrypt=bcrypt, email=request.form['email'], password=request.form['password'], timezone=timezone)
       except ValueError as e:
         flash(e.message)
