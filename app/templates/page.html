@@ -2,13 +2,18 @@
 
 {% block content %}
 <div><a href="/">&larr; Dashboard</a></div>
-<h3 style="line-height:20px!important">Changes for <a href="{{ page.url }}">{{ page.name }}</a></h3>
-<p>Page URL:&nbsp;<a href="{{ page.url }}">{{ page.url }}</a></p>
+<h3 style="line-height:20px!important">Changes for <a href="{{ page.url }}">{{ page.name }}</a> <span style="font-size:16px; vertical-align: middle">(<a href="{{ page.url }}">{{ page.url }}</a>)</span></h3>
+<p>Currently tracking {{ page.elements|list|length }} elements</p>
 <p>
 <a class="btn" href="/page/{{ page.id }}/edit"><i class="icon-edit"></i> Add or Change Elements</a>
 <a class="btn" href="/page/{{ page.id }}/delete"><i class="icon-remove"></i> Delete this Page</a>
 </p>
+{#
+TODO pending fix: right now this is always 0
 <div style="padding:20px 0"><span class="alert alert-info">{{ page.num_new_changes }} new alerts since last visit</span></div>
+#}
+
+{% if versions and versions|length > 0 %}
 <table class="table table-striped" width="95%">
   <thead>
     <tr>
@@ -52,6 +57,13 @@
       #}
     </tbody>
 </table>
+{% else %}
+<h3>No versions detected.
+{% if page.elements|list|length < 1 %}
+  You may want to <a href="/page/{{ page.id }}/edit">add some elements</a> to track.
+{% endif %}
+</h3>
+{% endif %}
 </div>
 </body>
 </html>
