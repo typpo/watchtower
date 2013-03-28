@@ -53,3 +53,8 @@ ul#left_nav {
 #story h3 {
   line-height: 1.2em;
 }
+
+#story div {
+  margin-top: 25px;
+
+}
