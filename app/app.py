@@ -97,7 +97,7 @@ def index():
       db.session.commit()
     news_feed = []
 
-    pages = g.user.pages
+    pages = list(g.user.pages)   # force eval
     all_versions = []
     elementid_to_element = {}
     for page in pages:

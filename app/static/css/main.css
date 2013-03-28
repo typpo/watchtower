@@ -29,4 +29,19 @@ ul#left_nav {
   box-shadow: 0 1px 4px rgba(0,0,0,.065);
 }
 
+#first_time_container {
+  font-size: 17px;
+}
+
+.first_time_steps li {
+  line-height: 1.4em;
+}
+
 .share-buttons{float: right; margin-top:7px;}.share-buttons>iframe{vertical-align:top;}.twitter-share-button{width:80px!important;}
+
+#save_page_selectors {
+  float: right;
+  width: 200px;
+  height: 35px;
+  font-size: 18px;
+}

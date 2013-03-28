@@ -1,84 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if pages %}
 <div class="row">
-<div class="span3">
-<ul id="left_nav" class="nav nav-list affix">
-  <li class="nav-header">Control Panel</li>
-  <li><a href="/page/new"><i class="icon-plus"></i> New Alert</a></li>
-  <li><a href="#overview"><i class="icon-th-list"></i> Overview</a></li>
-  <li><a href="#recent_changes"><i class="icon-eye-open"></i> Recent Changes</a></li>
-  <li><a href="#social_news"><i class="icon-share"></i> Social News</a></li>
-</ul>
-</div>
-<div class="span9">
-<p class="alert alert-info" style="margin-top:15px">
-Sorry, Watchtower is in closed beta and free accounts are NOT being processed for monitoring.  We'll notify you when scans have resumed.
-</p>
+  <div class="span3">
+  <ul id="left_nav" class="nav nav-list affix">
+    <li class="nav-header">Control Panel</li>
+    <li><a href="/page/new"><i class="icon-plus"></i> New Alert</a></li>
+    <li><a href="#overview"><i class="icon-th-list"></i> Overview</a></li>
+    <li><a href="#recent_changes"><i class="icon-eye-open"></i> Recent Changes</a></li>
+    <li><a href="#social_news"><i class="icon-share"></i> Social News</a></li>
+  </ul>
+  </div>
+  <div class="span9">
+{% if pages %}
+  <p class="alert alert-info" style="margin-top:15px">
+  Sorry, Watchtower is in closed beta and free accounts are NOT being processed for monitoring.  We'll notify you when scans have resumed.
+  </p>
 
-<h3 id="overview">Overview</h3>
-<a href="/page/new" class="btn btn-primary"><i class="icon-plus"></i> New alert</a>
-<table class="table table-bordered table-striped" style="margin-top:20px;">
-  <tbody>
-    <tr>
-      <th>Page</th>
-      <th>New versions</th>
-      <th style="width:5px"></th>
-      <th style="width:5px"></th>
-    </tr>
-    {% for page in pages %}
+  <h3 id="overview">Overview</h3>
+  <a href="/page/new" class="btn btn-primary"><i class="icon-plus"></i> New alert</a>
+  <table class="table table-bordered table-striped" style="margin-top:20px;">
+    <tbody>
       <tr>
-        <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
-        <td>{{ page.num_new_changes }}</td>
-        <td><a href=/page/{{ page.id }}/edit><i class="icon-edit"></i> </a></td>
-        <td><a href=/page/{{ page.id }}/delete><i class="icon-remove"></i> </a></td>
+        <th>Page</th>
+        <th>New versions</th>
+        <th style="width:5px"></th>
+        <th style="width:5px"></th>
       </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      {% for page in pages %}
+        <tr>
+          <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
+          <td>{{ page.num_new_changes }}</td>
+          <td><a href=/page/{{ page.id }}/edit><i class="icon-edit"></i> </a></td>
+          <td><a href=/page/{{ page.id }}/delete><i class="icon-remove"></i> </a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-<h3 id="recent_changes">Recent Changes</h3>
-{% if all_versions %}
-  <table class="table table-bordered table-striped">
-  {% for version in all_versions[:25] %}
-    <tr>
-    {% set page = (version|page_from_version) %}
-    {% set time = localize_with_tz(version.when, user.timezone) %}
+  <h3 id="recent_changes">Recent Changes</h3>
+  {% if all_versions %}
+    <table class="table table-bordered table-striped">
+    {% for version in all_versions[:25] %}
+      <tr>
+      {% set page = (version|page_from_version) %}
+      {% set time = localize_with_tz(version.when, user.timezone) %}
 
-    {% if time != prevtime %}
-      <td style="width: 150px">
-        <abbr class="timeago" data-toggle="tooltip" title="{{time.isoformat()}}">{{time.strftime('%b %d %I:%m %p %Z')}}</abbr>
-      </td>
-      {% set prevtime = time %}
-    {% else %}
-      <td></td>
-    {% endif %}
+      {% if time != prevtime %}
+        <td style="width: 150px">
+          <abbr class="timeago" data-toggle="tooltip" title="{{time.isoformat()}}">{{time.strftime('%b %d %I:%m %p %Z')}}</abbr>
+        </td>
+        {% set prevtime = time %}
+      {% else %}
+        <td></td>
+      {% endif %}
 
-    <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></td>
-    </tr>
-  {% endfor %}
-  </table>
+      <td><em>{{ (version|element_from_version).name }}</em> on <strong><a href="/page/{{ page.id }}">{{ page.name }}</a></strong> changed <i class="screenshot-preview icon-zoom-in" data-screenshot-url="{{ version.screenshot }}"></i></td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% else %}
+    There's nothing here yet...
+  {% endif %}
+  {% include 'blocks/social.html' %}
 {% else %}
-  There's nothing here yet...
+  <h3>First time?</h3>
+  <div id="first_time_container">
+    <p>
+    Getting started is simple!
+    </p>
+    <ol class="first_time_steps">
+      <li>Click <a href="/page/new"><i class="icon-plus"></i> New Alert</a> to add a page.</li>
+      <li>Select the areas of the page you want to track.</li>
+      <li>Watchtower will track and notify you of changes.</li>
+    </ol>
+  </div>
+
 {% endif %}
-{% include 'blocks/social.html' %}
 </div> {# end div right span #}
 </div> {# end div row #}
-{% else %}
-<div class="row span12">
-  </br>
-  <p class="alert alert-error">
-    No alerts have been created!
-  </p>
-</div>
-<div class="row span12">
-    <p class="alert alert-info">
-      Click "New alert" to start monitoring pages.
-    </p>
-</div>
-{% include 'blocks/social.html' %}
-{% endif %}
+
+{# {% include 'blocks/social.html' %} #}
 
 <div id="lightbox" class="lightbox hide fade"  tabindex="-1" role="dialog" aria-hidden="true">
   <div class='lightbox-header'>
