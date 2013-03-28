@@ -82,6 +82,10 @@ app.jinja_env.globals['localize_with_tz'] = templatetags.fn_localize_with_tz
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+  return render_template('index.html', user=g.user)
+
+@app.route('/dashboard')
+def dashboard():
   pages = Page.query.all()
   if g.user:
     app.logger.debug(pages)
@@ -111,7 +115,7 @@ def index():
     return render_template('dashboard.html', user=g.user, pages=pages, \
         all_versions=all_versions, element_map=elementid_to_element)
   else:
-    return render_template('index.html', user=g.user)
+    return redirect('/login')
 
 @app.route('/about')
 def about():
@@ -225,7 +229,7 @@ def edit_page(page):
 def delete_page(page):
   db.session.delete(page)
   db.session.commit()
-  return redirect('/')
+  return redirect('/dashboard')
 
 @app.route('/proxy')
 def proxy():
@@ -255,7 +259,6 @@ def lookup_current_user():
   if 'openid' in session and session['openid']:
     g.user = User.query.filter_by(openid=session['openid']).first()
 
-
 @oid.after_login
 def create_or_login(resp):
   session['openid'] = resp.identity_url
@@ -263,7 +266,8 @@ def create_or_login(resp):
   if user is None:
     g.user = create_user(bcrypt=bcrypt, email=resp.email, password=None, timezone=resp.timezone, openid=session['openid'])
     user = g.user
-  return redirect(oid.get_next_url())
+  #return redirect(oid.get_next_url())
+  return redirect(url_for('dashboard'))
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -275,38 +279,43 @@ def login():
     openid = request.args['openid']
     return oid.try_login(openid, ask_for=['email', 'fullname',
                                           'nickname', 'timezone'])
-  if request.method == 'POST':
-    print 'POST'
-    user_exists = User.query.filter_by(email=request.form['email']).first()
-    if not user_exists:
-      if 'timezone' in request.form:
-        try:
-          timezone = pytz.timezone(request.form['timezone']).zone
-          print 'tz'
-        except pytz.exceptions.UnknownTimeZoneError:
-          print 'tzexcept'
-          timezone = 'America/Los_Angeles'
-      else:
-        timezone = 'America/Los_Angeles'
-      try:
-        print 'CREATE W PASS'
-        g.user = create_user(bcrypt=bcrypt, email=request.form['email'], password=request.form['password'], timezone=timezone)
-      except ValueError as e:
-        flash(e.message)
-        return render_template('login.html', next=oid.get_next_url(),
-                               error=oid.fetch_error())
-      login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
-      flash('Account created')
-    else:
-      g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
-      if not g.user:
-        flash('Incorrect password')
-        return redirect(url_for('login'))
-      else:
-        login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
-    return redirect(url_for('index'))
-  return render_template('login.html', next=oid.get_next_url(),
+  if request.method != 'POST':
+    return render_template('login.html', next=oid.get_next_url(),
               error=oid.fetch_error())
+  print 'POST'
+  user_exists = User.query.filter_by(email=request.form['email']).first()
+  if not user_exists:
+    # new user
+
+    # timezone bs
+    if 'timezone' in request.form:
+      try:
+        timezone = pytz.timezone(request.form['timezone']).zone
+        print 'tz'
+      except pytz.exceptions.UnknownTimeZoneError:
+        print 'tzexcept'
+        timezone = 'America/Los_Angeles'
+    else:
+      timezone = 'America/Los_Angeles'
+
+    # password stuff
+    try:
+      print 'CREATE W PASS'
+      g.user = create_user(bcrypt=bcrypt, email=request.form['email'], password=request.form['password'], timezone=timezone)
+    except ValueError as e:
+      flash(e.message)
+      return render_template('login.html', next=oid.get_next_url(),
+                             error=oid.fetch_error())
+    login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+    flash('Account created')
+  else:
+    g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
+    if not g.user:
+      flash('Incorrect password')
+      return redirect(url_for('login'))
+    else:
+      login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+  return redirect(url_for('dashboard'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
