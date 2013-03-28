@@ -1,3 +1,7 @@
+body {
+  background-image: url(/static/images/ps_neutral.png);
+}
+
 #loader {
   position:fixed;
   top:30%;
