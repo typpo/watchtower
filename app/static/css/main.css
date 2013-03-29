@@ -57,3 +57,10 @@ ul#left_nav {
 #story div {
   margin-top: 25px;
 }
+
+#story .image_container {
+  outline: 1px solid #ccc;
+  -moz-box-shadow: 3px 3px 4px #000;
+  -webkit-box-shadow: 3px 3px 4px #000;
+  box-shadow: 3px 3px 4px #000;
+}
