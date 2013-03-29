@@ -16,7 +16,11 @@
     <div class="control-group">
       <label class="control-label" for="name">Page Name</label>
       <div class="controls">
+        {% if sitename %}
+        <input class="span5" type="text" name="name" value="{{sitename}}">
+        {% else %}
         <input class="span5" type="text" name="name" placeholder="Competitor's Landing Page">
+        {% endif %}
       </div>
     </div>
     <div class="control-group">

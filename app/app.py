@@ -7,7 +7,7 @@ from flaskext.bcrypt import Bcrypt
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
-from urlparse import urlparse, urljoin
+from urlparse import urlparse
 from threading import Thread
 import twitter
 #from twython import Twython
@@ -147,10 +147,15 @@ def show_page(page):
 
 @app.route('/page/new', methods=['GET', 'POST'])
 def new_page():
+  # Get
   if request.method == 'GET':
     url = request.args.get('url')
-    return render_template('new_page.html', url=url)
+    if not url.startswith('http'):
+      url = 'http://' + url   # add http:// to user submission
+    sitename = urlparse(url).hostname
+    return render_template('new_page.html', url=url, sitename=sitename)
 
+  # Post
   for p in ['url', 'name']:
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
