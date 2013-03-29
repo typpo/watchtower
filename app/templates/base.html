@@ -60,34 +60,36 @@
             </li>
             {% endif %}
           </ul>
-          <div class="btn-group pull-right" style="margin-top:-3px">
-            {% if not g.user %}
-            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign Up/Sign In <strong class="caret"></strong></a>
-            <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-                <p>
-                  <form id="login_form" action="{{url_for('login')}}" method="post" class="form">
-                    <dl>
-                      <dd><input type="text" name=email placeholder="email">
-                      <dd><input name="password" type="password" placeholder="password">
-                      <dd><input type="submit" class="btn" value="Sign up/Sign in">
-                    </dl>
+          {% if not g.user %}
+            <div class="btn-group pull-right" style="margin-top:7px;">
+              <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign Up/Sign In <strong class="caret"></strong></a>
+              <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+                  {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+                  <p>
+                    <form id="login_form" action="{{url_for('login')}}" method="post" class="form">
+                      <dl>
+                        <dd><input type="text" name=email placeholder="email">
+                        <dd><input name="password" type="password" placeholder="password">
+                        <dd><input type="submit" class="btn" value="Sign up/Sign in">
+                      </dl>
+                    </form>
+                    Or...
+                    <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
+                    <button type=submit class=btn>
+                      <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
+                    <input type=hidden name=next value="{{next}}">
                   </form>
-                  Or...
-                  <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
-                  <button type=submit class=btn>
-                    <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
-                  <input type=hidden name=next value="{{next}}">
+              </ul>
+            </div>
+          {% else %}
+              <div class="btn-group pull-right" style="margin-top:-3px">
+              <p>
+                <form action="/logout" method="get">
+                  <button type=submit value="Sign out" class="btn" href="/">Sign Out</button>
                 </form>
-            </ul>
-            {% else %}
-            <p>
-              <form action="/logout" method="get">
-                <button type=submit value="Sign out" class="btn" href="/">Sign Out</button>
-              </form>
-            </p>
-            {% endif %}
-          </div>
+              </p>
+              </div>
+          {% endif %}
         </div>
     </div>
     <div class="container">

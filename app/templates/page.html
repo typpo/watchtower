@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div><a href="/">&larr; Dashboard</a></div>
+<div><a href="/dashboard">&larr; Dashboard</a></div>
 <h3 style="line-height:20px!important">Changes for <a href="{{ page.url }}">{{ page.name }}</a> <span style="font-size:16px; vertical-align: middle">(<a href="{{ page.url }}">{{ page.url }}</a>)</span></h3>
 <p>Currently tracking {{ page.elements|list|length }} elements</p>
 <p>
