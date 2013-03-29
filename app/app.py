@@ -150,9 +150,11 @@ def new_page():
   # Get
   if request.method == 'GET':
     url = request.args.get('url')
-    if not url.startswith('http'):
-      url = 'http://' + url   # add http:// to user submission
-    sitename = urlparse(url).hostname
+    sitename = None
+    if url:
+      if not url.startswith('http'):
+        url = 'http://' + url   # add http:// to user submission
+      sitename = urlparse(url).hostname
     return render_template('new_page.html', url=url, sitename=sitename)
 
   # Post
