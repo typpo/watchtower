@@ -213,7 +213,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors, record_screenshot=True)
+  #fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors, record_screenshot=True)
   now = datetime.utcnow()
 
   # delete elements
@@ -224,12 +224,13 @@ def edit_page(page):
     db.session.delete(element)
 
   # add new selections
-  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+  #for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+  for name, selector in zip(selector_names, selectors):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
-        element=element, screenshot=screenshot_url)
+    #version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
+    #    element=element, screenshot=screenshot_url)
     db.session.add(element)
-    db.session.add(version)
+    #db.session.add(version)
   db.session.commit()
 
   return redirect('/page/%d' % page.id)

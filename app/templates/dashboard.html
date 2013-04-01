@@ -29,7 +29,7 @@
       </tr>
       {% for page in pages %}
         <tr>
-          <td><a href="/page/{{ page.id }}">{{ page.name }}</a></td>
+          <td><a href="/page/{{ page.id }}">{{ page.name or page.url }}</a></td>
           <td>{{ page.num_new_changes }}</td>
           <td><a href=/page/{{ page.id }}/edit><i class="icon-edit"></i> </a></td>
           <td><a href=/page/{{ page.id }}/delete><i class="icon-remove"></i> </a></td>
