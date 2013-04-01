@@ -175,7 +175,7 @@ def new_page():
   db.session.commit()
 
   # redirect to page for this page
-  return redirect('page/%s/edit' % page.id)
+  return redirect('page/%d/edit' % page.id)
 
 @app.route('/preview', methods=['GET'])
 def preview():
@@ -233,7 +233,8 @@ def edit_page(page):
     #db.session.add(version)
   db.session.commit()
 
-  return redirect('/page/%d' % page.id)
+  #return redirect('/page/%d' % page.id)
+  return jsonify(success=True, error=None)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
 @must_own_page
