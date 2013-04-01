@@ -3,7 +3,7 @@
 pushd `dirname $0`
 
 sudo apt-get update
-sudo apt-get install python-virtualenv python-pip unzip build-essential python-dev unzip xvfb xserver-xephyr postgresql postgresql-client sqlite3
+sudo apt-get install python-virtualenv python-pip unzip build-essential python-dev unzip xvfb xserver-xephyr postgresql postgresql-client postgresql-server-dev-all sqlite3
 #sudo apt-get install tightvncserver
 cd ..
 virtualenv .
