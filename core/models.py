@@ -19,6 +19,7 @@ class User(db.Model):
                           backref='user', lazy='dynamic')
   password = db.Column(db.String(255))
   timezone = db.Column(db.String(64), default='America/Los_Angeles')
+  created_at = db.Column(db.DateTime, default=datetime.now)
 
   def get_id(self):
     return self.id
