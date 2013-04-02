@@ -60,7 +60,37 @@ ul#left_nav {
 
 #story .image_container {
   outline: 1px solid #ccc;
-  -moz-box-shadow: 3px 3px 4px #000;
-  -webkit-box-shadow: 3px 3px 4px #000;
-  box-shadow: 3px 3px 4px #000;
+  -moz-box-shadow: 4px 4px 4px #000;
+  -webkit-box-shadow: 4px 4px 4px #000;
+  box-shadow: 4px 4px 4px #000;
+}
+
+.calloutblock {
+  background-color: #6bbe45;
+  border: 1px solid #6bbe45;
+  padding: 20px 0 20px 0;
+  box-shadow: 3px 10px 10px #ccc;
+  -moz-box-shadow: 3px 10px 10px #ccc;
+  -webkit-box-shadow: 3px 10px 10px #ccc;
+  color: #FFF;
+}
+
+.normalblock {
+  background-color: #FFFFFF;
+  border: 1px solid #6bbe45;
+  height: 225px;
+}
+
+.strong-green {
+  color: #66cc33;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.innerblock {
+  padding:20px;
+}
+
+#feed a {
+  padding: 5px;
 }
