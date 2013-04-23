@@ -1,5 +1,11 @@
 body {
   background-image: url(/static/images/ps_neutral.png);
+  font-family: 'Open Sans', sans-serif;
+}
+
+.container {
+  background-color: #fff;
+  padding: 15px;
 }
 
 #loader {
@@ -42,7 +48,6 @@ ul#left_nav {
 }
 
 .share-buttons{float: right; margin-top:7px;}.share-buttons>iframe{vertical-align:top;}.twitter-share-button{width:80px!important;}
-
 #save_page_selectors {
   float: right;
   width: 200px;
@@ -52,6 +57,9 @@ ul#left_nav {
 
 #story h3 {
   line-height: 1.2em;
+  color: #6bbe45;
+  font-weight: normal;
+  font-size: 26px;
 }
 
 #story div {
@@ -60,18 +68,19 @@ ul#left_nav {
 
 #story .image_container {
   outline: 1px solid #ccc;
-  -moz-box-shadow: 3px 3px 4px #000;
-  -webkit-box-shadow: 3px 3px 4px #000;
-  box-shadow: 3px 3px 4px #000;
+  -moz-box-shadow: 0 1px 5px #BBB;
+  -webkit-box-shadow: 0 1px 5px #BBB;
+  box-shadow: 0 1px 5px #BBB;
+  border-radius: 5px;
 }
 
 .calloutblock {
   background-color: #6bbe45;
-  border: 1px solid #6bbe45;
+  border: 1px solid #339900;
   padding: 20px 0 20px 0;
-  box-shadow: 3px 10px 10px #ccc;
-  -moz-box-shadow: 3px 10px 10px #ccc;
-  -webkit-box-shadow: 3px 10px 10px #ccc;
+  box-shadow: 0 1px 5px #BBB;
+  -moz-box-shadow: 0 1px 5px #BBB;
+  -webkit-box-shadow: 0 1px 5px #BBB;
   color: #FFF;
 }
 
@@ -94,3 +103,4 @@ ul#left_nav {
 #feed a {
   padding: 5px;
 }
+

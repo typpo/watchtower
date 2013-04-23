@@ -32,7 +32,7 @@ def create_app():
   app = Flask(__name__)
   app.secret_key = 'not a secret key'
   if is_production():
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://watchtower:jackathon@localhost/postgres'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@localhost/watchtower'
   else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
   db.init_app(app)
