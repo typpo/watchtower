@@ -39,25 +39,21 @@ def get_fingerprints(url, selectors, display=None, \
   if not browser:
     browser = start_browser()
 
-  print 'getting fingerprints'
   print 'load browser @ %s' % url
   browser.get(url) # Load page
 
   # inject jquery
-  print 'inject jquery'
   f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
   jquery_js = f.read();
   f.close()
   browser.execute_script(jquery_js)
 
   # check all selectors
-  print 'check selectors'
   ret = [get_fingerprint(browser, sel) for sel in selectors]
 
   # screenshot
 
   # mask all non-elements, so chosen elements are highlighted
-  print 'masking page for screenshot'
   mask_js = """
   jQuery.noConflict();
   (function($) {
@@ -86,7 +82,7 @@ def get_fingerprints(url, selectors, display=None, \
   if not os.path.isdir('/tmp/watchtower'):
     os.mkdir('/tmp/watchtower')
   screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
-  print 'screenshot to', screenshot_local_path
+  print 'Screenshot saved to', screenshot_local_path
   screenshot_url = ''
   if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
     screenshot_remote_path = 'images/'  \
@@ -181,6 +177,8 @@ def get_fingerprint(browser, selector):
 #    - diff_amount:  amount of difference, if applicable
 #    - diff_unit:  unit of diff_amount, if applicable
 def diff_fingerprints(f1, f2):
+  if f1 is None or f2 is None:
+    return None
   diffs = []
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
   #diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))  # disabled because text+srcs is better
