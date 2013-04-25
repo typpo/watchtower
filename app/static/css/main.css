@@ -104,3 +104,14 @@ ul#left_nav {
   padding: 5px;
 }
 
+.navbar-inner {
+  border-radius:0;
+  -webkit-border-radius:0;
+  -moz-border-radius:0;
+  height: 50px;
+}
+
+.container {
+  min-height:250px;
+}
+

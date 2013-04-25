@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block content %}
 <div class="row">
@@ -8,8 +8,8 @@ Enter any URL to try it now:
 <p>
 <div class="input-append">
   <form onSubmit="window.location.href='/preview?url=' + $('#monitor-url').val(); return false;">
-  <input id="monitor-url" class="span6" id="appendedInputButton" type="text">
-  <button class="btn" type="submit">Track!</button>
+  <input id="monitor-url" class="span6" id="appendedInputButton" type="text" style="height:40px;width:500px;font-size:24px;padding:5px;">
+  <button class="btn" type="submit" style="height:52px;font-size:20px;font-weight:bold;">Track!</button>
   </form>
 </div>
 </p>
@@ -38,7 +38,7 @@ Enter any URL to try it now:
 #}
 
 <div id="story" class="row span12" style="margin-top: 35px;">
-<div>
+<div class="row" style="margin-bottom:20px;">
   <div class="span6">
     <h3>Point and click setup.</h3>
     Watchtower makes it easy for users to choose the important parts of a competitor's site.  You just click on the elements you want to track.
@@ -48,7 +48,7 @@ Enter any URL to try it now:
   </div>
 </div>
 
-<div>
+<div class="row" style="margin-bottom:20px;">
   <div class="span6 image_container">
     <img src="http://i.imgur.com/rJrZks9.png" />
   </div>
@@ -58,7 +58,7 @@ Enter any URL to try it now:
   </div>
 </div>
 
-<div>
+<div class="row" style="margin-bottom:20px;">
   <div class="span6">
     <h3>Visual, highlighted changes.</h3>
     Watchtower uses a unique fingerprinting algorithm that picks up not only content changes, but also tracks the underlying code to evaluate the look and feel of the website.
