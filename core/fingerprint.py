@@ -165,7 +165,10 @@ def get_fingerprint(browser, selector):
     };
   })(jQuery);
   """.replace('{{ SELECTOR }}', selector)
-  ret = browser.execute_script(eval_js)
+  try:
+    ret = browser.execute_script(eval_js)
+  except:
+    return None
 
   print ret['text']
 
