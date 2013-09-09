@@ -46,6 +46,13 @@ def get_fingerprints(url, selectors, display=None, \
   f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
   jquery_js = f.read();
   f.close()
+
+  # Override blocking modal dialogs
+  browser.execute_script("window.alert = function() {}")
+  browser.execute_script("window.prompt = function() {return null;}")
+  browser.execute_script("window.confirm = function() {return true;}")
+
+  # inject jquery
   browser.execute_script(jquery_js)
 
   # check all selectors
