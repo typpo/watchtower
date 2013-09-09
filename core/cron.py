@@ -42,7 +42,11 @@ if __name__ == '__main__':
         print '** Found some old versions'
         old_print = json.loads(max(element.versions, key=attrgetter('when')).fingerprint)
       old_fingerprints.append(old_print)
-    new_fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
+    try:
+      new_fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
+    except:
+      print 'ERROR'
+      continue
 
     if len(old_fingerprints) < 1:
       # it's new
