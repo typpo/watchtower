@@ -388,4 +388,5 @@ def test():
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
 
 if __name__ == "__main__":
+  #app.run(debug=True, host='0.0.0.0', port=7777, use_reloader=True)
   app.run(debug=True, host='0.0.0.0', use_reloader=True)

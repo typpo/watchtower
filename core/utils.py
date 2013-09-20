@@ -22,6 +22,7 @@ def get_blob(url):
   # mechanize instead of basic request because somne sites have more complex
   # cookie validation (such as amazon).  mechanize handles this.
   br = mechanize.Browser()
+  br.set_handle_robots(False)
   br.addheaders = [('User-Agent', "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17"),]
   html = br.open(url).read()
   # to use bs4 normally, workaround needed for https://bugs.launchpad.net/beautifulsoup/+bug/1105207
