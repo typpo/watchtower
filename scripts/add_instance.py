@@ -83,7 +83,6 @@ class Launcher:
     returns:
       boto.ec2.blockdevicemapping: the block device mapping.
     """
-    print boto.ec2.blockdevicemapping
     dev_sda1 = boto.ec2.blockdevicemapping.BlockDeviceType()
     dev_sda1.size = self._disk_size  # size in gigabytes.
     bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
@@ -115,7 +114,7 @@ class Launcher:
           instance_type=self._instance_type, security_groups=self._security_groups,
           placement=self._zone, block_device_map=self.get_block_device_map())
       instance = reservation.instances[0]
-      while true:  # wait for the instance to come up
+      while True:  # wait for the instance to come up
         time.sleep(5)
         if instance.update() == 'running':
           break
@@ -154,7 +153,7 @@ class Launcher:
     self._key_name = kwargs.get('key_name', 'watchtower-key')
     self._instance_type = kwargs.get('instance_type', 'm1.large')
     self._server_type = kwargs.get('server_type', 'scan')
-    self._ami = kwargs.get('ami', 'tood(kk)')
+    self._ami = kwargs.get('ami', 'ami-33b0ed5a')
     self._disk_size = kwargs.get('disk_size', 50)
     self._security_groups = [kwargs.get('security_group', 'watchtower-scan')]
     self._test_mode = kwargs.get('test', False)
