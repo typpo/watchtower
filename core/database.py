@@ -3,7 +3,7 @@ The database
 """
 import sys
 import os
-  import socket
+import socket
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
