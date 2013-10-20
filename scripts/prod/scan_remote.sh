@@ -7,9 +7,8 @@ source bin/activate
 cd scripts
 #python add_instance.py
 
-# TODO run on instance
+# run on instance
 host=`python get_scan_instance.py`
-
 ssh -i ~/.ssh/watchtower-key.pem $host "./watchtower/scripts/run_cron.sh"
 
 # TODO terminate instance
