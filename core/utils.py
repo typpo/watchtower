@@ -28,7 +28,18 @@ def get_blob(url):
   # to use bs4 normally, workaround needed for https://bugs.launchpad.net/beautifulsoup/+bug/1105207
   # http://www.crummy.com/software/BeautifulSoup/bs3/documentation.html#Beautiful%20Soup%20Gives%20You%20Unicode,%20Dammit
   dammit = UnicodeDammit(html)  # guess encoding, handle mixed encoding, etc
-  return dammit.unicode
+
+  soup = BeautifulSoup(dammit.unicode)
+
+  head = ''.join([unicode(x) for x in soup.head.contents])
+  body = ''.join([unicode(x) for x in soup.body.contents])
+  soup.head.contents = soup.body.contents = ''
+  head_tag = str(soup.head).replace('</head>', '')
+  body_tag = str(soup.body).replace('</body>', '')
+  soup.html.contents = ''
+  html_tag = str(soup.html).replace('</html>', '')
+
+  return html_tag, head_tag, head, body_tag, body
 
 def is_production():
   return socket.gethostname().endswith('gowatchtower.com')

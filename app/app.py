@@ -252,14 +252,17 @@ def proxy():
   if (url[:3] != 'htt'):
     url = 'http://' + url
 
-  html = get_blob(url)
+  html_tag, head_tag, head, body_tag, body = get_blob(url)
 
-  if html is None:
+  if head is None or body is None:
     return 'Invalid url'
 
   watchtower_content_root = 'http://gowatchtower.com' if is_production() else 'http://localhost:5000'
   ts = time.time()
-  return render_template('proxy.html', html=html, root=url, \
+  return render_template('proxy.html', head_tag=head_tag, head=head, \
+      body_tag=body_tag, body=body,
+      html_tag=html_tag,
+      root=url, \
       watchtower_content_root=watchtower_content_root, timestamp=ts)
 
 @app.before_request

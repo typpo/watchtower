@@ -1,23 +1,32 @@
-{# jquery must go first so it doesn't overwrite other pages' jquery plugins #}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+{{ html_tag|safe }}
+{{ head_tag|safe }}
+  {# jquery must go first so it doesn't overwrite other pages' jquery plugins #}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
-<script type="text/javascript">
-  window.onbeforeunload = function () {
-    return "Click stay";
-  };
-</script>
+  <script type="text/javascript">
+    window.onbeforeunload = function () {
+      return "Click stay";
+    };
+  </script>
 
-<base href="{{ root }}"/>
-<style>
-  .watchtower-border-highlight {
-    outline: 3px solid red!important;
-  }
-  .watchtower-border-confirmed {
-    outline: 3px solid #0fd100!important;
-  }
-</style>
+  <base href="{{ root }}"/>
+  <style>
+    .watchtower-border-highlight {
+      outline: 3px solid red!important;
+    }
+    .watchtower-border-confirmed {
+      outline: 3px solid #0fd100!important;
+    }
+  </style>
 
-{{ html|safe }}
+  {{ head|safe }}
+</head>
+
+{{ body_tag|safe }}
+{{ body|safe }}
+</body>
 
 {# take over once all handlers are set #}
 <script src="{{ watchtower_content_root }}/static/js/iframe_include.js?{{timestamp}}"></script>
+
+</html>
