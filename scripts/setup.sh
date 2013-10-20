@@ -16,9 +16,10 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i ./google-chrome*.deb
 sudo apt-get -f install
 
-wget https://chromedriver.googlecode.com/files/chromedriver_linux64_26.0.1383.0.zip
+wget http://chromedriver.storage.googleapis.com/2.4/chromedriver_linux64.zip
 unzip chromedriver*
 sudo mv chromedriver /usr/bin
+rm chromedriver*
 
 #python tests/basic_selenium.py
 python tests/server_chrome.py

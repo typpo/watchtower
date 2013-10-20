@@ -35,17 +35,20 @@ if __name__ == '__main__':
     elements = page.elements
     if len(list(elements)) < 1:
       continue
-    print '** Werking', page.url
+    print '** Loading', page.url
     selectors = [element.selector for element in elements]
     old_fingerprints = []
     for element in elements:
       if len(list(element.versions)) < 1:
-        print '** No old versions'
         old_print = None
       else:
-        print '** Found some old versions'
         old_print = json.loads(max(element.versions, key=attrgetter('when')).fingerprint)
       old_fingerprints.append(old_print)
+    if old_print:
+      print '** Found some old versions'
+    else:
+      print '** No old versions'
+
     try:
       new_fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
     except Exception as inst:

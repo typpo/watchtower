@@ -3,7 +3,6 @@ import requests
 import mechanize
 from BeautifulSoup import BeautifulSoup, UnicodeDammit
 from requests.exceptions import ConnectionError
-import socket
 from functools import wraps
 from flask import g, request, redirect, url_for, flash
 from core.models import Element, Version, Page, User
@@ -29,9 +28,6 @@ def get_blob(url):
   # http://www.crummy.com/software/BeautifulSoup/bs3/documentation.html#Beautiful%20Soup%20Gives%20You%20Unicode,%20Dammit
   dammit = UnicodeDammit(html)  # guess encoding, handle mixed encoding, etc
   return dammit.unicode
-
-def is_production():
-  return socket.gethostname().endswith('gowatchtower.com')
 
 def login_required(f):
   @wraps(f)
