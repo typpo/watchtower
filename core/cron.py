@@ -29,8 +29,6 @@ if __name__ == '__main__':
 
   c= 0
   for page in pages:
-    if c > 1:
-      break
     c += 1
     elements = page.elements
     if len(list(elements)) < 1:
