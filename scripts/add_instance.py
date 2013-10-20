@@ -83,9 +83,10 @@ class Launcher:
     returns:
       boto.ec2.blockdevicemapping: the block device mapping.
     """
-    dev_sda1 = boto.ec2.blockdevicemapping.ebsblockdevicetype()
+    print boto.ec2.blockdevicemapping
+    dev_sda1 = boto.ec2.blockdevicemapping.BlockDeviceType()
     dev_sda1.size = self._disk_size  # size in gigabytes.
-    bdm = boto.ec2.blockdevicemapping.blockdevicemapping()
+    bdm = boto.ec2.blockdevicemapping.BlockDeviceMapping()
     bdm['/dev/sda1'] = dev_sda1
     return bdm
 
@@ -155,7 +156,7 @@ class Launcher:
     self._server_type = kwargs.get('server_type', 'scan')
     self._ami = kwargs.get('ami', 'tood(kk)')
     self._disk_size = kwargs.get('disk_size', 50)
-    self._security_groups = [kwargs.get('security_group', 'watchtower_scan')]
+    self._security_groups = [kwargs.get('security_group', 'watchtower-scan')]
     self._test_mode = kwargs.get('test', False)
 
 if __name__ == '__main__':
@@ -167,7 +168,7 @@ if __name__ == '__main__':
   parser.add_argument('--server-type', help='e.g., scan')
   parser.add_argument('--ami', help='e.g., ami-d52f63bc')
   parser.add_argument('--disk_size', help='size in GB. e.g., 50')
-  parser.add_argument('--security-group', help='e.g., watchtower_scan')
+  parser.add_argument('--security-group', help='e.g., watchtower-scan')
   parser.add_argument('--zone', help='e.g., us-east-1b')
   parser.add_argument('--test', help="testing mode - don't launch instance", default=False, action='store_true')
 
