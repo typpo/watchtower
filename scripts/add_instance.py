@@ -154,7 +154,7 @@ class Launcher:
     self._instance_type = kwargs.get('instance_type', 'm1.large')
     self._server_type = kwargs.get('server_type', 'scan')
     self._ami = kwargs.get('ami', 'ami-33b0ed5a')
-    self._disk_size = kwargs.get('disk_size', 50)
+    self._disk_size = kwargs.get('disk_size', 8)
     self._security_groups = [kwargs.get('security_group', 'watchtower-scan')]
     self._test_mode = kwargs.get('test', False)
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
   parser.add_argument('--instance-type', help='e.g., m1.large')
   parser.add_argument('--server-type', help='e.g., scan')
   parser.add_argument('--ami', help='e.g., ami-d52f63bc')
-  parser.add_argument('--disk_size', help='size in GB. e.g., 50')
+  parser.add_argument('--disk_size', help='size in GB. e.g., 8')
   parser.add_argument('--security-group', help='e.g., watchtower-scan')
   parser.add_argument('--zone', help='e.g., us-east-1b')
   parser.add_argument('--test', help="testing mode - don't launch instance", default=False, action='store_true')
