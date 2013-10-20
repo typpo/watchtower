@@ -12,12 +12,6 @@
         <input class="span5" type="text" name="url" placeholder="http://...">
         {% endif %}
       </div>
-      <div> Select User Agent
-        <input type="radio" name="user_agent" value="iPhone"
-            {% if agent == 'iPhone' %} checked {% endif %}>iPhone</br>
-        <input type="radio" name="user_agent" value="Desktop"
-            {% if agent == 'Desktop' %} checked {% endif %}>Desktop</br>
-      </div>
     </div>
     <div class="control-group">
       <label class="control-label" for="name">Page Name</label>
@@ -27,6 +21,15 @@
         {% else %}
         <input class="span5" type="text" name="name" placeholder="Competitor's Landing Page">
         {% endif %}
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="user_agent">Select User Agent<label>
+      <div class="controls">
+        <input type="radio" name="user_agent" value="iPhone"
+            {% if agent == 'iPhone' %} checked {% endif %}>iPhone</br>
+        <input type="radio" name="user_agent" value="Desktop"
+            {% if agent == 'Desktop' %} checked {% endif %}>Desktop</br>
       </div>
     </div>
     <div class="control-group">
