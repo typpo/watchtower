@@ -9,7 +9,7 @@ from flask import g, request, redirect, url_for, flash
 from core.models import Element, Version, Page, User
 from core.database import db
 
-def get_blob(url):
+def get_blob(url, agent):
   """
   try:
     headers = {}
@@ -23,7 +23,11 @@ def get_blob(url):
   # cookie validation (such as amazon).  mechanize handles this.
   br = mechanize.Browser()
   br.set_handle_robots(False)
-  br.addheaders = [('User-Agent', "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17"),]
+  print agent
+  if agent == 'iPhone':
+    br.addheaders = [('User-Agent', "Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543 Safari/419.3" ),]
+  else:
+    br.addheaders = [('User-Agent', "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17"),]
   html = br.open(url).read()
   # to use bs4 normally, workaround needed for https://bugs.launchpad.net/beautifulsoup/+bug/1105207
   # http://www.crummy.com/software/BeautifulSoup/bs3/documentation.html#Beautiful%20Soup%20Gives%20You%20Unicode,%20Dammit

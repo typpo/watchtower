@@ -7,10 +7,14 @@
 Enter any URL to try it now:
 <p>
 <div class="input-append">
-  <form onSubmit="window.location.href='/preview?url=' + $('#monitor-url').val(); return false;">
+  <form onSubmit="window.location.href='/preview?url=' + $('#monitor-url').val() + '&agent=' + $('input[name=\'user_agent\']:checked').val(); return false;">
   <input id="monitor-url" class="span6" id="appendedInputButton" type="text" style="height:40px;width:500px;font-size:24px;padding:5px;">
   <button class="btn" type="submit" style="height:52px;font-size:20px;font-weight:bold;">Track!</button>
   </form>
+</div>
+<div> Select User Agent
+  <input type="radio" name="user_agent" value="iPhone">iPhone</br>
+  <input type="radio" name="user_agent" value="Desktop" checked>Desktop</br>
 </div>
 </p>
 </div>

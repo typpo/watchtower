@@ -182,9 +182,10 @@ def new_page():
 @app.route('/preview', methods=['GET'])
 def preview():
   url = request.args.get('url')
+  agent = request.args.get('agent')
   if g.user:
-    return redirect(url_for('new_page', url=url))
-  return render_template('edit_page.html', url=url, preview=True)
+    return redirect(url_for('new_page', url=url, agent=agent))
+  return render_template('edit_page.html', url=url, agent=agent, preview=True)
 
 @app.route('/page/<int:page_id>/edit', methods=['GET', 'POST'])
 @must_own_page
@@ -249,10 +250,12 @@ def delete_page(page):
 def proxy():
   data = request.data
   url = request.args.get('url')
+  agent = request.args.get('agent')
+  print agent
   if (url[:3] != 'htt'):
     url = 'http://' + url
 
-  html = get_blob(url)
+  html = get_blob(url, agent)
 
   if html is None:
     return 'Invalid url'
