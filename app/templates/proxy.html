@@ -1,6 +1,12 @@
 {# jquery must go first so it doesn't overwrite other pages' jquery plugins #}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
+<script type="text/javascript">
+  window.onbeforeunload = function () {
+    return "Click stay";
+  };
+</script>
+
 <base href="{{ root }}"/>
 <style>
   .watchtower-border-highlight {
