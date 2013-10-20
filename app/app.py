@@ -4,7 +4,7 @@ from flask import Flask, request, redirect, session, url_for, render_template, R
 from flask.ext.openid import OpenID
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from flaskext.bcrypt import Bcrypt
-from flaskext.babel import Babel
+#from flaskext.babel import Babel
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
@@ -68,7 +68,7 @@ app = create_app()
 
 oid = OpenID(app, '/tmp/openid')
 bcrypt = Bcrypt(app)
-babel = Babel(app)
+#babel = Babel(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
