@@ -19,6 +19,7 @@ class User(db.Model):
                           backref='user', lazy='dynamic')
   password = db.Column(db.String(255))
   timezone = db.Column(db.String(64), default='America/Los_Angeles')
+  created_at = db.Column(db.DateTime, default=datetime.now)
 
   def get_id(self):
     return self.id
@@ -45,7 +46,7 @@ class User(db.Model):
 class Page(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(128))
-  url = db.Column(db.String(1024))
+  url = db.Column(db.String(1024), index=True)
   elements = db.relationship('Element',
                              backref='page', lazy='dynamic')
 

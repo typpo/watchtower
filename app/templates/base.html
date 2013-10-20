@@ -2,14 +2,16 @@
 <html lang="en" ng-app="WatchtowerApp">
   <head>
     <meta charset="utf-8">
-    <title>Competitive Monitoring and Intelligence for your Business - Watchtower</title>
+    <title>Competitive Monitoring and Intelligence - Watchtower {% block titleappend %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- styles -->
     <link rel="shortcut icon" href="/static/images/favicon.ico" />
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
     <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/main.css" rel="stylesheet">
+{% block css %}{% endblock %}
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -25,68 +27,73 @@
          -->
   </head>
   <body>
-    <div class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar navbar-inverse" style="height:64px">
       <div class="navbar-inner">
-        <div class="container-fluid">
           <a class="brand" href="/">
             <img src="/static/images/watchtower_logo.png">
           </a>
           <ul class="nav">
-            <li class="active">
+            <li>
               <a href="/">
                 Home
               </a>
             </li>
-            <li class="active">
+            <li>
+              <a href="/dashboard">
+                Dashboard
+              </a>
+            </li>
+            <li>
               <a href="/about">
                 About
               </a>
             </li>
-            <li class="active">
+            <li>
               <a href="/pricing">
                 Pricing
               </a>
             </li>
             {% if g.user %}
-            <li class="active">
+            <li>
               <a href="/profile">
                 Profile
               </a>
             </li>
             {% endif %}
           </ul>
-          <div class="btn-group pull-right" style="margin-top:10px;">
-            {% if not g.user %}
-            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign Up/Sign In <strong class="caret"></strong></a>
-            <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-                <p>
-                  <form id="login_form" action="{{url_for('login')}}" method="post" class="form">
-                    <dl>
-                      <dd><input type="text" name=email placeholder="email">
-                      <dd><input name="password" type="password" placeholder="password">
-                      <dd><input type="submit" class="btn" value="Sign up/Sign in">
-                    </dl>
+          {% if not g.user %}
+            <div class="btn-group pull-right" style="margin-top:7px;">
+              <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown">Sign Up/Sign In <strong class="caret"></strong></a>
+              <ul class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+                  {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+                  <p>
+                    <form id="login_form" action="{{url_for('login')}}" method="post" class="form">
+                      <dl>
+                        <dd><input type="text" name=email placeholder="email">
+                        <dd><input name="password" type="password" placeholder="password">
+                        <dd><input type="submit" class="btn" value="Sign up/Sign in">
+                      </dl>
+                    </form>
+                    Or...
+                    <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
+                    <button type=submit class=btn>
+                      <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
+                    <input type=hidden name=next value="{{next}}">
                   </form>
-                  Or...
-                  <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method=post>
-                  <button type=submit class=btn>
-                    <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
-                  <input type=hidden name=next value="{{next}}">
+              </ul>
+            </div>
+          {% else %}
+              <div class="btn-group pull-right" style="margin-top:-3px">
+              <p>
+                <form action="/logout" method="get">
+                  <button type=submit value="Sign out" class="btn" href="/">Sign Out</button>
                 </form>
-            </ul>
-            {% else %}
-            <p>
-              <form action="/logout" method="get">
-                <button type=submit value="Sign out" class="btn" href="/">Sign Out</button>
-              </form>
-            </p>
-            {% endif %}
-          </div>
+              </p>
+              </div>
+          {% endif %}
         </div>
-      </div>
     </div>
-    <div class="container" style="margin-top:80px;padding-left:15px;">
+    <div class="container">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           <div id="flashes">
@@ -122,24 +129,5 @@
 </script>
 {% block scripts %}{% endblock %}
 
-{% block share %}
-<div class="row span12 text-center" style="padding-bottom:50px;">
-<div class="share-buttons">
-  <div style="margin:0" class="fb-like" data-href="http://www.gowatchtower.com" data-send="false" data-layout="button_count" data-show-faces="false"></div>
-  <a class="twitter-share-button" style="font-size:10px;" href="https://twitter.com/share" data-url="http://www.gowatchtower.com" data-counturl="http://www.gowatchtower.com" class="twitter-share-button" data-lang="en">Tweet</a>
-  <g:plusone size="small" style="margin-left:0"></g:plusone>
-</div>
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=230286373664292";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
-</div>
-{% endblock %}
   </body>
 </html>

@@ -17,9 +17,9 @@
       {% endif %}
       or...
       <form action="{{url_for('login', openid='https://www.google.com/accounts/o8/id') }}" method="post" class="form">
-      <button type=submit action="" class=btn>
+      <button type="submit" class="btn">
         <img style="width: 300px; height: auto;" src="https://developers.google.com/accounts/images/sign-in-with-google.png" /></button>
-      <input type=hidden name=next value="{{next}}">
+      <input type="hidden" name="next" value="{{next}}">
   </form>
 </div>
 {% endblock %}

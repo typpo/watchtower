@@ -3,7 +3,7 @@
 pushd `dirname $0`
 
 sudo apt-get update
-sudo apt-get install python-virtualenv python-pip unzip build-essential python-dev unzip xvfb xserver-xephyr
+sudo apt-get install python-virtualenv python-pip unzip build-essential python-dev unzip xvfb xserver-xephyr postgresql postgresql-client postgresql-server-dev-all sqlite3
 #sudo apt-get install tightvncserver
 cd ..
 virtualenv .
@@ -24,6 +24,14 @@ sudo mv chromedriver /usr/bin
 python tests/server_chrome.py
 
 mkdir /tmp/watchtower
+
+# postgres stuff
+echo "Creating postgres watchtower user..."
+sudo -u postgres createuser --superuser watchtower
+echo "Type '\password watchtower' to set a password, then press ctrl-D:"
+sudo -u postgres psql
+
+sudo -u postgres createdb watchtower
 
 echo "run 'source bin/active' to enter virtualenv"
 

@@ -79,7 +79,7 @@ function EditPageCtrl($scope, $http) {
      }).success(function(data) {
        $('#loader').hide();
        //window.location.href = '/page/' + $scope.pageid;
-       window.location.href = '/';  // back to index
+       window.location.href = '/dashboard';  // back to dashboard
      });
   }
 

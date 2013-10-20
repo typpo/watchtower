@@ -4348,12 +4348,11 @@ background-color: #5ca43a;
 .navbar {
   *position: relative;
   *z-index: 2;
-  margin-bottom: 20px;
   overflow: visible;
 }
 
 .navbar-inner {
-  min-height: 40px;
+  height: 45px;
   padding-right: 20px;
   padding-left: 20px;
   background-color: #fafafa;
@@ -4412,7 +4411,6 @@ background-color: #5ca43a;
 
 .navbar-text {
   margin-bottom: 0;
-  line-height: 40px;
   color: #777777;
 }
 
@@ -4771,7 +4769,7 @@ background-color: #5ca43a;
 }
 
 .navbar-inverse .navbar-inner {
-  background: #444;
+  background: #404040;
 }
 
 .navbar-inverse .brand,
@@ -6137,32 +6135,4 @@ a.badge:focus {
 
 .affix {
   position: fixed;
-}
-
-.calloutblock {
-  background-color: #6bbe45;
-  border: 1px solid #6bbe45;
-  padding: 20px 0 20px 0;
-  box-shadow: 0 2px 5px #ccc;
-  color: #FFF;
-}
-
-.normalblock {
-  background-color: #FFFFFF;
-  border: 1px solid #6bbe45;
-  height: 225px;
-}
-
-.strong-green {
-  color: #66cc33;
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.innerblock {
-  padding:20px;
-}
-
-#feed a {
-  padding: 5px;
 }

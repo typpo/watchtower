@@ -8,7 +8,7 @@ from flaskext.babel import Babel
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from datetime import datetime
-from urlparse import urlparse, urljoin
+from urlparse import urlparse
 from threading import Thread
 import twitter
 #from twython import Twython
@@ -20,6 +20,7 @@ import os
 import sys
 import bcrypt
 import pytz
+import templatetags
 from operator import attrgetter, add
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -31,7 +32,10 @@ from core.utils import create_user, get_blob, is_production, login_required, mus
 def create_app():
   app = Flask(__name__)
   app.secret_key = 'not a secret key'
-  app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
+  if is_production():
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@localhost/watchtower'
+  else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
   db.init_app(app)
   # admin setup
   admin = Admin(app)
@@ -46,7 +50,8 @@ def create_app():
     def is_accessible(self):
       # Logic
       return True
-  admin.add_view(MyModelView(Version, db.session, column_list=['id', 'foreign_key']))
+  #admin.add_view(MyModelView(Version, db.session, column_list=['id', 'foreign_key']))
+  admin.add_view(ModelView(Version, db.session,))
   admin.add_view(ModelView(Element, db.session,))
   admin.add_view(ModelView(User, db.session,))
   return app
@@ -57,7 +62,7 @@ class TwythonOld(Twython):
     return self.get('https://search.twitter.com/search.json', params=kwargs)
     """
 
-reddit = praw.Reddit(user_agent='test')
+#reddit = praw.Reddit(user_agent='test')
 twitter = twitter.Twitter(domain="search.twitter.com")
 app = create_app()
 
@@ -73,38 +78,22 @@ def load_user(id):
   g.user = User.query.filter_by(id=id).first()
   return g.user
 
-def _jinja2_filter_element_from_version(version):
-  return Element.query.filter_by(id=version.element_id).first()
-
-def _jinja2_filter_page_from_element(element):
-  return Page.query.filter_by(id=element.page_id).first()
-
-def _jinja2_filter_page_from_version(version):
-  # better way?
-  return _jinja2_filter_page_from_element(_jinja2_filter_element_from_version(version))
-
-def _jinja2_filter_to_local_datetime(dt):
-  return format_datetime(dt)
-
-def _jinja2_fn_localize_with_tz(date, tz_str):
-  if not tz_str:  # necessary for backwards compatibility 3/11 some accounts don't have this set; alembic migration apparently isn't setting default?
-    tz_str = 'America/Los_Angeles'
-  ret = pytz.utc.localize(date).astimezone(pytz.timezone(tz_str))
-  print ret.isoformat()
-  return ret
-
-app.jinja_env.filters['element_from_version'] = _jinja2_filter_element_from_version
-app.jinja_env.filters['page_from_element'] = _jinja2_filter_page_from_element
-app.jinja_env.filters['page_from_version'] = _jinja2_filter_page_from_version
-app.jinja_env.filters['to_local_datetime'] = _jinja2_filter_to_local_datetime
-app.jinja_env.globals['localize_with_tz'] = _jinja2_fn_localize_with_tz
+app.jinja_env.filters['element_from_version'] = templatetags.filter_element_from_version
+app.jinja_env.filters['page_from_element'] = templatetags.filter_page_from_element
+app.jinja_env.filters['page_from_version'] = templatetags.filter_page_from_version
+app.jinja_env.filters['to_local_datetime'] = templatetags.filter_to_local_datetime
+app.jinja_env.globals['localize_with_tz'] = templatetags.fn_localize_with_tz
 
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+  return render_template('index.html', user=g.user)
+
+@app.route('/dashboard')
+def dashboard():
   pages = Page.query.all()
-  app.logger.debug(pages)
   if g.user:
+    app.logger.debug(pages)
     if (request.method =="POST"):
       app.logger.debug(g.user)
       add = request.form['addtweets']
@@ -117,7 +106,7 @@ def index():
       db.session.commit()
     news_feed = []
 
-    pages = g.user.pages
+    pages = list(g.user.pages)   # force eval
     all_versions = []
     elementid_to_element = {}
     for page in pages:
@@ -131,7 +120,7 @@ def index():
     return render_template('dashboard.html', user=g.user, pages=pages, \
         all_versions=all_versions, element_map=elementid_to_element)
   else:
-    return render_template('index.html', user=g.user)
+    return redirect('/login')
 
 @app.route('/about')
 def about():
@@ -163,10 +152,17 @@ def show_page(page):
 
 @app.route('/page/new', methods=['GET', 'POST'])
 def new_page():
+  # Get
   if request.method == 'GET':
     url = request.args.get('url')
-    return render_template('new_page.html', url=url)
+    sitename = None
+    if url:
+      if not url.startswith('http'):
+        url = 'http://' + url   # add http:// to user submission
+      sitename = urlparse(url).hostname
+    return render_template('new_page.html', url=url, sitename=sitename)
 
+  # Post
   for p in ['url', 'name']:
     if p not in request.form:
       return jsonify(error='missing %s param' % p)
@@ -181,7 +177,7 @@ def new_page():
   db.session.commit()
 
   # redirect to page for this page
-  return redirect('page/%s/edit' % page.id)
+  return redirect('page/%d/edit' % page.id)
 
 @app.route('/preview', methods=['GET'])
 def preview():
@@ -219,7 +215,7 @@ def edit_page(page):
     return jsonify(error='must have same number of names and selectors')
 
   # get fingerprints
-  fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
+  #fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors, record_screenshot=True)
   now = datetime.utcnow()
 
   # delete elements
@@ -230,23 +226,24 @@ def edit_page(page):
     db.session.delete(element)
 
   # add new selections
-  for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+  #for name, selector, fingerprint in zip(selector_names, selectors, fingerprints):
+  for name, selector in zip(selector_names, selectors):
     element = Element(name=name, selector=selector, page=page)
-    version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
-        element=element, screenshot=screenshot_url)
+    #version = Version(fingerprint=json.dumps(fingerprint), diff='', when=now,\
+    #    element=element, screenshot=screenshot_url)
     db.session.add(element)
-    db.session.add(version)
+    #db.session.add(version)
   db.session.commit()
 
-  return redirect('/page/%d' % page.id)
+  #return redirect('/page/%d' % page.id)
+  return jsonify(success=True, error=None)
 
 @app.route('/page/<int:page_id>/delete', methods=['GET', 'POST', 'DELETE'])
 @must_own_page
 def delete_page(page):
   db.session.delete(page)
   db.session.commit()
-  return redirect('/')
-
+  return redirect('/dashboard')
 
 @app.route('/proxy')
 def proxy():
@@ -260,15 +257,6 @@ def proxy():
   if html is None:
     return 'Invalid url'
 
-  """
-  soup = BeautifulSoup(html)
-  for a in soup.findAll('a'):
-    a['href'] = urljoin(a['href'], real_url)
-  for img in soup.findAll('img'):
-    img['src'] = urljoin(img['src'], real_url)
-
-  return render_template('proxy.html', html=str(soup), root=real_url, )
-  """
   watchtower_content_root = 'http://gowatchtower.com' if is_production() else 'http://localhost:5000'
   ts = time.time()
   return render_template('proxy.html', html=html, root=url, \
@@ -285,7 +273,6 @@ def lookup_current_user():
   if 'openid' in session and session['openid']:
     g.user = User.query.filter_by(openid=session['openid']).first()
 
-
 @oid.after_login
 def create_or_login(resp):
   session['openid'] = resp.identity_url
@@ -293,7 +280,8 @@ def create_or_login(resp):
   if user is None:
     g.user = create_user(bcrypt=bcrypt, email=resp.email, password=None, timezone=resp.timezone, openid=session['openid'])
     user = g.user
-  return redirect(oid.get_next_url())
+  #return redirect(oid.get_next_url())
+  return redirect(url_for('dashboard'))
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -301,34 +289,47 @@ def login():
   if (g.user is not None):
     return redirect(oid.get_next_url())
   if 'openid' in request.args:
+    print 'OPENID'
     openid = request.args['openid']
     return oid.try_login(openid, ask_for=['email', 'fullname',
                                           'nickname', 'timezone'])
-  if request.method == 'POST':
-    user_exists = User.query.filter_by(email=request.form['email']).first()
-    if not user_exists:
+  if request.method != 'POST':
+    return render_template('login.html', next=oid.get_next_url(),
+              error=oid.fetch_error())
+  print 'POST'
+  user_exists = User.query.filter_by(email=request.form['email']).first()
+  if not user_exists:
+    # new user
+
+    # timezone bs
+    if 'timezone' in request.form:
       try:
         timezone = pytz.timezone(request.form['timezone']).zone
+        print 'tz'
       except pytz.exceptions.UnknownTimeZoneError:
+        print 'tzexcept'
         timezone = 'America/Los_Angeles'
-      try:
-        g.user = create_user(bcrypt=bcrypt, email=request.form['email'], password=request.form['password'], timezone=timezone)
-      except ValueError as e:
-        flash(e.message)
-        return render_template('login.html', next=oid.get_next_url(),
-                               error=oid.fetch_error())
-      login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
-      flash('Account created')
     else:
-      g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
-      if not g.user:
-        flash('Incorrect password')
-        return redirect(url_for('login'))
-      else:
-        login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
-    return redirect(url_for('index'))
-  return render_template('login.html', next=oid.get_next_url(),
-              error=oid.fetch_error())
+      timezone = 'America/Los_Angeles'
+
+    # password stuff
+    try:
+      print 'CREATE W PASS'
+      g.user = create_user(bcrypt=bcrypt, email=request.form['email'], password=request.form['password'], timezone=timezone)
+    except ValueError as e:
+      flash(e.message)
+      return render_template('login.html', next=oid.get_next_url(),
+                             error=oid.fetch_error())
+    login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+    flash('Account created')
+  else:
+    g.user = login_hashed(bcrypt, request.form['email'], request.form['password'])
+    if not g.user:
+      flash('Incorrect password')
+      return redirect(url_for('login'))
+    else:
+      login_user(g.user) #, remember=request.form.get("remember", "no") == "yes")
+  return redirect(url_for('dashboard'))
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -348,6 +349,7 @@ def profile():
 @app.route('/news', methods=['GET', 'POST'])
 @login_required
 def news():
+  return jsonify({})
   feed = []
   for tweet in g.user.twitters:
     feed.append(twitter.search(q='#' + tweet.handle))
@@ -388,4 +390,5 @@ def test():
       randcolor=[random.randint(0, 255),random.randint(0, 255),random.randint(0, 255)])
 
 if __name__ == "__main__":
+  #app.run(debug=True, host='0.0.0.0', port=7777, use_reloader=True)
   app.run(debug=True, host='0.0.0.0', use_reloader=True)

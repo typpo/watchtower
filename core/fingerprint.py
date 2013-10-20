@@ -29,34 +29,38 @@ def start_browser():
 
 def stop_browser(browser):
   browser.close()
+  browser.quit()
 
 # returns a list of fingerprints for each selector
 def get_fingerprints(url, selectors, display=None, \
-    browser=None, cleanup_at_end=True):
+    browser=None, cleanup_at_end=True, record_screenshot=False):
   if not display:
     display = start_display()
   if not browser:
     browser = start_browser()
 
-  print 'getting fingerprints'
   print 'load browser @ %s' % url
   browser.get(url) # Load page
 
   # inject jquery
-  print 'inject jquery'
   f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
   jquery_js = f.read();
   f.close()
+
+  # Override blocking modal dialogs
+  browser.execute_script("window.alert = function() {}")
+  browser.execute_script("window.prompt = function() {return null;}")
+  browser.execute_script("window.confirm = function() {return true;}")
+
+  # inject jquery
   browser.execute_script(jquery_js)
 
   # check all selectors
-  print 'check selectors'
   ret = [get_fingerprint(browser, sel) for sel in selectors]
 
   # screenshot
 
   # mask all non-elements, so chosen elements are highlighted
-  print 'masking page for screenshot'
   mask_js = """
   jQuery.noConflict();
   (function($) {
@@ -85,15 +89,15 @@ def get_fingerprints(url, selectors, display=None, \
   if not os.path.isdir('/tmp/watchtower'):
     os.mkdir('/tmp/watchtower')
   screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
-  print 'screenshot to', screenshot_local_path
+  print 'Screenshot saved to', screenshot_local_path
   screenshot_url = ''
-  # TODO only save screenshot if there's a diff
   if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
     screenshot_remote_path = 'images/'  \
       + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
-    thread = Thread(target=screenshots.upload_screenshot, \
-        args=(screenshot_local_path,screenshot_remote_path))
-    thread.start()
+    if record_screenshot:
+      thread = Thread(target=screenshots.upload_screenshot, \
+          args=(screenshot_local_path,screenshot_remote_path,True))
+      thread.start()
     screenshot_url = screenshot_remote_path
 
   browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
@@ -168,7 +172,10 @@ def get_fingerprint(browser, selector):
     };
   })(jQuery);
   """.replace('{{ SELECTOR }}', selector)
-  ret = browser.execute_script(eval_js)
+  try:
+    ret = browser.execute_script(eval_js)
+  except:
+    return None
 
   print ret['text']
 
@@ -180,6 +187,8 @@ def get_fingerprint(browser, selector):
 #    - diff_amount:  amount of difference, if applicable
 #    - diff_unit:  unit of diff_amount, if applicable
 def diff_fingerprints(f1, f2):
+  if f1 is None or f2 is None:
+    return None
   diffs = []
   diffs.extend(diff_offsets(f1['offset'], f2['offset']))
   #diffs.extend(diff_html(f1['outerHTML'], f2['outerHTML']))  # disabled because text+srcs is better
