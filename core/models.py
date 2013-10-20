@@ -46,7 +46,7 @@ class User(db.Model):
 class Page(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(128))
-  url = db.Column(db.String(1024))
+  url = db.Column(db.String(1024), index=True)
   elements = db.relationship('Element',
                              backref='page', lazy='dynamic')
 

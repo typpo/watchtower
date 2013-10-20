@@ -1,6 +1,13 @@
 {# jquery must go first so it doesn't overwrite other pages' jquery plugins #}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
+<script type="text/javascript">
+  window.onbeforeunload = function () {
+    alert('This page is attempting to breakout! Click Stay on Page');
+    return 'Click Stay On Page';
+  };
+</script>
+
 <base href="{{ root }}"/>
 <style>
   .watchtower-border-highlight {
