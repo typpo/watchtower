@@ -27,7 +27,11 @@ if __name__ == '__main__':
 
   now = datetime.utcnow()
 
+  c= 0
   for page in pages:
+    if c > 1:
+      break
+    c += 1
     elements = page.elements
     if len(list(elements)) < 1:
       continue
@@ -44,8 +48,9 @@ if __name__ == '__main__':
       old_fingerprints.append(old_print)
     try:
       new_fingerprints, screenshot_url, screenshot_local = get_fingerprints(page.url, selectors)
-    except:
+    except Exception as inst:
       print 'ERROR'
+      print inst
       continue
 
     if len(old_fingerprints) < 1:
