@@ -25,9 +25,9 @@ from operator import attrgetter, add
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Twitter, Page, User
-from core.database import db
+from core.database import db, is_production
 from core.fingerprint import get_fingerprints
-from core.utils import create_user, get_blob, is_production, login_required, must_own_page, login_hashed
+from core.utils import create_user, get_blob, login_required, must_own_page, login_hashed
 
 def create_app():
   app = Flask(__name__)
