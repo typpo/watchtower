@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/bash -e
 
 cd $(git rev-parse --show-toplevel)
 source bin/activate
 
 # Add instance
 cd scripts
-python add_instance.py --instance_type m1.large
+python add_instance.py --instance-type 'm1.large'
 
 sleep 10
 
