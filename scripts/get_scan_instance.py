@@ -13,5 +13,6 @@ instances = [i for r in reservations for i in r.instances]
 for instance in instances:
   for g in instance.groups:
     if g.name == SCAN_SEC_GROUP:
-      print instance.public_dns_name
-      sys.exit(0)
+      if instance.public_dns_name != '':
+        # fml
+        print instance.public_dns_name
