@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 pushd `dirname $0`
 
@@ -19,7 +19,7 @@ sudo apt-get -f install
 wget http://chromedriver.storage.googleapis.com/2.4/chromedriver_linux64.zip
 unzip chromedriver*
 sudo mv chromedriver /usr/bin
-rm chromedriver*
+rm chromedriver* || true
 
 #python tests/basic_selenium.py
 python tests/server_chrome.py

@@ -7,8 +7,6 @@ source bin/activate
 cd scripts
 #python add_instance.py --instance-type 'm1.large'
 
-#sleep 40
-
 # run on instance
 host=`python get_scan_instance.py`
 echo "Connecting to host $host..."
