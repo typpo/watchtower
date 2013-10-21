@@ -106,7 +106,6 @@ def get_fingerprints(url, selectors, display=None, \
   stop_browser(browser)
   stop_display(display)
 
-  print 'ret'
   return ret, screenshot_url, screenshot_local_path
 
 # returns the fingerprint of the first element corresponding to a
