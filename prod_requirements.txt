@@ -1,0 +1,2 @@
+# Production only dependencies. Not needed for development
+psycopg2
