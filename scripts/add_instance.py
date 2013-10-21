@@ -112,7 +112,7 @@ class Launcher(object):
     self._key_name = kwargs.get('key_name', 'watchtower-key')
     self._instance_type = kwargs.get('instance_type', 't1.micro')
     self._server_type = kwargs.get('server_type', 'scan')
-    self._ami = kwargs.get('ami', 'ami-a5e8b5cc')
+    self._ami = kwargs.get('ami', 'ami-2febb646')
     self._disk_size = kwargs.get('disk_size', 8)
     self._security_groups = [kwargs.get('security_group', 'watchtower-scan')]
     self._test_mode = kwargs.get('test', False)
@@ -133,7 +133,7 @@ if __name__ == '__main__':
   parser.add_argument('--key-name', help='e.g., watchtower-key')
   parser.add_argument('--instance-type', help='e.g., m1.large')
   parser.add_argument('--server-type', help='e.g., scan')
-  parser.add_argument('--ami', help='e.g., ami-a5e8b5cc')
+  parser.add_argument('--ami', help='e.g., ami-2febb646')
   parser.add_argument('--disk_size', help='size in GB. e.g., 8')
   parser.add_argument('--security-group', help='e.g., watchtower-scan')
   parser.add_argument('--zone', help='e.g., us-east-1b')
