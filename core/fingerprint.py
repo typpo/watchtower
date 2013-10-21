@@ -32,8 +32,9 @@ def stop_browser(browser):
   browser.quit()
 
 # returns a list of fingerprints for each selector
-def get_fingerprints(url, selectors, display=None, \
-    browser=None, cleanup_at_end=True, record_screenshot=False):
+def get_fingerprints(url, selectors, display=None,
+                     browser=None, cleanup_at_end=True,
+                     record_screenshot=False):
   if not display:
     display = start_display()
   if not browser:

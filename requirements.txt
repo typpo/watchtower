@@ -16,4 +16,3 @@ twitter
 pytz
 mechanize
 BeautifulSoup
-psycopg2
