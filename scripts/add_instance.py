@@ -31,7 +31,7 @@ class Launcher(object):
     """
     return len([name for name, inst in self.get_instances_by_name().items()
                 if name.startswith(self._server_type) and
-                inst.state != 'terminated']) 
+                inst.state != 'terminated'])
 
   def default_zone(self, region):
     """get default zone in given region"""
@@ -112,7 +112,7 @@ class Launcher(object):
     self._key_name = kwargs.get('key_name', 'watchtower-key')
     self._instance_type = kwargs.get('instance_type', 't1.micro')
     self._server_type = kwargs.get('server_type', 'scan')
-    self._ami = kwargs.get('ami', 'ami-33b0ed5a')
+    self._ami = kwargs.get('ami', 'ami-a5e8b5cc')
     self._disk_size = kwargs.get('disk_size', 8)
     self._security_groups = [kwargs.get('security_group', 'watchtower-scan')]
     self._test_mode = kwargs.get('test', False)
@@ -133,7 +133,7 @@ if __name__ == '__main__':
   parser.add_argument('--key-name', help='e.g., watchtower-key')
   parser.add_argument('--instance-type', help='e.g., m1.large')
   parser.add_argument('--server-type', help='e.g., scan')
-  parser.add_argument('--ami', help='e.g., ami-d52f63bc')
+  parser.add_argument('--ami', help='e.g., ami-a5e8b5cc')
   parser.add_argument('--disk_size', help='size in GB. e.g., 8')
   parser.add_argument('--security-group', help='e.g., watchtower-scan')
   parser.add_argument('--zone', help='e.g., us-east-1b')
