@@ -25,15 +25,21 @@ from operator import attrgetter, add
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from core.models import Element, Version, Twitter, Page, User
-from core.database import db, is_production
+from core.database import db, is_production, is_scan
 from core.fingerprint import get_fingerprints
 from core.utils import create_user, get_blob, login_required, must_own_page, login_hashed
 
 def create_app():
   app = Flask(__name__)
   app.secret_key = 'not a secret key'
+
+  # FIXME duplicated in database.py
   if is_production():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@localhost/watchtower'
+  elif is_scan():
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@75.101.157.206/watchtower'
+    # TODO assumes static private ip
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@10.73.181.115/watchtower'
   else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
   db.init_app(app)

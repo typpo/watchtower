@@ -17,6 +17,7 @@ def is_scan():
 db = SQLAlchemy()
 app = Flask(__name__)
 app.secret_key = 'not a secret key'
+# FIXME duplicated in app.py
 if is_production():
   app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@localhost/watchtower'
 elif is_scan():
@@ -25,4 +26,8 @@ elif is_scan():
   app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@10.73.181.115/watchtower'
 else:
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
+
+print 'Production web machine? ', is_production()
+print 'Scan machine? ', is_scan()
+
 db.init_app(app)
