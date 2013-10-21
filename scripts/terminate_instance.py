@@ -41,19 +41,19 @@ class Terminator(object):
       print >> sys.stderr, 'unknown region: %s' % self._region
       exit(2)
     ec2_connection = ec2_region.connect()
-  
+
     #import code; code.interact(local=locals())
     instances = reduce(list.__add__, [reservation.instances for reservation in ec2_connection.get_all_instances()])
     name_matches = [i for i in instances
-                    if i.tags.get('Name', None) == self._instance_name]
-                    
+                    if i.tags.get('Name', None) == self._instance_name and i.state == 'running']
+
     if (not name_matches):
       raise ValueError('No instance found with name %s' % self._instance_name)
     elif len(name_matches) > 1:
       raise ValueError('Multiple instances found with name %s' % self._instance_name)
 
     instance = name_matches[0]
-  
+
     ec2_connection.terminate_instances(instance_ids=[instance.id])
 
 
