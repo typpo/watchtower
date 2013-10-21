@@ -20,7 +20,9 @@ app.secret_key = 'not a secret key'
 if is_production():
   app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@localhost/watchtower'
 elif is_scan():
-  app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@75.101.157.206/watchtower'
+  #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@75.101.157.206/watchtower'
+  # TODO assumes static private ip
+  app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:jackathon@10.73.181.115/watchtower'
 else:
   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/watchtower/watchtower.db'
 db.init_app(app)
