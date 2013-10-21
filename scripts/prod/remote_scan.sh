@@ -5,10 +5,11 @@ source bin/activate
 
 # Add instance
 cd scripts
-#python add_instance.py
+python add_instance.py
 
 # run on instance
 host=`python get_scan_instance.py`
 ssh -i ~/.ssh/watchtower-key.pem $host "./watchtower/scripts/run_cron.sh"
 
-# TODO terminate instance
+# terminate instance
+python terminate_instance.py  --instance_name scan00
