@@ -5,9 +5,9 @@ source bin/activate
 
 # Add instance
 cd scripts
-python add_instance.py --instance-type 'm1.large'
+#python add_instance.py --instance-type 'm1.large'
 
-sleep 40
+#sleep 40
 
 # run on instance
 host=`python get_scan_instance.py`
