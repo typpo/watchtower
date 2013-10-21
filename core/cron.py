@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
   now = datetime.utcnow()
 
-  c= 0
+  c = 0
   for page in pages:
     c += 1
     elements = page.elements
