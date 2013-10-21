@@ -10,7 +10,7 @@ cd scripts
 # run on instance
 host=`python get_scan_instance.py`
 echo "Connecting to host $host..."
-ssh -o "StrictHostKeyChecking no" -i ~/.ssh/watchtower-key.pem $host "cd ~/watchtower && git pull && source bin/activate && ./scripts/run_cron.sh"
+ssh -o "StrictHostKeyChecking no" -i ~/.ssh/watchtower-key.pem $host "cd ~/watchtower && git pull && source bin/activate && ./scripts/make_me_a_scan_instance.sh && ./scripts/run_cron.sh"
 
 # terminate instance
 python terminate_instance.py  --instance_name scan00
