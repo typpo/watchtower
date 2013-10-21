@@ -29,8 +29,9 @@ class Launcher(object):
     @param server_type - server name describing environment and what services will run on it - not including staging prefix
                          e.g., meta or index-book
     """
-    return len([name for name in self.get_instances_by_name()
-                if name.startswith(self._server_type)]) 
+    return len([name for name, inst in self.get_instances_by_name().items()
+                if name.startswith(self._server_type) and
+                inst.state != 'terminated']) 
 
   def default_zone(self, region):
     """get default zone in given region"""
