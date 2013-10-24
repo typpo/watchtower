@@ -35,79 +35,83 @@ def stop_browser(browser):
 def get_fingerprints(url, selectors, display=None,
                      browser=None, cleanup_at_end=True,
                      record_screenshot=False):
-  if not display:
-    display = start_display()
-  if not browser:
-    browser = start_browser()
+    if not display:
+      display = start_display()
+    if not browser:
+      browser = start_browser()
 
-  print 'load browser @ %s' % url
-  browser.get(url) # Load page
+    print 'load browser @ %s' % url
+    browser.get(url) # Load page
 
-  # inject jquery
-  f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
-  jquery_js = f.read();
-  f.close()
+    # inject jquery
+    f = open(os.path.join(os.path.dirname(__file__), 'jquery.js'))
+    jquery_js = f.read();
+    f.close()
 
-  # Override blocking modal dialogs
-  browser.execute_script("window.alert = function() {}")
-  browser.execute_script("window.prompt = function() {return null;}")
-  browser.execute_script("window.confirm = function() {return true;}")
+    # Override blocking modal dialogs
+    browser.execute_script("window.alert = function() {}")
+    browser.execute_script("window.prompt = function() {return null;}")
+    browser.execute_script("window.confirm = function() {return true;}")
 
-  # inject jquery
-  browser.execute_script(jquery_js)
+    # inject jquery
+    browser.execute_script(jquery_js)
 
-  # check all selectors
-  ret = [get_fingerprint(browser, sel) for sel in selectors]
+    # check all selectors
+    ret = [get_fingerprint(browser, sel) for sel in selectors]
 
-  # screenshot
+    # screenshot
 
-  # mask all non-elements, so chosen elements are highlighted
-  mask_js = """
-  jQuery.noConflict();
-  (function($) {
-    $('<div></div>').css({
-      background: 'rgba(0,0,0,0.3)',
-      width: '100%',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      'z-index': 99998,
-    }).height($(document).height()).appendTo('body');  // necessary to get FULL height of page in selenium screenshot
-    $('.watchtower-expose-for-screenshot').css({
-      'z-index': 99999,
-      'outline': '2px solid red',
-    }).each(function() {
-      var $el = $(this);
-      if ($el.css('position') === 'static') {
-        $el.css('position', 'relative');
-      }
-    });
-  })(jQuery);
-  """
-  browser.execute_script(mask_js)
+    # mask all non-elements, so chosen elements are highlighted
+    mask_js = """
+    jQuery.noConflict();
+    (function($) {
+      $('<div></div>').css({
+        background: 'rgba(0,0,0,0.3)',
+        width: '100%',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        'z-index': 99998,
+      }).height($(document).height()).appendTo('body');  // necessary to get FULL height of page in selenium screenshot
+      $('.watchtower-expose-for-screenshot').css({
+        'z-index': 99999,
+        'outline': '2px solid red',
+      }).each(function() {
+        var $el = $(this);
+        if ($el.css('position') === 'static') {
+          $el.css('position', 'relative');
+        }
+      });
+    })(jQuery);
+    """
+    browser.execute_script(mask_js)
 
-  # create tmp path
-  if not os.path.isdir('/tmp/watchtower'):
-    os.mkdir('/tmp/watchtower')
-  screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
-  print 'Screenshot saved to', screenshot_local_path
-  screenshot_url = ''
-  if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
-    screenshot_remote_path = 'images/'  \
-      + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
-    if record_screenshot:
-      thread = Thread(target=screenshots.upload_screenshot, \
-          args=(screenshot_local_path,screenshot_remote_path,True))
-      thread.start()
-    screenshot_url = screenshot_remote_path
+    # create tmp path
+    if not os.path.isdir('/tmp/watchtower'):
+      os.mkdir('/tmp/watchtower')
+    screenshot_local_path = '/tmp/watchtower/%d%d.png' % (time.time(), random.randint(0, 1000))
+    print 'Screenshot saved to', screenshot_local_path
+    screenshot_url = ''
+    if browser.save_screenshot(screenshot_local_path) and __name__ != '__main__':
+      screenshot_remote_path = 'images/'  \
+        + hashlib.sha1(screenshot_local_path).hexdigest() + '.png'
+      if record_screenshot:
+        thread = Thread(target=screenshots.upload_screenshot, \
+            args=(screenshot_local_path,screenshot_remote_path,True))
+        thread.start()
+      screenshot_url = screenshot_remote_path
 
-  browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
+    browser.delete_all_cookies()   # this only deletes cookies for the page that it's on, so it has to go here after the page is loaded
 
-  #if cleanup_at_end:
-  stop_browser(browser)
-  stop_display(display)
+    return ret, screenshot_url, screenshot_local_path
 
-  return ret, screenshot_url, screenshot_local_path
+  except Exception as inst:
+    print 'FINGERPRINT raising error'
+    raise inst
+  finally:
+    #if cleanup_at_end:
+    stop_browser(browser)
+    stop_display(display)
 
 # returns the fingerprint of the first element corresponding to a
 # given selector
