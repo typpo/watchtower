@@ -35,6 +35,7 @@ def stop_browser(browser):
 def get_fingerprints(url, selectors, display=None,
                      browser=None, cleanup_at_end=True,
                      record_screenshot=False):
+  try:
     if not display:
       display = start_display()
     if not browser:
