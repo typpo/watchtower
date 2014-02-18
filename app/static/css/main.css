@@ -1,11 +1,12 @@
 body {
-  background-image: url(/static/images/ps_neutral.png);
+  background-image: -webkit-radial-gradient(top center, circle, #34495e, #2e2f2b);
+  background-color: #34495e;
   font-family: 'Open Sans', sans-serif;
 }
 
 .container {
-  background-color: #fff;
-  padding: 15px;
+  background-color: #fffefb;
+  padding: 35px;
 }
 
 #loader {
@@ -13,7 +14,7 @@ body {
   top:30%;
   left:50%;
   color:#000;
-  background-color:#fff;
+  background-color:#fffefb;
   width:150px;
   height:80px;
   margin-top:-20px;
@@ -64,14 +65,21 @@ ul#left_nav {
 
 #story div {
   margin-top: 25px;
+  background-color: #F7F7F7;
 }
 
 #story .image_container {
   outline: 1px solid #ccc;
+  /*
   -moz-box-shadow: 0 1px 5px #BBB;
   -webkit-box-shadow: 0 1px 5px #BBB;
   box-shadow: 0 1px 5px #BBB;
+  */
   border-radius: 5px;
+
+  box-shadow: 0px 1px 12px #000;
+  -moz-box-shadow: 0px 1px 12px #000;
+  -webkit-box-shadow: 0px 1px 12px #000;
 }
 
 .calloutblock {
@@ -81,11 +89,11 @@ ul#left_nav {
   box-shadow: 0 1px 5px #BBB;
   -moz-box-shadow: 0 1px 5px #BBB;
   -webkit-box-shadow: 0 1px 5px #BBB;
-  color: #FFF;
+  color: #eee;
 }
 
 .normalblock {
-  background-color: #FFFFFF;
+  background-color: #fffefb;
   border: 1px solid #6bbe45;
   height: 225px;
 }
@@ -105,10 +113,15 @@ ul#left_nav {
 }
 
 .navbar-inner {
+  border: 1px solid #333;
   border-radius:0;
   -webkit-border-radius:0;
   -moz-border-radius:0;
   height: 50px;
+
+  box-shadow: 0px 0px 30px #000;
+  -moz-box-shadow: 0px 0px 30px #000;
+  -webkit-box-shadow: 0px 0px 30px #000;
 }
 
 .container {
